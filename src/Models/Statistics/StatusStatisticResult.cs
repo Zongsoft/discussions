@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,14 +27,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace Zongsoft.Discussions.Models.Statistics
+namespace Zongsoft.Discussions.Models.Statistics;
+
+/// <summary>
+/// 表示按状态分组统计结果的实体类。
+/// </summary>
+public struct StatusStatisticResult<TStatus> where TStatus : struct
 {
-	/// <summary>
-	/// 表示按状态分组统计结果的实体类。
-	/// </summary>
-	public struct StatusStatisticResult<TStatus> where TStatus : struct
-	{
-		public TStatus Status { get; set; }
-		public int Count { get; set; }
-	}
+	public TStatus Status { get; set; }
+	public int Count { get; set; }
 }

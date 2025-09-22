@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,34 +31,34 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
 using Zongsoft.Web;
-using Zongsoft.Security.Membership;
+using Zongsoft.Security.Privileges;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
+using Zongsoft.Web.Security;
 
-namespace Zongsoft.Discussions.Web.Controllers
+namespace Zongsoft.Discussions.Web.Controllers;
+
+[Authorization]
+[ControllerName("Folders")]
+public class FolderController : ServiceController<Folder, FolderService>
 {
-    [Authorization]
-    [ControllerName("Folders")]
-    public class FolderController : ServiceController<Folder, FolderService>
+    #region 公共方法
+    [HttpPatch("[area]/[controller]/{id}/Icon/{value}")]
+    public IActionResult SetIcon(uint id, string value = null)
     {
-        #region 公共方法
-        [HttpPatch("[area]/[controller]/{id}/Icon/{value}")]
-        public IActionResult SetIcon(uint id, string value = null)
-        {
-            return this.DataService.SetIcon(id, value) ? this.NoContent() : this.NotFound();
-        }
-
-        [HttpPatch("[area]/[controller]/{id}/Visiblity/{value}")]
-        public IActionResult SetVisiblity(uint id, Visibility value)
-        {
-            return this.DataService.SetVisiblity(id, value) ? this.NoContent() : this.NotFound();
-        }
-
-        [HttpPatch("[area]/[controller]/{id}/Accessibility/{value}")]
-        public IActionResult SetAccessibility(uint id, Accessibility value)
-        {
-            return this.DataService.SetAccessibility(id, value) ? this.NoContent() : this.NotFound();
-        }
-        #endregion
+        return this.DataService.SetIcon(id, value) ? this.NoContent() : this.NotFound();
     }
+
+    [HttpPatch("[area]/[controller]/{id}/Visiblity/{value}")]
+    public IActionResult SetVisiblity(uint id, Visibility value)
+    {
+        return this.DataService.SetVisiblity(id, value) ? this.NoContent() : this.NotFound();
+    }
+
+    [HttpPatch("[area]/[controller]/{id}/Accessibility/{value}")]
+    public IActionResult SetAccessibility(uint id, Accessibility value)
+    {
+        return this.DataService.SetAccessibility(id, value) ? this.NoContent() : this.NotFound();
+    }
+    #endregion
 }

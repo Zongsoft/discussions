@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,77 +37,77 @@ using Zongsoft.IO;
 using Zongsoft.Web;
 using Zongsoft.Data;
 using Zongsoft.Common;
-using Zongsoft.Security.Membership;
+using Zongsoft.Security.Privileges;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
+using Zongsoft.Web.Security;
 
-namespace Zongsoft.Discussions.Web.Controllers
+namespace Zongsoft.Discussions.Web.Controllers;
+
+[Authorization]
+[ControllerName("Files")]
+public class FileController : ServiceController<File, FileService>
 {
-	[Authorization]
-	[ControllerName("Files")]
-	public class FileController : ServiceController<File, FileService>
+	#region 公共属性
+	[Zongsoft.Services.ServiceDependency(IsRequired = true)]
+	public WebFileAccessor Accessor { get; set; }
+	#endregion
+
+	#region 重写属性
+	protected override bool CanCreate => false;
+	protected override bool CanDelete => false;
+	protected override bool CanUpdate => false;
+	#endregion
+
+	#region 公共方法
+	[HttpGet("[area]/[controller]/{id}")]
+	public async Task<IActionResult> DownloadAsync(string id, CancellationToken cancellation = default)
 	{
-		#region 公共属性
-		[Zongsoft.Services.ServiceDependency(IsRequired = true)]
-		public WebFileAccessor Accessor { get; set; }
-		#endregion
+		var file = await this.DataService.GetAsync(id, $"{nameof(Models.File.FileId)},{nameof(Models.File.Path)}", Paging.Disabled, Array.Empty<Sorting>(), cancellation) as File;
 
-		#region 重写属性
-		protected override bool CanCreate => false;
-		protected override bool CanDelete => false;
-		protected override bool CanUpdate => false;
-		#endregion
+		if(file == null || string.IsNullOrWhiteSpace(file.Path))
+			return null;
 
-		#region 公共方法
-		[HttpGet("[area]/[controller]/{id}")]
-		public async Task<IActionResult> DownloadAsync(string id, CancellationToken cancellation = default)
-		{
-			var file = await this.DataService.GetAsync(id, $"{nameof(Models.File.FileId)},{nameof(Models.File.Path)}", Paging.Disabled, Array.Empty<Sorting>(), cancellation) as File;
-
-			if(file == null || string.IsNullOrWhiteSpace(file.Path))
-				return null;
-
-			return this.Accessor.Read(file.Path);
-		}
-
-		[HttpPost("[area]/[controller]/{id?}")]
-		public async Task<IEnumerable<File>> UploadAsync(uint? id = null, CancellationToken cancellation = default)
-		{
-			var files = new List<File>();
-			var infos = this.Accessor.Write(this.Request,
-										  this.DataService.GetDirectory(id),
-										  args => args.FileName = $"{Timestamp.Millennium.Epoch.GetElapsed().Days}-{Randomizer.GenerateString()}", cancellation);
-
-			await foreach(var info in infos)
-			{
-				if(info == null || !info.IsFile)
-					continue;
-
-				object name = null;
-
-				if(info.HasProperties && !info.Properties.TryGetValue("FileName", out name))
-					info.Properties.TryGetValue("DispositionName", out name);
-
-				if(string.IsNullOrWhiteSpace(name as string))
-					name = info.Name;
-
-				var attachment = Model.Build<File>(file =>
-				{
-					file.FolderId = id ?? 0;
-					file.Name = info.Name;
-					file.Path = (PathLocation)info.Path.Url;
-					file.Type = info.Type;
-					file.Size = (uint)Math.Max(0, info.Size);
-				});
-
-				if(this.DataService.Insert(attachment) > 0)
-					files.Add(attachment);
-				else
-					await this.Accessor.Delete(info.Path.FullPath);
-			}
-
-			return files;
-		}
-		#endregion
+		return this.Accessor.Read(file.Path);
 	}
+
+	[HttpPost("[area]/[controller]/{id?}")]
+	public async Task<IEnumerable<File>> UploadAsync(uint? id = null, CancellationToken cancellation = default)
+	{
+		var files = new List<File>();
+		var infos = this.Accessor.Write(this.Request,
+									  this.DataService.GetDirectory(id),
+									  args => args.FileName = $"{Timestamp.Millennium.Epoch.GetElapsed().Days}-{Randomizer.GenerateString()}", cancellation);
+
+		await foreach(var info in infos)
+		{
+			if(info == null || !info.IsFile)
+				continue;
+
+			object name = null;
+
+			if(info.HasProperties && !info.Properties.TryGetValue("FileName", out name))
+				info.Properties.TryGetValue("DispositionName", out name);
+
+			if(string.IsNullOrWhiteSpace(name as string))
+				name = info.Name;
+
+			var attachment = Model.Build<File>(file =>
+			{
+				file.FolderId = id ?? 0;
+				file.Name = info.Name;
+				file.Path = (PathLocation)info.Path.Url;
+				file.Type = info.Type;
+				file.Size = (uint)Math.Max(0, info.Size);
+			});
+
+			if(this.DataService.Insert(attachment) > 0)
+				files.Add(attachment);
+			else
+				await this.Accessor.Delete(info.Path.FullPath);
+		}
+
+		return files;
+	}
+	#endregion
 }

@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,23 +26,22 @@
 
 using System;
 
-namespace Zongsoft.Discussions.Models
+namespace Zongsoft.Discussions.Models;
+
+/// <summary>
+/// 表示分享性的枚举。
+/// </summary>
+public enum Shareability : byte
 {
-	/// <summary>
-	/// 表示分享性的枚举。
-	/// </summary>
-	public enum Shareability : byte
-	{
-		/// <summary>私有，仅限所有者</summary>
-		Private,
+	/// <summary>私有，仅限所有者</summary>
+	Private,
 
-		/// <summary>内部，站内用户</summary>
-		Internal,
+	/// <summary>内部，站内用户</summary>
+	Internal,
 
-		/// <summary>好友，特定用户</summary>
-		Friendly,
+	/// <summary>好友，特定用户</summary>
+	Friendly,
 
-		/// <summary>公共，所有人(包括匿名用户)</summary>
-		All,
-	}
+	/// <summary>公共，所有人(包括匿名用户)</summary>
+	All,
 }

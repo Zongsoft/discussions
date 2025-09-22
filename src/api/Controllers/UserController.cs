@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,44 +35,39 @@ using Microsoft.AspNetCore.Http;
 
 using Zongsoft.Web;
 using Zongsoft.Data;
-using Zongsoft.Security.Membership;
+using Zongsoft.Security.Privileges;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
+using Zongsoft.Web.Security;
 
-namespace Zongsoft.Discussions.Web.Controllers
+namespace Zongsoft.Discussions.Web.Controllers;
+
+[Authorization]
+[ControllerName("Users")]
+public class UserController : ServiceController<UserProfile, UserService>
 {
-    [Authorization]
-    [ControllerName("Users")]
-    public class UserController : ServiceController<UserProfile, UserService>
+    #region 公共方法
+    [ActionName("Count")]
+    [HttpGet("[area]/[controller]/{id}/[action]/{args}")]
+    public IActionResult GetCount(uint id, string args)
     {
-        #region 公共方法
-        [ActionName("Count")]
-        [HttpGet("[area]/[controller]/{id}/[action]/{args}")]
-        public IActionResult GetCount(uint id, string args)
-        {
-            if (string.IsNullOrEmpty(args))
-                return this.BadRequest("Missing arguments of the request.");
+        if (string.IsNullOrEmpty(args))
+            return this.BadRequest("Missing arguments of the request.");
 
-            switch (args.ToLowerInvariant())
-            {
-                case "unread":
-                case "message-unread":
-                    return this.Ok(this.DataService.GetMessageUnreadCount(id));
-                case "message":
-                case "message-total":
-                    return this.Ok(this.DataService.GetMessageTotalCount(id));
-                default:
-                    return this.BadRequest("Invalid argument value.");
-            }
-        }
+		return args.ToLowerInvariant() switch
+		{
+			"unread" or "message-unread" => this.Ok(this.DataService.GetMessageUnreadCount(id)),
+			"message" or "message-total" => this.Ok(this.DataService.GetMessageTotalCount(id)),
+			_ => this.BadRequest("Invalid argument value."),
+		};
+	}
 
-        [ActionName("Avatar")]
-        [HttpPost("[area]/[controller]/{id}/[action]")]
-        public Task<IO.FileInfo> SetAvatar(uint id) => SetAvatar(id);
+    [ActionName("Avatar")]
+    [HttpPost("[area]/[controller]/{id}/[action]")]
+    public Task<IO.FileInfo> SetAvatar(uint id) => SetAvatar(id);
 
-        [ActionName("Photo")]
-        [HttpPost("[area]/[controller]/{id}/[action]")]
-        public Task<IO.FileInfo> SetPhoto(uint id) => SetPhoto(id);
-        #endregion
-    }
+    [ActionName("Photo")]
+    [HttpPost("[area]/[controller]/{id}/[action]")]
+    public Task<IO.FileInfo> SetPhoto(uint id) => SetPhoto(id);
+    #endregion
 }

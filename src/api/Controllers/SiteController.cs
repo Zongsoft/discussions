@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,16 @@ using Zongsoft.Data;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
 
-namespace Zongsoft.Discussions.Web.Controllers
-{
-    [ControllerName("Sites")]
-    public class SiteController : ServiceController<Site, SiteService>
-    {
-        #region 公共方法
-        [HttpGet("[area]/[controller]/{siteId}/Forums")]
-        public IEnumerable<Forum> GetForums(uint siteId, [FromQuery(Name = "group")] ushort groupId = 0) => this.DataService.GetForums(siteId, groupId);
+namespace Zongsoft.Discussions.Web.Controllers;
 
-        [HttpGet("[area]/[controller]/{siteId}/ForumGroups")]
-        public IEnumerable<ForumGroup> GetForumGroups(uint siteId) => this.DataService.GetForumGroups(siteId);
-        #endregion
-    }
+[ControllerName("Sites")]
+public class SiteController : ServiceController<Site, SiteService>
+{
+    #region 公共方法
+    [HttpGet("[area]/[controller]/{siteId}/Forums")]
+    public IEnumerable<Forum> GetForums(uint siteId, [FromQuery(Name = "group")] ushort groupId = 0) => this.DataService.GetForums(siteId, groupId);
+
+    [HttpGet("[area]/[controller]/{siteId}/ForumGroups")]
+    public IEnumerable<ForumGroup> GetForumGroups(uint siteId) => this.DataService.GetForumGroups(siteId);
+    #endregion
 }

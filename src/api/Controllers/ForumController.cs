@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,41 +37,40 @@ using Zongsoft.Data;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
 
-namespace Zongsoft.Discussions.Web.Controllers
+namespace Zongsoft.Discussions.Web.Controllers;
+
+[ControllerName("Forums")]
+public class ForumController : ServiceController<Forum, ForumService>
 {
-	[ControllerName("Forums")]
-	public class ForumController : ServiceController<Forum, ForumService>
+	#region 公共方法
+	[HttpGet("[area]/[controller]/{id}/Moderators")]
+	public IEnumerable<UserProfile> GetModerators(ushort id)
 	{
-		#region 公共方法
-		[HttpGet("[area]/[controller]/{id}/Moderators")]
-		public IEnumerable<UserProfile> GetModerators(ushort id)
-		{
-			return this.DataService.GetModerators(id, this.Request.Headers.GetDataSchema());
-		}
-
-		[HttpGet("[area]/[controller]/{id}/Globals")]
-		public IEnumerable<Thread> GetGlobalThreads(ushort id, [FromQuery] Paging page = null)
-		{
-			return this.DataService.GetGlobalThreads(id, this.Request.Headers.GetDataSchema(), page);
-		}
-
-		[HttpGet("[area]/[controller]/{id}/Pinneds")]
-		public IEnumerable<Thread> GetPinnedThreads(ushort id, [FromQuery] Paging page = null)
-		{
-			return this.DataService.GetPinnedThreads(id, this.Request.Headers.GetDataSchema(), page);
-		}
-
-		[HttpGet("[area]/[controller]/{id}/Topmosts/{count?}")]
-		public IEnumerable<Thread> GetTopmosts(ushort id, int count = 0)
-		{
-			return this.DataService.GetTopmosts(id, this.Request.Headers.GetDataSchema(), count);
-		}
-
-		[HttpGet("[area]/[controller]/{id}/Threads")]
-		public object GetThreads(ushort id, [FromQuery] Paging page = null)
-		{
-			return this.Paginate(page ??= Paging.First(), this.DataService.GetThreads(id, this.Request.Headers.GetDataSchema(), page));
-		}
-		#endregion
+		return this.DataService.GetModerators(id, this.Request.Headers.GetDataSchema());
 	}
+
+	[HttpGet("[area]/[controller]/{id}/Globals")]
+	public IEnumerable<Thread> GetGlobalThreads(ushort id, [FromQuery] Paging page = null)
+	{
+		return this.DataService.GetGlobalThreads(id, this.Request.Headers.GetDataSchema(), page);
+	}
+
+	[HttpGet("[area]/[controller]/{id}/Pinneds")]
+	public IEnumerable<Thread> GetPinnedThreads(ushort id, [FromQuery] Paging page = null)
+	{
+		return this.DataService.GetPinnedThreads(id, this.Request.Headers.GetDataSchema(), page);
+	}
+
+	[HttpGet("[area]/[controller]/{id}/Topmosts/{count?}")]
+	public IEnumerable<Thread> GetTopmosts(ushort id, int count = 0)
+	{
+		return this.DataService.GetTopmosts(id, this.Request.Headers.GetDataSchema(), count);
+	}
+
+	[HttpGet("[area]/[controller]/{id}/Threads")]
+	public object GetThreads(ushort id, [FromQuery] Paging page = null)
+	{
+		return this.Paginate(page ??= Paging.First(), this.DataService.GetThreads(id, this.Request.Headers.GetDataSchema(), page));
+	}
+	#endregion
 }

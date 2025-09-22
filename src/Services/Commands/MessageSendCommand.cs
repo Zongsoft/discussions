@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,98 +29,100 @@ using System.Linq;
 using System.Collections.Generic;
 
 using Zongsoft.Services;
+using Zongsoft.Components;
+using System.Threading.Tasks;
+using System.Threading;
 
-namespace Zongsoft.Discussions.Services.Commands
+namespace Zongsoft.Discussions.Services.Commands;
+
+[CommandOption(SUBJECT_OPTION, typeof(string), Required = true)]
+[CommandOption(CONTENT_OPTION, typeof(string), Required = true)]
+[CommandOption(CONTENTTYPE_OPTION, typeof(string))]
+[CommandOption(MESSAGETYPE_OPTION, typeof(string))]
+[CommandOption(SOURCE_OPTION, typeof(string))]
+public class MessageSendCommand : CommandBase<CommandContext>
 {
-	[CommandOption(SUBJECT_OPTION, typeof(string), Required = true)]
-	[CommandOption(CONTENT_OPTION, typeof(string), Required = true)]
-	[CommandOption(CONTENTTYPE_OPTION, typeof(string))]
-	[CommandOption(MESSAGETYPE_OPTION, typeof(string))]
-	[CommandOption(SOURCE_OPTION, typeof(string))]
-	public class MessageSendCommand : CommandBase<CommandContext>
+	#region 常量定义
+	private const string SUBJECT_OPTION = "subject";
+	private const string CONTENT_OPTION = "content";
+	private const string CONTENTTYPE_OPTION = "contentType";
+	private const string MESSAGETYPE_OPTION = "messageType";
+	private const string SOURCE_OPTION = "source";
+	#endregion
+
+	#region 构造函数
+	public MessageSendCommand() : base("Send") { }
+	public MessageSendCommand(string name) : base(name) { }
+	#endregion
+
+	#region 公共属性
+	[ServiceDependency(Provider = Module.NAME)]
+	public MessageService Service { get; set; }
+	#endregion
+
+	#region 执行方法
+	protected override ValueTask<object> OnExecuteAsync(CommandContext context, CancellationToken cancellation)
 	{
-		#region 常量定义
-		private const string SUBJECT_OPTION = "subject";
-		private const string CONTENT_OPTION = "content";
-		private const string CONTENTTYPE_OPTION = "contentType";
-		private const string MESSAGETYPE_OPTION = "messageType";
-		private const string SOURCE_OPTION = "source";
-		#endregion
+		if(context.Expression.Arguments == null || context.Expression.Arguments.IsEmpty)
+			throw new CommandException("Missing arguments of the command.");
 
-		#region 构造函数
-		public MessageSendCommand() : base("Send") { }
-		public MessageSendCommand(string name) : base(name) { }
-		#endregion
+		var content = context.Expression.Options.GetValue<string>(CONTENT_OPTION);
+		var contentType = context.Expression.Options.GetValue<string>(CONTENTTYPE_OPTION);
 
-		#region 公共属性
-		[ServiceDependency(Provider = Module.NAME)]
-		public MessageService Service { get; set; }
-		#endregion
+		//根据内容类型解析得到真实内容
+		content = GetContent(content, ref contentType);
 
-		#region 执行方法
-		protected override object OnExecute(CommandContext context)
+		var message = Zongsoft.Data.Model.Build<Models.Message>(entity =>
 		{
-			if(context.Expression.Arguments == null || context.Expression.Arguments.Length == 0)
-				throw new CommandException("Missing arguments of the command.");
+			entity.Content = content;
+			entity.ContentType = contentType;
+			entity.Referer = context.Expression.Options.GetValue<string>(SOURCE_OPTION);
+			entity.Subject = context.Expression.Options.GetValue<string>(SUBJECT_OPTION);
+			entity.MessageType = context.Expression.Options.GetValue<string>(MESSAGETYPE_OPTION);
+		});
 
-			var content = context.Expression.Options.GetValue<string>(CONTENT_OPTION);
-			var contentType = context.Expression.Options.GetValue<string>(CONTENTTYPE_OPTION);
+		if(this.Service.Send(message, GetUsers(context.Expression.Arguments)) > 0)
+			return ValueTask.FromResult<object>(message);
 
-			//根据内容类型解析得到真实内容
-			content = GetContent(content, ref contentType);
+		return ValueTask.FromResult<object>(null);
+	}
+	#endregion
 
-			var message = Zongsoft.Data.Model.Build<Models.Message>(entity =>
-			{
-				entity.Content = content;
-				entity.ContentType = contentType;
-				entity.Referer = context.Expression.Options.GetValue<string>(SOURCE_OPTION);
-				entity.Subject = context.Expression.Options.GetValue<string>(SUBJECT_OPTION);
-				entity.MessageType = context.Expression.Options.GetValue<string>(MESSAGETYPE_OPTION);
-			});
+	#region 私有方法
+	private static string GetContent(string content, ref string contentType)
+	{
+		if(string.IsNullOrWhiteSpace(content) || string.IsNullOrWhiteSpace(contentType))
+			return content;
 
-			if(this.Service.Send(message, GetUsers(context.Expression.Arguments)) > 0)
-				return message;
-
-			return null;
-		}
-		#endregion
-
-		#region 私有方法
-		private static string GetContent(string content, ref string contentType)
+		if(contentType.Length > 5 && contentType.EndsWith("+file", StringComparison.OrdinalIgnoreCase))
 		{
-			if(string.IsNullOrWhiteSpace(content) || string.IsNullOrWhiteSpace(contentType))
-				return content;
+			contentType = contentType.Substring(0, contentType.Length - 5);
 
-			if(contentType.Length > 5 && contentType.EndsWith("+file", StringComparison.OrdinalIgnoreCase))
+			if(Zongsoft.IO.FileSystem.File.Exists(content))
 			{
-				contentType = contentType.Substring(0, contentType.Length - 5);
-
-				if(Zongsoft.IO.FileSystem.File.Exists(content))
+				using(var stream = Zongsoft.IO.FileSystem.File.Open(content))
 				{
-					using(var stream = Zongsoft.IO.FileSystem.File.Open(content))
+					using(var reader = new System.IO.StreamReader(stream))
 					{
-						using(var reader = new System.IO.StreamReader(stream))
-						{
-							content = reader.ReadToEnd();
-						}
+						content = reader.ReadToEnd();
 					}
 				}
 			}
-
-			return content;
 		}
 
-		private static IEnumerable<uint> GetUsers(string[] args)
-		{
-			if(args == null)
-				yield break;
-
-			foreach(var arg in args)
-			{
-				if(arg != null && uint.TryParse(arg, out var id))
-					yield return id;
-			}
-		}
-		#endregion
+		return content;
 	}
+
+	private static IEnumerable<uint> GetUsers(string[] args)
+	{
+		if(args == null)
+			yield break;
+
+		foreach(var arg in args)
+		{
+			if(arg != null && uint.TryParse(arg, out var id))
+				yield return id;
+		}
+	}
+	#endregion
 }

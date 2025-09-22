@@ -15,10 +15,24 @@
 		<ProjectReference Include="..\Zongsoft.Discussions.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Zongsoft.Core" />
-		<PackageReference Include="Zongsoft.Web" />
-	</ItemGroup>
+	<Choose>
+		<When Condition="$(ZongsoftFrameworkPathReferenced) And Exists('$(ZongsoftFrameworkPath)')">
+			<ItemGroup>
+				<Reference Include="Zongsoft.Core">
+					<HintPath>$(ZongsoftFrameworkPath)\Zongsoft.Core\src\bin\$(Configuration)\$(TargetFramework)\Zongsoft.Core.dll</HintPath>
+				</Reference>
+				<Reference Include="Zongsoft.Web">
+					<HintPath>$(ZongsoftFrameworkPath)\Zongsoft.Web\src\bin\$(Configuration)\$(TargetFramework)\Zongsoft.Web.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<PackageReference Include="Zongsoft.Core" />
+				<PackageReference Include="Zongsoft.Web" />
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
 
 	<ItemGroup>
 		<None Include="$(MSBuildProjectName).deploy" Link=".deploy" Pack="true" PackagePath="\.deploy" />

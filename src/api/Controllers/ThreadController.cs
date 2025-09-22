@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,82 +35,82 @@ using Zongsoft.Web;
 using Zongsoft.Data;
 using Zongsoft.Web.Http;
 using Zongsoft.Security;
-using Zongsoft.Security.Membership;
+using Zongsoft.Security.Privileges;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
+using Zongsoft.Web.Security;
 
-namespace Zongsoft.Discussions.Web.Controllers
+namespace Zongsoft.Discussions.Web.Controllers;
+
+[Authorization]
+[ControllerName("Threads")]
+public class ThreadController : ServiceController<Thread, ThreadService>
 {
-	[Authorization]
-	[ControllerName("Threads")]
-	public class ThreadController : ServiceController<Thread, ThreadService>
+	#region 公共方法
+	[HttpPatch("[area]/[controller]/{id}/Approve")]
+	public object Approve(ulong id)
 	{
-		#region 公共方法
-		[HttpPatch("[area]/[controller]/{id}/Approve")]
-		public object Approve(ulong id)
-		{
-			return this.DataService.Approve(id) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPatch("[area]/[controller]/{id}/Hidden")]
-		public object Hidden(ulong id)
-		{
-			return this.DataService.Visible(id, false) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPatch("[area]/[controller]/{id}/Visible")]
-		public object Visible(ulong id)
-		{
-			return this.DataService.Visible(id, true) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPost("[area]/[controller]/{id}/Lock")]
-		public object Lock(ulong id)
-		{
-			return this.DataService.SetLocked(id, true) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPost("[area]/[controller]/{id}/Unlock")]
-		public object Unlock(ulong id)
-		{
-			return this.DataService.SetLocked(id, false) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPost("[area]/[controller]/{id}/Pin")]
-		public object Pin(ulong id)
-		{
-			return this.DataService.SetPinned(id, true) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPost("[area]/[controller]/{id}/Unpin")]
-		public object Unpin(ulong id)
-		{
-			return this.DataService.SetPinned(id, false) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPost("[area]/[controller]/{id}/Valued")]
-		public object Valued(ulong id)
-		{
-			return this.DataService.SetValued(id, true) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPost("[area]/[controller]/{id}/Unvalued")]
-		public object Unvalued(ulong id)
-		{
-			return this.DataService.SetValued(id, false) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPost("[area]/[controller]/{id}/Global")]
-		public object Global(ulong id)
-		{
-			return this.DataService.SetGlobal(id, true) ? this.NoContent() : this.NotFound();
-		}
-
-		[HttpPost("[area]/[controller]/{id}/Unglobal")]
-		public object Unglobal(ulong id)
-		{
-			return this.DataService.SetGlobal(id, false) ? this.NoContent() : this.NotFound();
-		}
-		#endregion
+		return this.DataService.Approve(id) ? this.NoContent() : this.NotFound();
 	}
+
+	[HttpPatch("[area]/[controller]/{id}/Hidden")]
+	public object Hidden(ulong id)
+	{
+		return this.DataService.Visible(id, false) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPatch("[area]/[controller]/{id}/Visible")]
+	public object Visible(ulong id)
+	{
+		return this.DataService.Visible(id, true) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPost("[area]/[controller]/{id}/Lock")]
+	public object Lock(ulong id)
+	{
+		return this.DataService.SetLocked(id, true) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPost("[area]/[controller]/{id}/Unlock")]
+	public object Unlock(ulong id)
+	{
+		return this.DataService.SetLocked(id, false) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPost("[area]/[controller]/{id}/Pin")]
+	public object Pin(ulong id)
+	{
+		return this.DataService.SetPinned(id, true) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPost("[area]/[controller]/{id}/Unpin")]
+	public object Unpin(ulong id)
+	{
+		return this.DataService.SetPinned(id, false) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPost("[area]/[controller]/{id}/Valued")]
+	public object Valued(ulong id)
+	{
+		return this.DataService.SetValued(id, true) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPost("[area]/[controller]/{id}/Unvalued")]
+	public object Unvalued(ulong id)
+	{
+		return this.DataService.SetValued(id, false) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPost("[area]/[controller]/{id}/Global")]
+	public object Global(ulong id)
+	{
+		return this.DataService.SetGlobal(id, true) ? this.NoContent() : this.NotFound();
+	}
+
+	[HttpPost("[area]/[controller]/{id}/Unglobal")]
+	public object Unglobal(ulong id)
+	{
+		return this.DataService.SetGlobal(id, false) ? this.NoContent() : this.NotFound();
+	}
+	#endregion
 }

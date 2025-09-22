@@ -26,34 +26,46 @@
 
 using System;
 using System.Linq;
-using System.Collections.Generic;
 
+using System.IO;
 using Zongsoft.Data;
+using Zongsoft.Data.Archiving;
 using Zongsoft.Services;
+using Zongsoft.Serialization;
+
 using Zongsoft.Discussions.Models;
+using Zongsoft.Discussions.Services;
 
-namespace Zongsoft.Discussions.Services;
+namespace Zongsoft.Discussions.Features.Archiving;
 
-[Service(nameof(SiteService))]
-[DataService(typeof(SiteCriteria))]
-public class SiteService : DataServiceBase<Site>
+[Service(typeof(IDataTemplateModelProvider))]
+public class UserDataTemplateModelProvider : DataTemplateModelProviderBase
 {
 	#region 构造函数
-	public SiteService(IServiceProvider serviceProvider) : base(serviceProvider) { }
+	public UserDataTemplateModelProvider(IServiceProvider services) : base("User-List", services) { }
+	#endregion
+
+	#region 公共属性
+	[ServiceDependency("~", IsRequired = true)]
+	public IDataAccess DataAccess { get; set; }
 	#endregion
 
 	#region 公共方法
-	public IEnumerable<ForumGroup> GetForumGroups(uint siteId) =>
-		this.DataAccess.Select<ForumGroup>(Condition.Equal(nameof(ForumGroup.SiteId), siteId));
-
-	public IEnumerable<Forum> GetForums(uint siteId, ushort groupId = 0)
+	public override IDataTemplateModel GetModel(IDataTemplate template, object argument)
 	{
-		return groupId == 0 ?
-			this.DataAccess.Select<Forum>(
-				Condition.Equal(nameof(Forum.SiteId), siteId)) :
-			this.DataAccess.Select<Forum>(
-				Condition.Equal(nameof(Forum.SiteId), siteId) &
-				Condition.Equal(nameof(Forum.GroupId), groupId));
+		var schema = $"*, {nameof(UserProfile.Site)}" + "{*}";
+
+		if(argument is Stream stream)
+			argument = Serializer.Json.Deserialize<UserProfileCriteria>(stream);
+
+		var data = argument switch
+		{
+			string key => this.Services.ResolveRequired<UserService>().Get(key, schema),
+			IModel model => this.Services.ResolveRequired<UserService>().Select(Criteria.Transform(model), schema),
+			_ => this.Services.ResolveRequired<UserService>().Select(null, schema),
+		};
+
+		return new DataTemplateModel(new { Users = data });
 	}
 	#endregion
 }

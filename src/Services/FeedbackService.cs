@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,116 +32,115 @@ using Zongsoft.Data;
 using Zongsoft.Services;
 using Zongsoft.Discussions.Models;
 
-namespace Zongsoft.Discussions.Services
+namespace Zongsoft.Discussions.Services;
+
+[Service(nameof(FeedbackService))]
+[DataService(typeof(FeedbackCriteria))]
+public class FeedbackService : DataServiceBase<Feedback>
 {
-	[Service(nameof(FeedbackService))]
-	[DataService(typeof(FeedbackCriteria))]
-	public class FeedbackService : DataServiceBase<Feedback>
+	#region 构造函数
+	public FeedbackService(IServiceProvider serviceProvider) : base(serviceProvider) { }
+	#endregion
+
+	#region 重写方法
+	protected override Feedback OnGet(ICondition criteria, ISchema schema, DataSelectOptions options)
 	{
-		#region 构造函数
-		public FeedbackService(IServiceProvider serviceProvider) : base(serviceProvider) { }
-		#endregion
+		//调用基类同名方法
+		var feedback = base.OnGet(criteria, schema, options);
 
-		#region 重写方法
-		protected override Feedback OnGet(ICondition criteria, ISchema schema, DataSelectOptions options)
-		{
-			//调用基类同名方法
-			var feedback = base.OnGet(criteria, schema, options);
+		if(feedback == null)
+			return null;
 
-			if(feedback == null)
-				return null;
+		//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
+		if(!Utility.IsContentEmbedded(feedback.ContentType))
+			feedback.Content = Utility.ReadTextFile(feedback.Content);
 
-			//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
-			if(!Utility.IsContentEmbedded(feedback.ContentType))
-				feedback.Content = Utility.ReadTextFile(feedback.Content);
-
-			return feedback;
-		}
-
-		protected override void OnValidate(DataServiceMethod method, ISchema schema, IDataDictionary<Feedback> data, IDataMutateOptions options)
-		{
-			if(method.IsWriting)
-			{
-				//更新内容及内容类型
-				var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
-			}
-
-			base.OnValidate(method, schema, data, options);
-		}
-
-		protected override int OnInsert(IDataDictionary<Feedback> data, ISchema schema, DataInsertOptions options)
-		{
-			//更新内容及内容类型
-			var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
-
-			try
-			{
-				//调用基类同名方法
-				var count = base.OnInsert(data, schema, options);
-
-				if(count < 1)
-				{
-					//如果新增记录失败则删除刚创建的内容文件
-					if(contentFile != null && contentFile.Length > 0)
-						Utility.DeleteFile(contentFile);
-				}
-
-				return count;
-			}
-			catch
-			{
-				//删除新建的内容文件
-				if(contentFile != null && contentFile.Length > 0)
-					Utility.DeleteFile(contentFile);
-
-				throw;
-			}
-		}
-
-		protected override int OnUpdate(IDataDictionary<Feedback> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
-		{
-			//更新内容及内容类型
-			Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
-
-			//调用基类同名方法
-			return base.OnUpdate(data, criteria, schema, options);
-		}
-
-		protected override int OnUpsert(IDataDictionary<Feedback> data, ISchema schema, DataUpsertOptions options)
-		{
-			//更新内容及内容类型
-			var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
-
-			try
-			{
-				//调用基类同名方法
-				var count = base.OnUpsert(data, schema, options);
-
-				if(count < 1)
-				{
-					//如果更新记录失败则删除刚创建的内容文件
-					if(contentFile != null && contentFile.Length > 0)
-						Utility.DeleteFile(contentFile);
-				}
-
-				return count;
-			}
-			catch
-			{
-				//删除新建的内容文件
-				if(contentFile != null && contentFile.Length > 0)
-					Utility.DeleteFile(contentFile);
-
-				throw;
-			}
-		}
-		#endregion
-
-		#region 虚拟方法
-		protected virtual string GetContentFilePath(ulong feedbackId)
-		{
-			return Utility.GetFilePath($"feedbacks/feedback-{feedbackId}.txt");
-		}
-		#endregion
+		return feedback;
 	}
+
+	protected override void OnValidate(DataServiceMethod method, ISchema schema, IDataDictionary<Feedback> data, IDataMutateOptions options)
+	{
+		if(method.IsWriting)
+		{
+			//更新内容及内容类型
+			var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
+		}
+
+		base.OnValidate(method, schema, data, options);
+	}
+
+	protected override int OnInsert(IDataDictionary<Feedback> data, ISchema schema, DataInsertOptions options)
+	{
+		//更新内容及内容类型
+		var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
+
+		try
+		{
+			//调用基类同名方法
+			var count = base.OnInsert(data, schema, options);
+
+			if(count < 1)
+			{
+				//如果新增记录失败则删除刚创建的内容文件
+				if(contentFile != null && contentFile.Length > 0)
+					Utility.DeleteFile(contentFile);
+			}
+
+			return count;
+		}
+		catch
+		{
+			//删除新建的内容文件
+			if(contentFile != null && contentFile.Length > 0)
+				Utility.DeleteFile(contentFile);
+
+			throw;
+		}
+	}
+
+	protected override int OnUpdate(IDataDictionary<Feedback> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
+	{
+		//更新内容及内容类型
+		Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
+
+		//调用基类同名方法
+		return base.OnUpdate(data, criteria, schema, options);
+	}
+
+	protected override int OnUpsert(IDataDictionary<Feedback> data, ISchema schema, DataUpsertOptions options)
+	{
+		//更新内容及内容类型
+		var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
+
+		try
+		{
+			//调用基类同名方法
+			var count = base.OnUpsert(data, schema, options);
+
+			if(count < 1)
+			{
+				//如果更新记录失败则删除刚创建的内容文件
+				if(contentFile != null && contentFile.Length > 0)
+					Utility.DeleteFile(contentFile);
+			}
+
+			return count;
+		}
+		catch
+		{
+			//删除新建的内容文件
+			if(contentFile != null && contentFile.Length > 0)
+				Utility.DeleteFile(contentFile);
+
+			throw;
+		}
+	}
+	#endregion
+
+	#region 虚拟方法
+	protected virtual string GetContentFilePath(ulong feedbackId)
+	{
+		return Utility.GetFilePath($"feedbacks/feedback-{feedbackId}.txt");
+	}
+	#endregion
 }

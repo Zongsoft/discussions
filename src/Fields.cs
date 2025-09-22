@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,9 @@
 
 using System;
 
-namespace Zongsoft.Discussions
+namespace Zongsoft.Discussions;
+
+internal class Fields
 {
-	internal class Fields
-	{
-		public const string SiteId = nameof(SiteId);
-	}
+	public const string SiteId = nameof(SiteId);
 }

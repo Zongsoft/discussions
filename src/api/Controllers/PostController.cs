@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,41 +35,40 @@ using Zongsoft.Data;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
 
-namespace Zongsoft.Discussions.Web.Controllers
+namespace Zongsoft.Discussions.Web.Controllers;
+
+[ControllerName("Posts")]
+public class PostController : ServiceController<Post, PostService>
 {
-    [ControllerName("Posts")]
-    public class PostController : ServiceController<Post, PostService>
+    #region 公共方法
+    [HttpPost("[area]/[controller]/{id}/Upvote/{value?}")]
+    public IActionResult Upvote(ulong id, byte value = 1)
     {
-        #region 公共方法
-        [HttpPost("[area]/[controller]/{id}/Upvote/{value?}")]
-        public IActionResult Upvote(ulong id, byte value = 1)
-        {
-            return this.DataService.Upvote(id, value) ? this.NoContent() : this.NotFound();
-        }
-
-        [HttpPost("[area]/[controller]/{id}/Downvote/{value?}")]
-        public IActionResult Downvote(ulong id, byte value = 1)
-        {
-            return this.DataService.Downvote(id, value) ? this.NoContent() : this.NotFound();
-        }
-
-        [HttpGet("[area]/[controller]/{id}/Upvotes")]
-        public IEnumerable<Post.PostVoting> GetUpvotes(ulong id, [FromQuery] Paging page = null)
-        {
-            return this.DataService.GetUpvotes(id, page);
-        }
-
-        [HttpGet("[area]/[controller]/{id}/Downvotes")]
-        public IEnumerable<Post.PostVoting> GetDownvotes(ulong id, [FromQuery] Paging page = null)
-        {
-            return this.DataService.GetDownvotes(id, page);
-        }
-
-        [HttpGet("[area]/[controller]/{id}/Comments")]
-        public IEnumerable<Post> GetComments(ulong id, [FromQuery] Paging page = null)
-        {
-            return this.DataService.GetComments(id, page);
-        }
-        #endregion
+        return this.DataService.Upvote(id, value) ? this.NoContent() : this.NotFound();
     }
+
+    [HttpPost("[area]/[controller]/{id}/Downvote/{value?}")]
+    public IActionResult Downvote(ulong id, byte value = 1)
+    {
+        return this.DataService.Downvote(id, value) ? this.NoContent() : this.NotFound();
+    }
+
+    [HttpGet("[area]/[controller]/{id}/Upvotes")]
+    public IEnumerable<Post.PostVoting> GetUpvotes(ulong id, [FromQuery] Paging page = null)
+    {
+        return this.DataService.GetUpvotes(id, page);
+    }
+
+    [HttpGet("[area]/[controller]/{id}/Downvotes")]
+    public IEnumerable<Post.PostVoting> GetDownvotes(ulong id, [FromQuery] Paging page = null)
+    {
+        return this.DataService.GetDownvotes(id, page);
+    }
+
+    [HttpGet("[area]/[controller]/{id}/Comments")]
+    public IEnumerable<Post> GetComments(ulong id, [FromQuery] Paging page = null)
+    {
+        return this.DataService.GetComments(id, page);
+    }
+    #endregion
 }

@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,37 +30,36 @@ using Zongsoft.Components;
 
 [assembly: ApplicationModule(Zongsoft.Discussions.Module.NAME)]
 
-namespace Zongsoft.Discussions
+namespace Zongsoft.Discussions;
+
+public class Module : ApplicationModule<Module.EventRegistry>
 {
-	public class Module : ApplicationModule<Module.EventRegistry>
+	#region 常量定义
+	/// <summary>表示论坛模块的名称常量值。</summary>
+	public const string NAME = nameof(Discussions);
+	#endregion
+
+	#region 单例字段
+	public static readonly Module Current = new();
+	#endregion
+
+	#region 构造函数
+	public Module() : base(NAME, Discussions.Properties.Resources.Discussions, Discussions.Properties.Resources.Discussions_Description) { }
+	#endregion
+
+	#region 公共属性
+	private IDataAccess _accessor;
+	public IDataAccess Accessor => _accessor ??= this.Services.ResolveRequired<IDataAccessProvider>().GetAccessor(this.Name);
+	#endregion
+
+	#region 嵌套子类
+	public sealed class EventRegistry : EventRegistryBase
 	{
-		#region 常量定义
-		/// <summary>表示论坛模块的名称常量值。</summary>
-		public const string NAME = nameof(Discussions);
-		#endregion
-
-		#region 单例字段
-		public static readonly Module Current = new();
-		#endregion
-
 		#region 构造函数
-		public Module() : base(NAME, Discussions.Properties.Resources.Discussions, Discussions.Properties.Resources.Discussions_Description) { }
-		#endregion
-
-		#region 公共属性
-		private IDataAccess _accessor;
-		public IDataAccess Accessor => _accessor ??= this.Services.ResolveRequired<IDataAccessProvider>().GetAccessor(this.Name);
-		#endregion
-
-		#region 嵌套子类
-		public sealed class EventRegistry : EventRegistryBase
+		public EventRegistry() : base(NAME)
 		{
-			#region 构造函数
-			public EventRegistry() : base(NAME)
-			{
-			}
-			#endregion
 		}
 		#endregion
 	}
+	#endregion
 }

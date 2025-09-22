@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,44 +25,62 @@
  */
 
 using System;
-using System.Linq;
 using System.Collections;
 
 using Zongsoft.Data;
 using Zongsoft.Security;
 
-namespace Zongsoft.Discussions.Data
+namespace Zongsoft.Discussions.Data;
+
+[DataAccessFilter($"{Module.NAME}.{nameof(Models.Post)}")]
+public class PostFilter : IDataAccessFilter<DataSelectContextBase>
 {
-	[DataAccessFilter($"{Module.NAME}.{nameof(Models.Post)}")]
-	public class PostFilter : IDataAccessFilter<DataSelectContextBase>
+	#region 构造函数
+	public PostFilter() { }
+	#endregion
+
+	#region 过滤方法
+	public void OnFiltered(DataSelectContextBase context) { }
+	public void OnFiltering(DataSelectContextBase context) => context.Result = new FilteredResult(context);
+	#endregion
+
+	#region 嵌套子类
+	private class FilteredResult(DataSelectContextBase context) : IEnumerable
 	{
-		#region 构造函数
-		public PostFilter() { }
-		#endregion
+		private readonly IEnumerable _result = context.Result;
+		private readonly System.Security.Claims.ClaimsPrincipal _principal = context.Principal;
 
-		#region 过滤方法
-		public void OnFiltered(DataSelectContextBase context) { }
-		public void OnFiltering(DataSelectContextBase context) => context.ResultFilter = this.OnResultFilter;
-		#endregion
+		public IEnumerator GetEnumerator() => new Iterator(_result, _principal);
 
-		#region 结果过滤
-		private bool OnResultFilter(DataSelectContextBase context, ref object data)
+		private sealed class Iterator(IEnumerable result, System.Security.Claims.ClaimsPrincipal principal) : IEnumerator
 		{
-			var dictionary = DataDictionary.GetDictionary<Models.Post>(data);
+			private readonly IEnumerator _result = result.GetEnumerator();
+			private readonly System.Security.Claims.ClaimsPrincipal _principal = principal;
 
-			if(dictionary.TryGetValue(p => p.Approved, out var approved) && !approved &&
-			  (!context.Principal.Identity.IsAuthenticated || context.Principal.Identity.GetIdentifier<uint>() != dictionary.GetValue(p => p.CreatorId, 0U)))
+			public object Current
 			{
-				dictionary.TrySetValue(p => p.Content, string.Empty);
-			}
-			else if(dictionary.TryGetValue(p => p.Content, out var content) && dictionary.TryGetValue(p => p.ContentType, out var contentType))
-			{
-				if(!Utility.IsContentEmbedded(contentType))
-					dictionary.SetValue(p => p.Content, Utility.ReadTextFile(content));
+				get
+				{
+					var dictionary = DataDictionary.GetDictionary<Models.Post>(_result.Current);
+
+					if(dictionary.TryGetValue(p => p.Approved, out var approved) && !approved &&
+					  (!_principal.Identity.IsAuthenticated || _principal.Identity.GetIdentifier<uint>() != dictionary.GetValue(p => p.CreatorId, 0U)))
+					{
+						dictionary.TrySetValue(p => p.Content, string.Empty);
+					}
+					else if(dictionary.TryGetValue(p => p.Content, out var content) && dictionary.TryGetValue(p => p.ContentType, out var contentType))
+					{
+						if(!Utility.IsContentEmbedded(contentType))
+							dictionary.SetValue(p => p.Content, Utility.ReadTextFile(content));
+					}
+
+					return _result.Current;
+				}
 			}
 
-			return true;
+			public bool MoveNext() => _result.MoveNext();
+			public void Reset() => _result.Reset();
 		}
-		#endregion
 	}
+	#endregion
 }

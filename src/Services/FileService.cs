@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,54 +31,53 @@ using Zongsoft.Data;
 using Zongsoft.Services;
 using Zongsoft.Discussions.Models;
 
-namespace Zongsoft.Discussions.Services
+namespace Zongsoft.Discussions.Services;
+
+[Service(nameof(FileService))]
+[DataService(typeof(FileCriteria))]
+public class FileService : DataServiceBase<File>
 {
-	[Service(nameof(FileService))]
-	[DataService(typeof(FileCriteria))]
-	public class FileService : DataServiceBase<File>
+	#region 构造函数
+	public FileService(IServiceProvider serviceProvider) : base(serviceProvider) { }
+	#endregion
+
+	#region 公共方法
+	public string GetDirectory(uint? folderId = null)
 	{
-		#region 构造函数
-		public FileService(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        #endregion
+		if(folderId.HasValue)
+			return Utility.GetFilePath("/folders/{folderId}/");
+		else
+			return Utility.GetFilePath("files/");
+	}
+	#endregion
 
-        #region 公共方法
-        public string GetDirectory(uint? folderId = null)
-        {
-            if(folderId.HasValue)
-                return Utility.GetFilePath("/folders/{folderId}/");
-            else
-                return Utility.GetFilePath("files/");
-        }
-		#endregion
+	#region 重写方法
+	protected override int OnInsert(IDataDictionary<File> data, ISchema schema, DataInsertOptions options)
+	{
+		var filePath = data.GetValue(p => p.Path);
 
-		#region 重写方法
-		protected override int OnInsert(IDataDictionary<File> data, ISchema schema, DataInsertOptions options)
+		try
 		{
-			var filePath = data.GetValue(p => p.Path);
+			//调用基类同名方法
+			var count = base.OnInsert(data, schema, options);
 
-			try
+			if(count < 1)
 			{
-				//调用基类同名方法
-				var count = base.OnInsert(data, schema, options);
-
-				if(count < 1)
-				{
-					//如果新增记录失败则删除刚创建的文件
-					if(!filePath.IsEmpty)
-						Utility.DeleteFile(filePath.Path);
-				}
-
-				return count;
-			}
-			catch
-			{
-				//删除新建的文件
+				//如果新增记录失败则删除刚创建的文件
 				if(!filePath.IsEmpty)
 					Utility.DeleteFile(filePath.Path);
-
-				throw;
 			}
+
+			return count;
 		}
-		#endregion
+		catch
+		{
+			//删除新建的文件
+			if(!filePath.IsEmpty)
+				Utility.DeleteFile(filePath.Path);
+
+			throw;
+		}
 	}
+	#endregion
 }

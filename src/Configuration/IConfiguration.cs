@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,16 @@
 using System;
 using System.Collections.Generic;
 
-namespace Zongsoft.Discussions.Configuration
-{
-	/// <summary>
-	/// 表示应用配置信息的接口。
-	/// </summary>
-	public interface IConfiguration
-	{
-		/// <summary>获取或设置默认的站点编号。</summary>
-		uint SiteId { get; set; }
+namespace Zongsoft.Discussions.Configuration;
 
-		/// <summary>获取或设置文件存储的基路径。</summary>
-		string BasePath { get; set; }
-	}
+/// <summary>
+/// 表示应用配置信息的接口。
+/// </summary>
+public interface IConfiguration
+{
+	/// <summary>获取或设置默认的站点编号。</summary>
+	uint SiteId { get; set; }
+
+	/// <summary>获取或设置文件存储的基路径。</summary>
+	string BasePath { get; set; }
 }

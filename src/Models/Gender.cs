@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,20 +26,19 @@
 
 using System;
 
-namespace Zongsoft.Discussions.Models
+namespace Zongsoft.Discussions.Models;
+
+/// <summary>
+/// 表示性别的枚举。
+/// </summary>
+public enum Gender : byte
 {
-	/// <summary>
-	/// 表示性别的枚举。
-	/// </summary>
-	public enum Gender : byte
-	{
-		/// <summary>未知</summary>
-		None = 99,
+	/// <summary>未知</summary>
+	None = 99,
 
-		/// <summary>男(先生)</summary>
-		Male = 1,
+	/// <summary>男(先生)</summary>
+	Male = 1,
 
-		/// <summary>女(女士)</summary>
-		Female = 0,
-	}
+	/// <summary>女(女士)</summary>
+	Female = 0,
 }

@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
  * 
- * Copyright (C) 2015-2017 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,16 @@ using Zongsoft.Data;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
 
-namespace Zongsoft.Discussions.Web.Controllers
+namespace Zongsoft.Discussions.Web.Controllers;
+
+[ControllerName("ForumGroups")]
+public class ForumGroupController : ServiceController<ForumGroup, ForumGroupService>
 {
-    [ControllerName("ForumGroups")]
-    public class ForumGroupController : ServiceController<ForumGroup, ForumGroupService>
+    #region 公共方法
+    [HttpGet("[area]/[controller]/{siteId}-{groupId}/Forums")]
+    public IEnumerable<Forum> GetForums(uint siteId, ushort groupId)
     {
-        #region 公共方法
-        [HttpGet("[area]/[controller]/{siteId}-{groupId}/Forums")]
-        public IEnumerable<Forum> GetForums(uint siteId, ushort groupId)
-        {
-            return this.DataService.GetForums(siteId, groupId);
-        }
-        #endregion
+        return this.DataService.GetForums(siteId, groupId);
     }
+    #endregion
 }

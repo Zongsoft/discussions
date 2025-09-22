@@ -9,7 +9,7 @@
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
  * 
- * Copyright (C) 2015-2019 Zongsoft Corporation. All rights reserved.
+ * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,57 +28,56 @@ using System;
 using System.Globalization;
 using System.ComponentModel;
 
-namespace Zongsoft.Discussions.Models
+namespace Zongsoft.Discussions.Models;
+
+public class TagsConverter : TypeConverter
 {
-	public class TagsConverter : TypeConverter
+	public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 	{
-		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+		if(sourceType == typeof(string))
+			return true;
+
+		return base.CanConvertFrom(context, sourceType);
+	}
+
+	public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+	{
+		if(destinationType == typeof(string))
+			return true;
+
+		return base.CanConvertTo(context, destinationType);
+	}
+
+	public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+	{
+		if(value == null)
+			return null;
+
+		if(value is string text)
+			return Utility.GetTags(text);
+
+		if(value is string[] items)
+			return items;
+
+		return base.ConvertFrom(context, culture, value);
+	}
+
+	public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+	{
+		if(value == null)
+			return null;
+
+		if(value is string text)
+			return string.IsNullOrEmpty(text) ? null : value;
+
+		if(value is string[] items)
 		{
-			if(sourceType == typeof(string))
-				return true;
-
-			return base.CanConvertFrom(context, sourceType);
-		}
-
-		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-		{
-			if(destinationType == typeof(string))
-				return true;
-
-			return base.CanConvertTo(context, destinationType);
-		}
-
-		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-		{
-			if(value == null)
+			if(items == null || items.Length == 0)
 				return null;
-
-			if(value is string text)
-				return Utility.GetTags(text);
-
-			if(value is string[] items)
-				return items;
-
-			return base.ConvertFrom(context, culture, value);
+			else
+				return string.Join(",", items);
 		}
 
-		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-		{
-			if(value == null)
-				return null;
-
-			if(value is string text)
-				return string.IsNullOrEmpty(text) ? null : value;
-
-			if(value is string[] items)
-			{
-				if(items == null || items.Length == 0)
-					return null;
-				else
-					return string.Join(",", items);
-			}
-
-			return base.ConvertTo(context, culture, value, destinationType);
-		}
+		return base.ConvertTo(context, culture, value, destinationType);
 	}
 }
