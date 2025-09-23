@@ -29,6 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
+using Zongsoft.Common;
 using Zongsoft.Services;
 using Zongsoft.Discussions.Models;
 
@@ -54,6 +55,18 @@ public class SiteService : DataServiceBase<Site>
 			this.DataAccess.Select<Forum>(
 				Condition.Equal(nameof(Forum.SiteId), siteId) &
 				Condition.Equal(nameof(Forum.GroupId), groupId));
+	}
+	#endregion
+
+	#region 重写方法
+	protected override void OnValidate(DataServiceMethod method, ISchema schema, IDataDictionary<Site> data, IDataMutateOptions options)
+	{
+		if(method.IsInsert)
+		{
+			data.TrySetValue(nameof(Site.SiteNo), () => $"S{Randomizer.GenerateString()}", string.IsNullOrWhiteSpace);
+		}
+
+		base.OnValidate(method, schema, data, options);
 	}
 	#endregion
 }

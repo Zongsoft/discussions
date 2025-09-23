@@ -83,7 +83,7 @@ public class DataValidator : IDataValidator
 		if(UserIdentity.Current == null)
 			return criteria;
 
-		if(HasProperty(context, Fields.SiteId) && !criteria.Contains(Fields.SiteId))
+		if(HasProperty(context, Fields.SiteId) && (criteria == null || !criteria.Contains(Fields.SiteId, 1)))
 			criteria &= Condition.Equal(Fields.SiteId, UserIdentity.Current.SiteId);
 
 		return criteria;

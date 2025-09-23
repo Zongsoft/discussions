@@ -24,7 +24,6 @@
 			</expose>
 
 			<expose name="Events" value="{path:../@Events}" />
-			<expose name="Schemas" value="{path:../@Schemas}" />
 			<expose name="Properties" value="{path:../@Properties}" />
 		</object>
 	</extension>
@@ -46,18 +45,5 @@
 	<!-- 挂载身份转换器 -->
 	<extension path="/Workbench/Security/Authentication/Transformers">
 		<object value="{static:Zongsoft.Discussions.Security.UserIdentity+Transformer.Instance, Zongsoft.Discussions}" />
-	</extension>
-
-	<extension path="/Workbench/Modules/Discussions/Schemas">
-		<object name="Site" title="{res:Site}" description="{res:Site.Description}" />
-		<object name="File" title="{res:File}" description="{res:File.Description}" />
-		<object name="Folder" title="{res:Folder}" description="{res:Folder.Description}" />
-		<object name="Forum" title="{res:Forum}" description="{res:Forum.Description}" />
-		<object name="ForumGroup" title="{res:ForumGroup}" description="{res:ForumGroup.Description}" />
-		<object name="Message" title="{res:Message}" description="{res:Message.Description}" />
-		<object name="Post" title="{res:Post}" description="{res:Post.Description}" />
-		<object name="Thread" title="{res:Thread}" description="{res:Thread.Description}" />
-		<object name="User" title="{res:User}" description="{res:User.Description}" />
-		<object name="Feedback" title="{res:Feedback}" description="{res:Feedback.Description}" />
 	</extension>
 </plugin>
