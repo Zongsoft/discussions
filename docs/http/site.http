@@ -27,14 +27,17 @@ Authorization: Credential {{$dotenv credentialId}}
 }
 
 ### 创建操作
-# @prompt name 站点名称
+# @prompt name   站点名称
+# @prompt domain 域名
 POST /Discussions/Sites HTTP/1.1
 Host: {{host}}:{{port}}
 Authorization: Credential {{$dotenv credentialId}}
 Content-Type: application/json
 
 {
-	"Name": "{{name}}"
+	"Name": "{{name}}",
+	"Host": "{{host}}",
+	"Domain": "{{domain}}"
 }
 
 ### 更新操作
