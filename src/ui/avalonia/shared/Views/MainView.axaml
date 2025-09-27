@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Zongsoft.Discussions.Presentation.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Zongsoft.Discussions.Presentation.Views.MainView"
+             x:DataType="vm:MainViewModel">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:MainViewModel />
+	</Design.DataContext>
+
+	<Border Background="LightBlue"
+          BorderBrush="Black"
+          BorderThickness="2"
+          Padding="15">
+		<StackPanel Background="White"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Top">
+			<TextBlock Margin="5,0"
+					   FontSize="18"
+					   HorizontalAlignment="Center">
+				Alignment, Margin and Padding Sample
+			</TextBlock>
+			<Button HorizontalAlignment="Left" Margin="20">Button 1</Button>
+			<Button HorizontalAlignment="Right" Margin="10">Button 2</Button>
+			<Button HorizontalAlignment="Stretch">Button 3</Button>
+		</StackPanel>
+	</Border>
+</UserControl>
