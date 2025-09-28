@@ -31,8 +31,11 @@
 
 	<ItemGroup>
 		<Compile Remove="api\**" />
+		<Compile Remove="ui\**" />
 		<EmbeddedResource Remove="api\**" />
+		<EmbeddedResource Remove="ui\**" />
 		<None Remove="api\**" />
+		<None Remove="ui\**" />
 	</ItemGroup>
 
 	<ItemGroup>
