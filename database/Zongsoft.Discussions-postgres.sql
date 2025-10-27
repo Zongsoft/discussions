@@ -136,11 +136,11 @@ CREATE TABLE IF NOT EXISTS "Discussions_Site"
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS "UX_Discussions_Site_SiteNo" ON "Discussions_Site" USING btree
-  ("SiteNo" ASC NULLS LAST);
+  ("SiteNo" ASC);
 CREATE INDEX IF NOT EXISTS "IX_Discussions_Site_Host" ON "Discussions_Site" USING btree
-  ("Host" ASC NULLS LAST);
+  ("Host" ASC);
 CREATE INDEX IF NOT EXISTS "IX_Discussions_Site_Domain" ON "Discussions_Site" USING btree
-  ("Domain" ASC NULLS LAST);
+  ("Domain" ASC);
 
 COMMENT ON TABLE "Discussions_Site" IS '站点表';
 COMMENT ON COLUMN "Discussions_Site"."SiteId"      IS '主键，站点编号';
@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS "Discussions_PostAttachment"
 );
 
 CREATE INDEX IF NOT EXISTS "IX_Discussions_PostAttachment_Ordinal" ON "Discussions_PostAttachment" USING btree
-  ("PostId", "AttachmentFolderId", "Ordinal" ASC NULLS LAST);
+  ("PostId", "AttachmentFolderId", "Ordinal" ASC);
 
 COMMENT ON TABLE "Discussions_PostAttachment" IS '帖子附件表';
 COMMENT ON COLUMN "Discussions_PostAttachment"."PostId"             IS '主键，帖子编号';
