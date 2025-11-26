@@ -25,13 +25,12 @@
  */
 
 using System;
-using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Services;
 using Zongsoft.Components;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace Zongsoft.Discussions.Services.Commands;
 
@@ -63,11 +62,11 @@ public class MessageSendCommand : CommandBase<CommandContext>
 	#region 执行方法
 	protected override ValueTask<object> OnExecuteAsync(CommandContext context, CancellationToken cancellation)
 	{
-		if(context.Expression.Arguments == null || context.Expression.Arguments.IsEmpty)
+		if(context.Arguments == null || context.Arguments.IsEmpty)
 			throw new CommandException("Missing arguments of the command.");
 
-		var content = context.Expression.Options.GetValue<string>(CONTENT_OPTION);
-		var contentType = context.Expression.Options.GetValue<string>(CONTENTTYPE_OPTION);
+		var content = context.GetOptions().GetValue<string>(CONTENT_OPTION);
+		var contentType = context.GetOptions().GetValue<string>(CONTENTTYPE_OPTION);
 
 		//根据内容类型解析得到真实内容
 		content = GetContent(content, ref contentType);
@@ -76,12 +75,12 @@ public class MessageSendCommand : CommandBase<CommandContext>
 		{
 			entity.Content = content;
 			entity.ContentType = contentType;
-			entity.Referer = context.Expression.Options.GetValue<string>(SOURCE_OPTION);
-			entity.Subject = context.Expression.Options.GetValue<string>(SUBJECT_OPTION);
-			entity.MessageType = context.Expression.Options.GetValue<string>(MESSAGETYPE_OPTION);
+			entity.Referer = context.GetOptions().GetValue<string>(SOURCE_OPTION);
+			entity.Subject = context.GetOptions().GetValue<string>(SUBJECT_OPTION);
+			entity.MessageType = context.GetOptions().GetValue<string>(MESSAGETYPE_OPTION);
 		});
 
-		if(this.Service.Send(message, GetUsers(context.Expression.Arguments)) > 0)
+		if(this.Service.Send(message, GetUsers(context.Arguments)) > 0)
 			return ValueTask.FromResult<object>(message);
 
 		return ValueTask.FromResult<object>(null);

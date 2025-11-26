@@ -41,10 +41,12 @@ namespace Zongsoft.Discussions.Web.Controllers;
 public class SiteController : ServiceController<Site, SiteService>
 {
     #region 公共方法
-    [HttpGet("[area]/[controller]/{siteId}/Forums")]
-    public IEnumerable<Forum> GetForums(uint siteId, [FromQuery(Name = "group")] ushort groupId = 0) => this.DataService.GetForums(siteId, groupId);
+    [ActionName("Forums")]
+    [HttpGet("{siteId}/[action]")]
+    public IEnumerable<Forum> GetForums(uint siteId, [FromQuery]ushort group = 0) => this.DataService.GetForums(siteId, group);
 
-    [HttpGet("[area]/[controller]/{siteId}/ForumGroups")]
+    [ActionName("ForumGroups")]
+    [HttpGet("{siteId}/[action]")]
     public IEnumerable<ForumGroup> GetForumGroups(uint siteId) => this.DataService.GetForumGroups(siteId);
     #endregion
 }

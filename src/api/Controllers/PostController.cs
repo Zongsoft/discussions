@@ -41,31 +41,36 @@ namespace Zongsoft.Discussions.Web.Controllers;
 public class PostController : ServiceController<Post, PostService>
 {
     #region 公共方法
-    [HttpPost("[area]/[controller]/{id}/Upvote/{value?}")]
+    [ActionName("Upvote")]
+    [HttpPost("{id}/[action]/{value?}")]
     public IActionResult Upvote(ulong id, byte value = 1)
     {
         return this.DataService.Upvote(id, value) ? this.NoContent() : this.NotFound();
     }
 
-    [HttpPost("[area]/[controller]/{id}/Downvote/{value?}")]
+    [ActionName("Downvote")]
+    [HttpPost("{id}/[action]/{value?}")]
     public IActionResult Downvote(ulong id, byte value = 1)
     {
         return this.DataService.Downvote(id, value) ? this.NoContent() : this.NotFound();
     }
 
-    [HttpGet("[area]/[controller]/{id}/Upvotes")]
+    [ActionName("Upvotes")]
+    [HttpGet("{id}/[action]")]
     public IEnumerable<Post.PostVoting> GetUpvotes(ulong id, [FromQuery] Paging page = null)
     {
         return this.DataService.GetUpvotes(id, page);
     }
 
-    [HttpGet("[area]/[controller]/{id}/Downvotes")]
+    [ActionName("Downvotes")]
+    [HttpGet("{id}/[action]")]
     public IEnumerable<Post.PostVoting> GetDownvotes(ulong id, [FromQuery] Paging page = null)
     {
         return this.DataService.GetDownvotes(id, page);
     }
 
-    [HttpGet("[area]/[controller]/{id}/Comments")]
+    [ActionName("Comments")]
+    [HttpGet("{id}/[action]")]
     public IEnumerable<Post> GetComments(ulong id, [FromQuery] Paging page = null)
     {
         return this.DataService.GetComments(id, page);

@@ -37,10 +37,10 @@ using Zongsoft.IO;
 using Zongsoft.Web;
 using Zongsoft.Data;
 using Zongsoft.Common;
+using Zongsoft.Web.Security;
 using Zongsoft.Security.Privileges;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
-using Zongsoft.Web.Security;
 
 namespace Zongsoft.Discussions.Web.Controllers;
 
@@ -60,7 +60,7 @@ public class FileController : ServiceController<File, FileService>
 	#endregion
 
 	#region 公共方法
-	[HttpGet("[area]/[controller]/{id}")]
+	[HttpGet("{id}/[action]")]
 	public async Task<IActionResult> DownloadAsync(string id, CancellationToken cancellation = default)
 	{
 		var file = await this.DataService.GetAsync(id, $"{nameof(Models.File.FileId)},{nameof(Models.File.Path)}", Paging.Disabled, Array.Empty<Sorting>(), cancellation) as File;
@@ -71,7 +71,8 @@ public class FileController : ServiceController<File, FileService>
 		return this.Accessor.Read(file.Path);
 	}
 
-	[HttpPost("[area]/[controller]/{id?}")]
+	[HttpPost("[action]/{id?}")]
+	[HttpPost("{id:required}/[action]")]
 	public async Task<IEnumerable<File>> UploadAsync(uint? id = null, CancellationToken cancellation = default)
 	{
 		var files = new List<File>();

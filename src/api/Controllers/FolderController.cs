@@ -43,19 +43,22 @@ namespace Zongsoft.Discussions.Web.Controllers;
 public class FolderController : ServiceController<Folder, FolderService>
 {
     #region 公共方法
-    [HttpPatch("[area]/[controller]/{id}/Icon/{value}")]
+    [ActionName("Icon")]
+    [HttpPost("{id}/[action]/{value}")]
     public IActionResult SetIcon(uint id, string value = null)
     {
         return this.DataService.SetIcon(id, value) ? this.NoContent() : this.NotFound();
     }
 
-    [HttpPatch("[area]/[controller]/{id}/Visiblity/{value}")]
+    [ActionName("Visiblity")]
+    [HttpPost("{id}/[action]/{value}")]
     public IActionResult SetVisiblity(uint id, Visibility value)
     {
         return this.DataService.SetVisiblity(id, value) ? this.NoContent() : this.NotFound();
     }
 
-    [HttpPatch("[area]/[controller]/{id}/Accessibility/{value}")]
+    [ActionName("Accessibility")]
+    [HttpPost("{id}/[action]/{value}")]
     public IActionResult SetAccessibility(uint id, Accessibility value)
     {
         return this.DataService.SetAccessibility(id, value) ? this.NoContent() : this.NotFound();

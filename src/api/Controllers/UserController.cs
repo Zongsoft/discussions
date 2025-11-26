@@ -34,11 +34,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
 using Zongsoft.Web;
-using Zongsoft.Data;
+using Zongsoft.Web.Security;
 using Zongsoft.Security.Privileges;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
-using Zongsoft.Web.Security;
 
 namespace Zongsoft.Discussions.Web.Controllers;
 
@@ -48,7 +47,7 @@ public class UserController : ServiceController<UserProfile, UserService>
 {
     #region 公共方法
     [ActionName("Count")]
-    [HttpGet("[area]/[controller]/{id}/[action]/{args}")]
+    [HttpGet("{id}/[action]/{args}")]
     public IActionResult GetCount(uint id, string args)
     {
         if (string.IsNullOrEmpty(args))
@@ -63,11 +62,11 @@ public class UserController : ServiceController<UserProfile, UserService>
 	}
 
     [ActionName("Avatar")]
-    [HttpPost("[area]/[controller]/{id}/[action]")]
+    [HttpPost("{id}/[action]")]
     public Task<IO.FileInfo> SetAvatar(uint id) => SetAvatar(id);
 
     [ActionName("Photo")]
-    [HttpPost("[area]/[controller]/{id}/[action]")]
+    [HttpPost("{id}/[action]")]
     public Task<IO.FileInfo> SetPhoto(uint id) => SetPhoto(id);
     #endregion
 }
