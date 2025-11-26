@@ -426,7 +426,7 @@
   <data name="Shareability.All" xml:space="preserve">
     <value>所有</value>
   </data>
-  <data name="Shareability.Frendly" xml:space="preserve">
+  <data name="Shareability.Friendly" xml:space="preserve">
     <value>好友</value>
   </data>
   <data name="Shareability.Internal" xml:space="preserve">
