@@ -65,8 +65,8 @@ public class MessageSendCommand : CommandBase<CommandContext>
 		if(context.Arguments == null || context.Arguments.IsEmpty)
 			throw new CommandException("Missing arguments of the command.");
 
-		var content = context.GetOptions().GetValue<string>(CONTENT_OPTION);
-		var contentType = context.GetOptions().GetValue<string>(CONTENTTYPE_OPTION);
+		var content = context.Options.GetValue<string>(CONTENT_OPTION);
+		var contentType = context.Options.GetValue<string>(CONTENTTYPE_OPTION);
 
 		//根据内容类型解析得到真实内容
 		content = GetContent(content, ref contentType);
@@ -75,9 +75,9 @@ public class MessageSendCommand : CommandBase<CommandContext>
 		{
 			entity.Content = content;
 			entity.ContentType = contentType;
-			entity.Referer = context.GetOptions().GetValue<string>(SOURCE_OPTION);
-			entity.Subject = context.GetOptions().GetValue<string>(SUBJECT_OPTION);
-			entity.MessageType = context.GetOptions().GetValue<string>(MESSAGETYPE_OPTION);
+			entity.Referer = context.Options.GetValue<string>(SOURCE_OPTION);
+			entity.Subject = context.Options.GetValue<string>(SUBJECT_OPTION);
+			entity.MessageType = context.Options.GetValue<string>(MESSAGETYPE_OPTION);
 		});
 
 		if(this.Service.Send(message, GetUsers(context.Arguments)) > 0)
@@ -99,7 +99,7 @@ public class MessageSendCommand : CommandBase<CommandContext>
 
 			if(Zongsoft.IO.FileSystem.File.Exists(content))
 			{
-				using(var stream = Zongsoft.IO.FileSystem.File.Open(content))
+				using(var stream = Zongsoft.IO.FileSystem.File.Open(content, System.IO.FileMode.Open))
 				{
 					using(var reader = new System.IO.StreamReader(stream))
 					{

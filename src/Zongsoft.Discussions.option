@@ -2,6 +2,6 @@
 
 <options>
 	<option path="/Discussions">
-		<general siteId="1" basePath="zfs.oss:/zongsoft-discussions/" />
+		<general siteId="1" basePath="zfs.s3:/zongsoft-discussions/" />
 	</option>
 </options>

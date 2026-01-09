@@ -85,12 +85,12 @@ public class FileController : ServiceController<File, FileService>
 			if(info == null || !info.IsFile)
 				continue;
 
-			object name = null;
+			string name = null;
 
 			if(info.HasProperties && !info.Properties.TryGetValue("FileName", out name))
 				info.Properties.TryGetValue("DispositionName", out name);
 
-			if(string.IsNullOrWhiteSpace(name as string))
+			if(string.IsNullOrWhiteSpace(name))
 				name = info.Name;
 
 			var attachment = Model.Build<File>(file =>
