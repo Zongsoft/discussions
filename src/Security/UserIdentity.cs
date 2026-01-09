@@ -107,7 +107,7 @@ public class UserIdentity : IUser
 	#endregion
 
 	#region 静态成员
-	public static UserIdentity Current => ClaimsIdentityModel.Get<UserIdentity>(Scheme, Transformer.Instance);
+	public static UserIdentity Current => ClaimsIdentityModeling.GetModel<UserIdentity>(Scheme);
 	#endregion
 
 	#region 嵌套子类
