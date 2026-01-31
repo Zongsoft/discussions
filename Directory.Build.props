@@ -9,7 +9,7 @@
 		<PackageProjectUrl>https://github.com/Zongsoft/Zongsoft.Discussions</PackageProjectUrl>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageIcon>zongsoft-logo.png</PackageIcon>
-		<PackageIconUrl>https://github.com/Zongsoft/Guidelines/raw/master/zongsoft-logo(48x48).png</PackageIconUrl>
+		<PackageIconUrl>https://github.com/Zongsoft/guidelines/raw/main/zongsoft-logo(48x48).png</PackageIconUrl>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>

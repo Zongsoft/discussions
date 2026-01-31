@@ -7,7 +7,7 @@
 		<IsPackable>true</IsPackable>
 		<IncludeSymbols>true</IncludeSymbols>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<RepositoryUrl>https://github.com/Zongsoft/Zongsoft.Discussions/tree/master/src/api</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Zongsoft/Zongsoft.Discussions/tree/main/src/api</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Zongsoft/Zongsoft.Discussions</PackageProjectUrl>
 	</PropertyGroup>
 
