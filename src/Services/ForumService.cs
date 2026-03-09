@@ -103,7 +103,7 @@ public class ForumService : DataServiceBase<Forum>
 			Condition.Equal(nameof(Thread.Visible), true);
 
 		//只有第一页或者不分页才需要加载最顶部主题集
-		if(paging == null || paging.PageIndex == 1)
+		if(paging == null || paging.Index == 1)
 		{
 			//获取指定论坛中最顶部的主题集（全局贴+本论坛的置顶贴）
 			var topmosts = this.GetTopmosts(forumId, schema);

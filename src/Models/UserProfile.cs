@@ -50,19 +50,15 @@ public abstract class UserProfile : IUser
 	public abstract uint UserId { get; set; }
 
 	/// <summary>获取或设置用户名称。</summary>
-	[ModelProperty(ModelPropertyRole.Name, ModelPropertyFlags.Required)]
 	public abstract string Name { get; set; }
 
 	/// <summary>获取或设置用昵称。</summary>
-	[ModelProperty(ModelPropertyRole.Name)]
 	public abstract string Nickname { get; set; }
 
 	/// <summary>获取或设置用户绑定的邮箱地址。</summary>
-	[ModelProperty(ModelPropertyRole.Email)]
 	public abstract string Email { get; set; }
 
 	/// <summary>获取或设置用户绑定的手机号码。</summary>
-	[ModelProperty(ModelPropertyRole.Phone)]
 	public abstract string Phone { get; set; }
 
 	/// <summary>获取或设置头像标识。</summary>
