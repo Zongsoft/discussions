@@ -44,7 +44,7 @@ public class Module : ApplicationModule<Module.EventRegistry>
 	#endregion
 
 	#region 构造函数
-	public Module() : base(NAME, Discussions.Properties.Resources.Discussions, Discussions.Properties.Resources.Discussions_Description) { }
+	public Module() : base(NAME) { }
 	#endregion
 
 	#region 公共属性
