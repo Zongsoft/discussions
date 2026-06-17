@@ -52,7 +52,7 @@ public class MessageService : DataServiceBase<Message>
 		if(users == null || !users.Any())
 			return 0;
 
-		using(var transaction = new Zongsoft.Transactions.Transaction())
+		using(var transaction = new Transaction())
 		{
 			//插入消息
 			this.Insert(message);

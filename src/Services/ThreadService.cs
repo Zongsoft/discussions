@@ -202,7 +202,7 @@ public class ThreadService : DataServiceBase<Thread>
 		//更新主题内容贴的相关属性
 		post.Visible = false;
 
-		using(var transaction = new Zongsoft.Transactions.Transaction())
+		using(var transaction = new Transaction())
 		{
 			//调用基类同名方法，插入主题数据
 			var count = base.OnInsert(data, schema, options);

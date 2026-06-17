@@ -77,7 +77,7 @@ public class FolderService : DataServiceBase<Folder>
 	#region 重写方法
 	protected override int OnUpdate(IDataDictionary<Folder> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
 	{
-		using(var transaction = new Transactions.Transaction())
+		using(var transaction = new Transaction())
 		{
 			//调用基类同名方法
 			var count = base.OnUpdate(data, criteria, schema, options);

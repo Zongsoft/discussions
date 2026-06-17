@@ -51,7 +51,7 @@ public class PostService : DataServiceBase<Post>
 
 		var userId = this.Principal.Identity.GetIdentifier<uint>();
 
-		using(var transaction = new Zongsoft.Transactions.Transaction())
+		using(var transaction = new Transaction())
 		{
 			this.DataAccess.Delete<Post.PostVoting>(
 				Condition.Equal(nameof(Post.PostVoting.PostId), postId) &
@@ -84,7 +84,7 @@ public class PostService : DataServiceBase<Post>
 		if(value == 0)
 			value = 1;
 
-		using(var transaction = new Zongsoft.Transactions.Transaction())
+		using(var transaction = new Transaction())
 		{
 			var userId = this.Principal.Identity.GetIdentifier<uint>();
 
@@ -215,7 +215,7 @@ public class PostService : DataServiceBase<Post>
 
 		try
 		{
-			using(var transaction = new Zongsoft.Transactions.Transaction())
+			using(var transaction = new Transaction())
 			{
 				//调用基类同名方法
 				var count = base.OnInsert(data, schema.Include(nameof(Post.Attachments)), options);
