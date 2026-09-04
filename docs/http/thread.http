@@ -1,18 +1,18 @@
 ### 列表操作
-GET /Discussions/Threads?page={{$dotenv page}} HTTP/1.1
+GET /Discussions/Threads?page={{page}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 模式查询
-GET /Discussions/Threads/IsLocked:false+IsValued:true+CreatedTime:thisyear?page={{$dotenv page}} HTTP/1.1
+GET /Discussions/Threads/IsLocked:false+IsValued:true+CreatedTime:thisyear?page={{page}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 查询操作
-### 注：有关查询条件请参考对应的条件实体类的定义。
-POST /Discussions/Threads/Query?page={{$dotenv page}} HTTP/1.1
+# 注：有关查询条件请参考对应的条件实体类的定义。
+POST /Discussions/Threads/Query?page={{page}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 {
 	"Approved": true,
@@ -22,16 +22,16 @@ Authorization: Credential {{$dotenv credentialId}}
 }
 
 ### 编号查询
-# @prompt id 主题编号
+@id = {{$input 主题编号 $value:100 }}
 GET /Discussions/Threads/{{id}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 创建操作
-# @prompt title 主题标题
+@title = {{$input 主题标题 $value: }}
 POST /Discussions/Threads HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 Content-Type: application/json
 
 {
@@ -39,12 +39,12 @@ Content-Type: application/json
 }
 
 ### 更新操作
-# @prompt id    主题编号
-# @prompt field 字段名称
-# @prompt value 字段内容
+@id = {{$input 主题编号 $value: }}
+@field = {{$input 字段名称 $value: }}
+@value = {{$input 字段内容 $value: }}
 PATCH /Discussions/Threads/{{id}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 Content-Type: application/json
 
 {
@@ -52,15 +52,15 @@ Content-Type: application/json
 }
 
 ### 删除操作
-# @prompt id 主题编号
+@id = {{$input 主题编号 $value:404 }}
 DELETE /Discussions/Threads/{{id}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 批量删除
 DELETE /Discussions/Threads HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 Content-Type: text/plain
 
 401,402,403
@@ -70,4 +70,4 @@ GET /Discussions/Threads/Export?format=spreadsheet HTTP/1.1
 Host: {{host}}:{{port}}
 X-Data-Schema: *
 X-Export-Fields: *
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}

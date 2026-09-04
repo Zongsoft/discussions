@@ -1,15 +1,15 @@
 ### 列表操作
-# @prompt id 论坛编号
-GET /Forums/{{id}}/Users?page={{$dotenv page}} HTTP/1.1
+@id = {{$input 论坛编号 $value:100 }}
+GET /Discussions/Forums/{{id}}/Users?page={{page}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 新增操作
-# @prompt forumId 论坛编号
-# @prompt userId  用户编号
+@forumId = {{$input 论坛编号 $value:100 }}
+@userId = {{$input 用户编号 $value:100 }}
 POST /Discussions/Forums/{{forumId}}/Users HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 [
 	{
@@ -19,11 +19,11 @@ Authorization: Credential {{$dotenv credentialId}}
 ]
 
 ### 增改操作
-# @prompt forumId 论坛编号
-# @prompt userId  用户编号
+@forumId = {{$input 论坛编号 $value:100 }}
+@userId = {{$input 用户编号 $value:100 }}
 PUT /Discussions/Forums/{{forumId}}/Users HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 [
 	{
@@ -33,11 +33,11 @@ Authorization: Credential {{$dotenv credentialId}}
 ]
 
 ### 更新操作
-# @prompt forumId 论坛编号
-# @prompt userId  用户编号
+@forumId = {{$input 论坛编号 $value:100 }}
+@userId = {{$input 用户编号 $value:100 }}
 PATCH /Discussions/Forums/{{forumId}}/Users HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 [
 	{
@@ -47,21 +47,21 @@ Authorization: Credential {{$dotenv credentialId}}
 ]
 
 ### 删除操作
-# @prompt forumId 论坛编号
-# @prompt userId  用户编号
+@forumId = {{$input 论坛编号 $value:404 }}
+@userId = {{$input 用户编号 $value:1 }}
 DELETE /Discussions/Forums/Users/{{forumId}}-{{userId}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 批量删除
 DELETE /Discussions/Forums/Users HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 404-1,404-2,404-3
 
 ### 清空操作
-# @prompt id 论坛编号
+@id = {{$input 论坛编号 $value:404 }}
 DELETE /Discussions/Forums/{{id}}/Users HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}

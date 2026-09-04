@@ -1,24 +1,24 @@
 ### 列表操作
-GET /Discussions/Sites?page={{$dotenv page}} HTTP/1.1
+GET /Discussions/Sites?page={{page}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 编号查询
-# @prompt id 站点编号
+@id = {{$input 站点编号 $value:100 }}
 GET /Discussions/Sites/{{id}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 模式查询
-GET /Discussions/Sites/name:MySite+host:localhost?page={{$dotenv page}} HTTP/1.1
+GET /Discussions/Sites/name:MySite+host:localhost?page={{page}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 查询操作
-### 注：有关查询条件请参考对应的条件实体类的定义。
-POST /Discussions/Sites/Query?page={{$dotenv page}} HTTP/1.1
+# 注：有关查询条件请参考对应的条件实体类的定义。
+POST /Discussions/Sites/Query?page={{page}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 {
 	"Name": "%",
@@ -27,11 +27,11 @@ Authorization: Credential {{$dotenv credentialId}}
 }
 
 ### 创建操作
-# @prompt name   站点名称
-# @prompt domain 域名
+@name = {{$input 站点名称 $value: }}
+@domain = {{$input 域名 $value: }}
 POST /Discussions/Sites HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 Content-Type: application/json
 
 {
@@ -41,12 +41,12 @@ Content-Type: application/json
 }
 
 ### 更新操作
-# @prompt id    站点编号
-# @prompt field 字段名称
-# @prompt value 字段内容
+@id = {{$input 站点编号 $value: }}
+@field = {{$input 字段名称 $value: }}
+@value = {{$input 字段内容 $value: }}
 PATCH /Discussions/Sites/{{id}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 Content-Type: application/json
 
 {
@@ -54,15 +54,15 @@ Content-Type: application/json
 }
 
 ### 删除操作
-# @prompt id 站点编号
+@id = {{$input 站点编号 $value:404 }}
 DELETE /Discussions/Sites/{{id}} HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 
 ### 批量删除
 DELETE /Discussions/Sites HTTP/1.1
 Host: {{host}}:{{port}}
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
 Content-Type: text/plain
 
 401,402,403
@@ -72,4 +72,4 @@ GET /Discussions/Sites/Export?format=spreadsheet HTTP/1.1
 Host: {{host}}:{{port}}
 X-Data-Schema: *
 X-Export-Fields: *
-Authorization: Credential {{$dotenv credentialId}}
+Authorization: Credential {{credentialId}}
