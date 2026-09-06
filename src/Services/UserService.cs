@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -26,6 +26,8 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
@@ -138,6 +140,18 @@ public class UserService : DataServiceBase<UserProfile>
 			return Zongsoft.IO.Path.Combine(_basePath, name.Trim() + "-" + userId.ToString());
 
 		throw new ArgumentNullException($"Invalid '{name}' value of the name argument.");
+	}
+	#endregion
+	#region 异步业务路径
+	protected override async ValueTask<int> OnUpdateAsync(IDataDictionary<UserProfile> data, ICondition criteria, ISchema schema, DataUpdateOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		//如果没有指定用户编号或指定的用户编号为零，则显式指定为当前用户编号
+		if(!data.TryGetValue(p => p.UserId, out var userId) || userId == 0)
+			data.SetValue(p => p.UserId, userId = this.Principal.Identity.GetIdentifier<uint>());
+
+		//调用基类同名方法
+		return await base.OnUpdateAsync(data, criteria, schema, options, cancellation);
 	}
 	#endregion
 }

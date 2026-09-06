@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -26,6 +26,8 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
@@ -58,89 +60,61 @@ public class FeedbackService : DataServiceBase<Feedback>
 		return feedback;
 	}
 
-	protected override void OnValidate(DataServiceMethod method, ISchema schema, IDataDictionary<Feedback> data, IDataMutateOptions options)
-	{
-		if(method.IsWriting)
-		{
-			//更新内容及内容类型
-			var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
-		}
-
-		base.OnValidate(method, schema, data, options);
-	}
-
 	protected override int OnInsert(IDataDictionary<Feedback> data, ISchema schema, DataInsertOptions options)
 	{
-		//更新内容及内容类型
-		var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
-
-		try
-		{
-			//调用基类同名方法
-			var count = base.OnInsert(data, schema, options);
-
-			if(count < 1)
-			{
-				//如果新增记录失败则删除刚创建的内容文件
-				if(contentFile != null && contentFile.Length > 0)
-					Utility.DeleteFile(contentFile);
-			}
-
-			return count;
-		}
-		catch
-		{
-			//删除新建的内容文件
-			if(contentFile != null && contentFile.Length > 0)
-				Utility.DeleteFile(contentFile);
-
-			throw;
-		}
+		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnInsert(data, schema, options));
 	}
 
 	protected override int OnUpdate(IDataDictionary<Feedback> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
 	{
-		//更新内容及内容类型
-		Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
-
-		//调用基类同名方法
-		return base.OnUpdate(data, criteria, schema, options);
+		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnUpdate(data, criteria, schema, options));
 	}
 
 	protected override int OnUpsert(IDataDictionary<Feedback> data, ISchema schema, DataUpsertOptions options)
 	{
-		//更新内容及内容类型
-		var contentFile = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId)));
-
-		try
-		{
-			//调用基类同名方法
-			var count = base.OnUpsert(data, schema, options);
-
-			if(count < 1)
-			{
-				//如果更新记录失败则删除刚创建的内容文件
-				if(contentFile != null && contentFile.Length > 0)
-					Utility.DeleteFile(contentFile);
-			}
-
-			return count;
-		}
-		catch
-		{
-			//删除新建的内容文件
-			if(contentFile != null && contentFile.Length > 0)
-				Utility.DeleteFile(contentFile);
-
-			throw;
-		}
+		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnUpsert(data, schema, options));
 	}
 	#endregion
 
 	#region 虚拟方法
 	protected virtual string GetContentFilePath(ulong feedbackId)
 	{
-		return Utility.GetFilePath($"feedbacks/feedback-{feedbackId}.txt");
+		return Utility.GetFilePath($"feedbacks/feedback-{feedbackId}-{Zongsoft.Common.Randomizer.GenerateString()}.txt");
+	}
+	#endregion
+	#region 异步业务路径
+	protected override async ValueTask<Feedback> OnGetAsync(ICondition criteria, ISchema schema, DataSelectOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		//调用基类同名方法
+		var feedback = await base.OnGetAsync(criteria, schema, options, cancellation);
+
+		if(feedback == null)
+			return null;
+
+		//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
+		if(!Utility.IsContentEmbedded(feedback.ContentType))
+			feedback.Content = Utility.ReadTextFile(feedback.Content);
+
+		return feedback;
+	}
+
+	protected override async ValueTask<int> OnInsertAsync(IDataDictionary<Feedback> data, ISchema schema, DataInsertOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		return await Utility.MutateContentAsync(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnInsertAsync(data, schema, options, cancellation), cancellation);
+	}
+
+	protected override async ValueTask<int> OnUpdateAsync(IDataDictionary<Feedback> data, ICondition criteria, ISchema schema, DataUpdateOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		return await Utility.MutateContentAsync(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnUpdateAsync(data, criteria, schema, options, cancellation), cancellation);
+	}
+
+	protected override async ValueTask<int> OnUpsertAsync(IDataDictionary<Feedback> data, ISchema schema, DataUpsertOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		return await Utility.MutateContentAsync(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnUpsertAsync(data, schema, options, cancellation), cancellation);
 	}
 	#endregion
 }

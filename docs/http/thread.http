@@ -29,13 +29,20 @@ Authorization: Credential {{credentialId}}
 
 ### 创建操作
 @title = {{$input 主题标题 $value: }}
+@forumId = {{$input 论坛编号 $value: }}
+@content = {{$input 主题正文 $value: }}
 POST /Discussions/Threads HTTP/1.1
 Host: {{host}}:{{port}}
 Authorization: Credential {{credentialId}}
 Content-Type: application/json
 
 {
-	"Title": "{{title}}"
+	"ForumId": {{forumId}},
+	"Title": "{{title}}",
+	"Post": {
+		"Content": "{{content}}",
+		"ContentType": "text/plain+embedded"
+	}
 }
 
 ### 更新操作

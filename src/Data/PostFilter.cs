@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -40,47 +40,38 @@ public class PostFilter : IDataAccessFilter<DataSelectContextBase>
 	#endregion
 
 	#region 过滤方法
-	public void OnFiltered(DataSelectContextBase context) { }
-	public void OnFiltering(DataSelectContextBase context) => context.Result = new FilteredResult(context);
+	public void OnFiltering(DataSelectContextBase context) { }
+	public void OnFiltered(DataSelectContextBase context)
+	{
+		if(context.Result == null)
+			return;
+
+		var identity = context.Principal?.Identity;
+		context.Result = FilteredResult.Create(context, item => Filter(item, identity));
+	}
 	#endregion
 
-	#region 嵌套子类
-	private class FilteredResult(DataSelectContextBase context) : IEnumerable
+	#region 私有方法
+	private static bool Filter(object item, System.Security.Principal.IIdentity identity)
 	{
-		private readonly IEnumerable _result = context.Result;
-		private readonly System.Security.Claims.ClaimsPrincipal _principal = context.Principal;
+		var dictionary = DataDictionary.GetDictionary<Models.Post>(item);
+		if(!dictionary.TryGetValue(p => p.Content, out var content))
+			return true;
 
-		public IEnumerator GetEnumerator() => new Iterator(_result, _principal);
-
-		private sealed class Iterator(IEnumerable result, System.Security.Claims.ClaimsPrincipal principal) : IEnumerator
+		if(!(dictionary.TryGetValue(p => p.Approved, out var approved) && approved) &&
+		   !(identity?.IsAuthenticated == true && dictionary.TryGetValue(p => p.CreatorId, out var creatorId) && identity.GetIdentifier<uint>() == creatorId))
 		{
-			private readonly IEnumerator _result = result.GetEnumerator();
-			private readonly System.Security.Claims.ClaimsPrincipal _principal = principal;
-
-			public object Current
-			{
-				get
-				{
-					var dictionary = DataDictionary.GetDictionary<Models.Post>(_result.Current);
-
-					if(dictionary.TryGetValue(p => p.Approved, out var approved) && !approved &&
-					  (!_principal.Identity.IsAuthenticated || _principal.Identity.GetIdentifier<uint>() != dictionary.GetValue(p => p.CreatorId, 0U)))
-					{
-						dictionary.TrySetValue(p => p.Content, string.Empty);
-					}
-					else if(dictionary.TryGetValue(p => p.Content, out var content) && dictionary.TryGetValue(p => p.ContentType, out var contentType))
-					{
-						if(!Utility.IsContentEmbedded(contentType))
-							dictionary.SetValue(p => p.Content, Utility.ReadTextFile(content));
-					}
-
-					return _result.Current;
-				}
-			}
-
-			public bool MoveNext() => _result.MoveNext();
-			public void Reset() => _result.Reset();
+			dictionary.TrySetValue(p => p.Content, string.Empty);
+			if(dictionary.TryGetValue(p => p.ContentType, out var hiddenType))
+				dictionary.TrySetValue(p => p.ContentType, Utility.GetContentType(hiddenType, true));
 		}
+		else if(dictionary.TryGetValue(p => p.ContentType, out var contentType) && !Utility.IsContentEmbedded(contentType))
+		{
+			dictionary.SetValue(p => p.Content, string.IsNullOrEmpty(content) ? string.Empty : Utility.ReadTextFile(content));
+			dictionary.SetValue(p => p.ContentType, Utility.GetContentType(contentType, true));
+		}
+
+		return true;
 	}
 	#endregion
 }

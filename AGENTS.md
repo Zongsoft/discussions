@@ -1,6 +1,7 @@
 ## 硬性要求
 
-- 新建文本文件使用 CRLF 换行符，代码文件使用 Tab 缩进；保持既有文件的局部格式，不做无关重排。
+- 文本文件使用 CRLF 换行符，代码文件使用 Tab 缩进；`.cmd` 文件必须使用 CRLF，`.sh` 文件遵循 `.gitattributes` 使用 LF。
+- 代码中不允许连续两个及以上空行；不做与任务无关的重排。
 - 开始工作前阅读目标目录就近的 `AGENTS.md`、`SKILL.md`、项目文件、插件产物和相关文档。
 - 保留工作树中的用户修改；不要重置、覆盖或顺手整理任务范围外的差异。
 
@@ -36,5 +37,5 @@ NuGet 版本由 `Directory.Packages.props` 集中管理。`Directory.Build.props
 - 文档改动检查相对链接、CRLF、`git diff --check` 和实际差异，不必运行构建。
 - 领域库改动优先构建 `src/Zongsoft.Discussions.csproj`；API 改动构建 `src/api/Zongsoft.Discussions.Web.csproj`。
 - 公共模型、映射或多目标依赖变化按需要分别验证 `net8.0`、`net9.0`、`net10.0`。
-- 仓库当前没有自动化测试项目；行为验证应使用临时数据库、临时文件存储和隔离身份，不能以一次成功构建替代业务契约检查。
+- test/Zongsoft.Discussions.Regression.csproj 提供不访问外部资源的控制台回归检查（dotnet run，目标 net10.0）；数据库、文件存储和完整授权流程仍应使用临时资源与隔离身份验证，不能以一次成功构建替代业务契约检查。
 - Avalonia 原型按其就近说明单独验证，不因后端改动默认构建 UI。

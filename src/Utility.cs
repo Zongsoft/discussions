@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -27,6 +27,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.IO;
@@ -68,14 +70,14 @@ internal static class Utility
 
 		if(embedded)
 		{
-			if(contentType.EndsWith(CONTENT_TYPE_EMBEDDED_SUFFIX))
+			if(contentType.EndsWith(CONTENT_TYPE_EMBEDDED_SUFFIX, StringComparison.OrdinalIgnoreCase))
 				return contentType;
 			else
 				return contentType + CONTENT_TYPE_EMBEDDED_SUFFIX;
 		}
 		else
 		{
-			if(contentType.EndsWith(CONTENT_TYPE_EMBEDDED_SUFFIX))
+			if(contentType.EndsWith(CONTENT_TYPE_EMBEDDED_SUFFIX, StringComparison.OrdinalIgnoreCase))
 				return contentType.Substring(0, contentType.Length - CONTENT_TYPE_EMBEDDED_SUFFIX.Length);
 			else
 				return contentType;
@@ -102,7 +104,15 @@ internal static class Utility
 			filePath = getFilePath();
 
 			//将内容文本写入到文件中
-			Utility.WriteTextFile(filePath, content);
+			try
+			{
+				Utility.WriteTextFile(filePath, content);
+			}
+			catch
+			{
+				Utility.DeleteFile(filePath);
+				throw;
+			}
 
 			//更新内容文件的存储路径
 			data.SetValue("Content", filePath);
@@ -112,6 +122,41 @@ internal static class Utility
 		});
 
 		return filePath;
+	}
+
+	public static int MutateContent(IDataDictionary data, Func<string> getFilePath, Func<int> mutate)
+	{
+		var filePath = SetContent(data, getFilePath);
+		try
+		{
+			var count = mutate();
+			if(count > 0)
+				filePath = null;
+			return count;
+		}
+		finally
+		{
+			if(!string.IsNullOrEmpty(filePath))
+				DeleteFile(filePath);
+		}
+	}
+
+	public static async ValueTask<int> MutateContentAsync(IDataDictionary data, Func<string> getFilePath, Func<ValueTask<int>> mutate, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		var filePath = SetContent(data, getFilePath);
+		try
+		{
+			var count = await mutate();
+			if(count > 0)
+				filePath = null;
+			return count;
+		}
+		finally
+		{
+			if(!string.IsNullOrEmpty(filePath))
+				DeleteFile(filePath);
+		}
 	}
 
 	public static bool DeleteContentFile(IDataDictionary data)
@@ -223,11 +268,11 @@ internal static class Utility
 	/// <remarks>
 	///		<list type="list">
 	///			<item>根目录下的指定子目录：<code>GetFilePath(0, 0, "/apps");</code></item>
-	///	
+	///
 	///			<item>指定站点下的子目录：<code>GetFilePath(1, 0, "/sub");</code></item>
 	///			<item>指定站点下的当前用户子目录：<code>GetFilePath(1, 0, "sub");</code></item>
 	///			<item>指定站点下的指定用户子目录：<code>GetFilePath(1, 100, "sub");</code></item>
-	///	
+	///
 	///			<item>指定用户下的子目录：<code>GetFilePath(0, 100, "/sub");</code></item>
 	///			<item>当前站点下的当前用户子目录：<code>GetFilePath(0, 0, "sub");</code></item>
 	///			<item>当前站点下的指定用户子目录：<code>GetFilePath(0, 100, "sub");</code></item>

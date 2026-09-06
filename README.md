@@ -13,6 +13,21 @@
 
 **_The documentation and implementation are still being improved. Follow the Zongsoft WeChat account and Knowledge Planet community for project updates._**
 
+## Local build and regression checks
+
+The current code requires **Zongsoft.Core 7.59.0** and uses Core's pagination filters and asynchronous enumeration adapters. This version was not yet available on NuGet when checked on 2026-09-06. Until it is published, use the adjacent `../framework` build outputs; do not downgrade to 7.58.0, which contains pagination filtering defects.
+
+Run these commands from the discussions root with the .NET 10 SDK and Debug configuration:
+
+```powershell
+dotnet build ../framework/Zongsoft.Core/src/Zongsoft.Core.csproj -f net10.0 -p:GeneratePackageOnBuild=false
+dotnet build ../framework/Zongsoft.Web/src/Zongsoft.Web.csproj -f net10.0 -p:GeneratePackageOnBuild=false
+dotnet build src/api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
+dotnet run --project test/Zongsoft.Discussions.Regression.csproj -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
+```
+
+Local references do not build framework automatically: its output directory, configuration, and target framework must match. To check net8.0 or net9.0, change the target in the first three commands together. The regression executable targets net10.0 and does not connect to databases or external services. Once Core 7.59.0 is published, omit the local-reference property to use the default NuGet path.
+
 <a name="contribution"></a>
 ## Contributing
 

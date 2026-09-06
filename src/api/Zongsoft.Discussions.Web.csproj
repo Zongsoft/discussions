@@ -37,7 +37,7 @@
 	<ItemGroup>
 		<None Include="$(MSBuildProjectName).deploy" Link=".deploy" Pack="true" PackagePath="\.deploy" />
 		<None Include="$(MSBuildProjectName).plugin" Pack="true" PackagePath="\artifacts" />
-		<None Include="..\..\.http\*" Pack="true" PackagePath="\artifacts\http" Visible="false" />
+		<None Include="..\..\docs\http\*" Pack="true" PackagePath="\artifacts\http" Visible="false" />
 		<None Include="..\..\docs\templates\*.xlsx" Pack="true" PackagePath="\artifacts\templates" Visible="false" />
 	</ItemGroup>
 </Project>

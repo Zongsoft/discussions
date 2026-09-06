@@ -15,6 +15,21 @@
 **_文档正在撰写中，代码也还在持续完善中。请关注我们的微信公号和知识星球以获得最新进展及通知！_**
 
 
+## 本地构建与回归
+
+当前代码要求 **Zongsoft.Core 7.59.0**，查询结果适配直接复用 Core 的分页过滤与异步枚举能力。2026-09-06 核对时该版本尚未发布到 NuGet；此前请使用相邻 `../framework` 的源码输出，不能降回包含分页过滤缺陷的 7.58.0。
+
+在 discussions 根目录执行以下命令，使用 Debug 配置和 .NET 10 SDK：
+
+```powershell
+dotnet build ../framework/Zongsoft.Core/src/Zongsoft.Core.csproj -f net10.0 -p:GeneratePackageOnBuild=false
+dotnet build ../framework/Zongsoft.Web/src/Zongsoft.Web.csproj -f net10.0 -p:GeneratePackageOnBuild=false
+dotnet build src/api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
+dotnet run --project test/Zongsoft.Discussions.Regression.csproj -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
+```
+
+本地引用不会自动构建 framework；目录、配置和目标框架必须与其输出一致。验证 net8.0 或 net9.0 时，将前三条命令中的目标框架一起调整；回归程序固定使用 net10.0，不连接数据库或外部服务。Core 7.59.0 发布后可省略本地引用参数，恢复默认 NuGet 路径。
+
 <a name="contribution"></a>
 ## 贡献
 

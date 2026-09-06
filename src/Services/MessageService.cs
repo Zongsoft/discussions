@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -26,6 +26,8 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
@@ -55,7 +57,8 @@ public class MessageService : DataServiceBase<Message>
 		using(var transaction = new Transaction())
 		{
 			//插入消息
-			this.Insert(message);
+			if(this.Insert(message) < 1)
+				return 0;
 
 			//插入用户消息
 			var count = this.DataAccess.InsertMany(users.Select(uid => new UserMessage(uid, message.MessageId)));
@@ -94,81 +97,56 @@ public class MessageService : DataServiceBase<Message>
 
 	protected override int OnInsert(IDataDictionary<Message> data, ISchema schema, DataInsertOptions options)
 	{
-		string filePath = null;
-
-		//获取原始的内容类型
-		var rawType = data.GetValue(p => p.ContentType, null);
-
-		//调整内容类型为嵌入格式
-		data.SetValue(p => p.ContentType, Utility.GetContentType(rawType, true));
-
-		data.TryGetValue(p => p.Content, (key, value) =>
-		{
-			if(string.IsNullOrWhiteSpace(value) || value.Length < 500)
-				return;
-
-			//设置内容文件的存储路径
-			filePath = this.GetContentFilePath(data.GetValue(p => p.MessageId), data.GetValue(p => p.ContentType));
-
-			//将内容文本写入到文件中
-			Utility.WriteTextFile(filePath, value);
-
-			//更新内容文件的存储路径
-			data.SetValue(p => p.Content, filePath);
-
-			//更新内容类型为非嵌入格式（即外部文件）
-			data.SetValue(p => p.ContentType, Utility.GetContentType(data.GetValue(p => p.ContentType), false));
-		});
-
-		var count = base.OnInsert(data, schema, options);
-
-		if(count < 1)
-		{
-			//如果新增记录失败则删除刚创建的文件
-			if(filePath != null && filePath.Length > 0)
-				Utility.DeleteFile(filePath);
-
-			return count;
-		}
-
-		return count;
+		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.MessageId, 0UL), data.GetValue(p => p.ContentType, null)), () => base.OnInsert(data, schema, options));
 	}
 
 	protected override int OnUpdate(IDataDictionary<Message> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
 	{
-		//更新内容到文本文件中
-		data.TryGetValue(p => p.Content, (key, value) =>
-		{
-			if(string.IsNullOrWhiteSpace(value) || value.Length < 500)
-				return;
-
-			//根据当前反馈编号，获得其对应的内容文件存储路径
-			var filePath = this.GetContentFilePath(data.GetValue(p => p.MessageId), data.GetValue(p => p.ContentType));
-
-			//将反馈内容写入到对应的存储文件中
-			Utility.WriteTextFile(filePath, value);
-
-			//更新当前反馈的内容文件存储路径属性
-			data.SetValue(p => p.Content, filePath);
-
-			//更新内容类型为非嵌入格式（即外部文件）
-			data.SetValue(p => p.ContentType, Utility.GetContentType(data.GetValue(p => p.ContentType), false));
-		});
-
-		//调用基类同名方法
-		var count = base.OnUpdate(data, criteria, schema, options);
-
-		if(count < 1)
-			return count;
-
-		return count;
+		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.MessageId, 0UL), data.GetValue(p => p.ContentType, null)), () => base.OnUpdate(data, criteria, schema, options));
 	}
 	#endregion
 
 	#region 虚拟方法
 	protected virtual string GetContentFilePath(ulong messageId, string contentType)
 	{
-		return Utility.GetFilePath(string.Format("messages/message-{0}.txt", messageId.ToString()));
+		return Utility.GetFilePath(string.Format("messages/message-{0}-{1}.txt", messageId.ToString(), Zongsoft.Common.Randomizer.GenerateString()));
+	}
+	#endregion
+	#region 异步业务路径
+	protected override async ValueTask<Message> OnGetAsync(ICondition criteria, ISchema schema, DataSelectOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		//调用基类同名方法
+		var message = await base.OnGetAsync(criteria, schema, options, cancellation);
+
+		if(message == null)
+			return null;
+
+		//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
+		if(!Utility.IsContentEmbedded(message.ContentType))
+			message.Content = Utility.ReadTextFile(message.Content);
+
+		//更新当前用户对该消息的读取状态
+		await this.DataAccess.UpdateAsync(Model.Naming.Get<UserMessage>(), new
+		{
+			IsRead = true,
+		},
+		Condition.Equal(nameof(UserMessage.MessageId), message.MessageId) &
+		Condition.Equal(nameof(UserMessage.UserId), this.Principal.Identity.GetIdentifier<uint>()), cancellation: cancellation);
+
+		return message;
+	}
+
+	protected override async ValueTask<int> OnInsertAsync(IDataDictionary<Message> data, ISchema schema, DataInsertOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		return await Utility.MutateContentAsync(data, () => this.GetContentFilePath(data.GetValue(p => p.MessageId, 0UL), data.GetValue(p => p.ContentType, null)), () => base.OnInsertAsync(data, schema, options, cancellation), cancellation);
+	}
+
+	protected override async ValueTask<int> OnUpdateAsync(IDataDictionary<Message> data, ICondition criteria, ISchema schema, DataUpdateOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		return await Utility.MutateContentAsync(data, () => this.GetContentFilePath(data.GetValue(p => p.MessageId, 0UL), data.GetValue(p => p.ContentType, null)), () => base.OnUpdateAsync(data, criteria, schema, options, cancellation), cancellation);
 	}
 	#endregion
 }

@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -26,11 +26,14 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
 using Zongsoft.Security;
 using Zongsoft.Services;
+using Zongsoft.Collections;
 using Zongsoft.Discussions.Models;
 
 namespace Zongsoft.Discussions.Services;
@@ -150,71 +153,28 @@ public class PostService : DataServiceBase<Post>
 	{
 		string filePath = null;
 
-		//获取原始的内容类型
-		var rawType = data.GetValue(p => p.ContentType, null);
-
-		//调整内容类型为嵌入格式
-		data.SetValue(p => p.ContentType, Utility.GetContentType(rawType, true));
-
-		//尝试更新帖子内容
-		data.TryGetValue(p => p.Content, (key, value) =>
+		options.Parameters.TryGetValue("Thread", out var threadObject);
+		var thread = threadObject as IDataDictionary<Models.Thread> ?? (threadObject == null ? null : DataDictionary.GetDictionary<Models.Thread>(threadObject));
+		if(thread == null)
 		{
-			if(string.IsNullOrWhiteSpace(value) || value.Length < 500)
-				return;
+			var threadId = data.GetValue(p => p.ThreadId, 0UL);
+			if(threadId == 0)
+				throw new InvalidOperationException("Missing thread of the post.");
 
-			//设置内容文件的存储路径
-			filePath = this.GetContentFilePath(data.GetValue(p => p.PostId), data.GetValue(p => p.ContentType));
-
-			//将内容文本写入到文件中
-			Utility.WriteTextFile(filePath, value);
-
-			//更新内容文件的存储路径
-			data.SetValue(p => p.Content, filePath);
-
-			//更新内容类型为非嵌入格式（即外部文件）
-			data.SetValue(p => p.ContentType, Utility.GetContentType(data.GetValue(p => p.ContentType), false));
-		});
-
-		//附加数据是否包含了关联的主题对象
-		if(options.Parameters.TryGetValue("Thread", out var threadObject) && threadObject != null)
-		{
-			uint siteId = 0;
-			ushort forumId = 0;
-
-			if(threadObject is Thread thread)
-			{
-				siteId = thread.SiteId;
-				forumId = thread.ForumId;
-			}
-			else if(threadObject is IDataDictionary<Thread> dictionary)
-			{
-				siteId = dictionary.GetValue(p => p.SiteId);
-				forumId = dictionary.GetValue(p => p.ForumId);
-			}
-
-			//判断当前用户是否是新增主题所在论坛的版主
-			var isModerator = this.ServiceProvider.ResolveRequired<ForumService>()
-								  .IsModerator(forumId);
-
-			if(isModerator)
-			{
-				data.SetValue(p => p.Approved, true);
-			}
-			else
-			{
-				var forum = this.DataAccess.Select<Forum>(
-					Condition.Equal(nameof(Forum.SiteId), siteId) &
-					Condition.Equal(nameof(Forum.ForumId), forumId)).FirstOrDefault();
-
-				if(forum == null)
-					throw new InvalidOperationException("The specified forum is not existed about the new thread.");
-
-				data.SetValue(p => p.Approved, !forum.Approvable);
-			}
+			var parent = this.DataAccess.Select<Models.Thread>(Condition.Equal(nameof(Models.Thread.ThreadId), threadId), "SiteId,ForumId").FirstOrDefault();
+			if(parent == null)
+				throw new InvalidOperationException("The specified thread does not exist.");
+			thread = DataDictionary.GetDictionary<Models.Thread>(parent);
 		}
+
+		//审核状态由论坛规则决定，不能采用调用方或映射中的默认值。
+		data.SetValue(p => p.Approved, this.ServiceProvider.ResolveRequired<ForumService>().CanPublish(thread));
+		schema.Include(nameof(Post.Approved));
 
 		try
 		{
+			filePath = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.PostId, 0UL), data.GetValue(p => p.ContentType, null)));
+
 			using(var transaction = new Transaction())
 			{
 				//调用基类同名方法
@@ -252,34 +212,11 @@ public class PostService : DataServiceBase<Post>
 
 	protected override int OnUpdate(IDataDictionary<Post> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
 	{
-		//更新内容到文本文件中
-		data.TryGetValue(p => p.Content, (key, value) =>
-		{
-			if(string.IsNullOrWhiteSpace(value) || value.Length < 500)
-				return;
-
-			//根据当前反馈编号，获得其对应的内容文件存储路径
-			var filePath = this.GetContentFilePath(data.GetValue(p => p.PostId), data.GetValue(p => p.ContentType));
-
-			//将反馈内容写入到对应的存储文件中
-			Utility.WriteTextFile(filePath, value);
-
-			//更新当前反馈的内容文件存储路径属性
-			data.SetValue(p => p.Content, filePath);
-
-			//更新内容类型为非嵌入格式（即外部文件）
-			data.SetValue(p => p.ContentType, Utility.GetContentType(data.GetValue(p => p.ContentType), false));
-		});
-
-		//调用基类同名方法
-		var count = base.OnUpdate(data, criteria, schema, options);
-
-		if(count < 1)
-			return count;
-
-		return count;
+		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.PostId, 0UL), data.GetValue(p => p.ContentType, null)), () => base.OnUpdate(data, criteria, schema, options));
 	}
 	#endregion
+
+	internal string GetContentFilePath(IDataDictionary<Post> data) => this.GetContentFilePath(data.GetValue(p => p.PostId, 0UL), data.GetValue(p => p.ContentType, null));
 
 	#region 虚拟方法
 	protected virtual string GetContentFilePath(ulong postId, string contentType)
@@ -319,13 +256,13 @@ public class PostService : DataServiceBase<Post>
 			return false;
 
 		//如果当前帖子对应的主题是不存在的，则返回失败
-		var thread = this.DataAccess.Select<Thread>(Condition.Equal(nameof(Thread.ThreadId), threadId)).FirstOrDefault();
+		var thread = this.DataAccess.Select<Models.Thread>(Condition.Equal(nameof(Models.Thread.ThreadId), threadId)).FirstOrDefault();
 
 		if(thread == null)
 			return false;
 
 		//递增新增贴所属的主题的累计回帖总数
-		if(this.DataAccess.Increase<Thread>(nameof(Thread.TotalReplies), Condition.Equal(nameof(Thread.ThreadId), threadId)) < 0)
+		if(this.DataAccess.Increase<Models.Thread>(nameof(Models.Thread.TotalReplies), Condition.Equal(nameof(Models.Thread.ThreadId), threadId)) < 0)
 			return false;
 
 		var userId = data.GetValue(p => p.CreatorId);
@@ -333,7 +270,7 @@ public class PostService : DataServiceBase<Post>
 		var count = 0;
 
 		//更新当前帖子所属主题的最后回帖信息
-		count += this.DataAccess.Update(Model.Naming.Get<Thread>(), new
+		count += this.DataAccess.Update(Model.Naming.Get<Models.Thread>(), new
 		{
 			ThreadId = threadId,
 			MostRecentPostId = data.GetValue(p => p.PostId),
@@ -364,6 +301,155 @@ public class PostService : DataServiceBase<Post>
 				MostRecentPostId = data.GetValue(p => p.PostId),
 				MostRecentPostTime = data.GetValue(p => p.CreatedTime),
 			});
+		}
+
+		return count > 0;
+	}
+	#endregion
+	#region 异步业务路径
+	protected override async ValueTask<Post> OnGetAsync(ICondition criteria, ISchema schema, DataSelectOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		//调用基类同名方法
+		var post = await base.OnGetAsync(criteria, schema, options, cancellation);
+
+		if(post == null)
+			return null;
+
+		//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
+		if(!Utility.IsContentEmbedded(post.ContentType))
+			post.Content = Utility.ReadTextFile(post.Content);
+
+		return post;
+	}
+
+	protected override async ValueTask<int> OnInsertAsync(IDataDictionary<Post> data, ISchema schema, DataInsertOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		string filePath = null;
+
+		options.Parameters.TryGetValue("Thread", out var threadObject);
+		var thread = threadObject as IDataDictionary<Models.Thread> ?? (threadObject == null ? null : DataDictionary.GetDictionary<Models.Thread>(threadObject));
+		if(thread == null)
+		{
+			var threadId = data.GetValue(p => p.ThreadId, 0UL);
+			if(threadId == 0)
+				throw new InvalidOperationException("Missing thread of the post.");
+
+			var parent = await this.DataAccess.SelectAsync<Models.Thread>(Condition.Equal(nameof(Models.Thread.ThreadId), threadId), "SiteId,ForumId", cancellation: cancellation).FirstOrDefault(cancellation);
+			if(parent == null)
+				throw new InvalidOperationException("The specified thread does not exist.");
+			thread = DataDictionary.GetDictionary<Models.Thread>(parent);
+		}
+
+		//审核状态由论坛规则决定，不能采用调用方或映射中的默认值。
+		data.SetValue(p => p.Approved, await this.ServiceProvider.ResolveRequired<ForumService>().CanPublishAsync(thread, cancellation));
+		schema.Include(nameof(Post.Approved));
+
+		try
+		{
+			filePath = Utility.SetContent(data, () => this.GetContentFilePath(data.GetValue(p => p.PostId, 0UL), data.GetValue(p => p.ContentType, null)));
+
+			await using(var transaction = new Transaction())
+			{
+				//调用基类同名方法
+				var count = await base.OnInsertAsync(data, schema.Include(nameof(Post.Attachments)), options, cancellation);
+
+				if(count > 0)
+				{
+					//更新发帖人的关联帖子统计信息
+					//注意：只有当前帖子不是主题贴才需要更新对应的统计信息
+					if(threadObject == null)
+						await this.SetMostRecentPostAsync(data, cancellation: cancellation);
+
+					//提交事务
+					await transaction.CommitAsync(cancellation);
+				}
+				else
+				{
+					//如果新增记录失败则删除刚创建的文件
+					if(filePath != null && filePath.Length > 0)
+						Utility.DeleteFile(filePath);
+				}
+
+				return count;
+			}
+		}
+		catch
+		{
+			//删除新建的文件
+			if(filePath != null && filePath.Length > 0)
+				Utility.DeleteFile(filePath);
+
+			throw;
+		}
+	}
+
+	protected override async ValueTask<int> OnUpdateAsync(IDataDictionary<Post> data, ICondition criteria, ISchema schema, DataUpdateOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		return await Utility.MutateContentAsync(data, () => this.GetContentFilePath(data.GetValue(p => p.PostId, 0UL), data.GetValue(p => p.ContentType, null)), () => base.OnUpdateAsync(data, criteria, schema, options, cancellation), cancellation);
+	}
+
+	private async ValueTask<bool> SetMostRecentPostAsync(IDataDictionary<Post> data, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		//注意：如果当前帖子是主题内容贴则不需要更新对应的统计信息
+		if(data == null)
+			return false;
+
+		//如果当前帖子没有指定对应的主题编号，则返回失败
+		var threadId = data.GetValue(p => p.ThreadId, (ulong)0);
+
+		if(threadId == 0)
+			return false;
+
+		//如果当前帖子对应的主题是不存在的，则返回失败
+		var thread = await this.DataAccess.SelectAsync<Models.Thread>(Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation: cancellation).FirstOrDefault(cancellation);
+
+		if(thread == null)
+			return false;
+
+		//递增新增贴所属的主题的累计回帖总数
+		if(await this.DataAccess.IncreaseAsync<Models.Thread>(nameof(Models.Thread.TotalReplies), Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation: cancellation) < 0)
+			return false;
+
+		var userId = data.GetValue(p => p.CreatorId);
+		var user = await this.DataAccess.SelectAsync<UserProfile>(Condition.Equal(nameof(UserProfile.UserId), userId), cancellation: cancellation).FirstOrDefault(cancellation);
+		var count = 0;
+
+		//更新当前帖子所属主题的最后回帖信息
+		count += await this.DataAccess.UpdateAsync(Model.Naming.Get<Models.Thread>(), new
+		{
+			ThreadId = threadId,
+			MostRecentPostId = data.GetValue(p => p.PostId),
+			MostRecentPostTime = data.GetValue(p => p.CreatedTime),
+			MostRecentPostAuthorId = userId,
+			MostRecentPostAuthorName = user?.Nickname,
+			MostRecentPostAuthorAvatar = user?.Avatar,
+		}, cancellation: cancellation);
+
+		//更新当前帖子所属论坛的最后回帖信息
+		count += await this.DataAccess.UpdateAsync(Model.Naming.Get<Forum>(), new
+		{
+			SiteId = thread.SiteId,
+			ForumId = thread.ForumId,
+			MostRecentPostId = data.GetValue(p => p.PostId),
+			MostRecentPostTime = data.GetValue(p => p.CreatedTime),
+			MostRecentPostAuthorId = userId,
+			MostRecentPostAuthorName = user?.Nickname,
+			MostRecentPostAuthorAvatar = user?.Avatar,
+		}, cancellation: cancellation);
+
+		//递增当前发帖人的累计回帖数，并且更新发帖人的最后回帖信息
+		if(await this.DataAccess.IncreaseAsync<UserProfile>(nameof(UserProfile.TotalPosts), Condition.Equal(nameof(UserProfile.UserId), data.GetValue(p => p.CreatorId)), cancellation: cancellation) > 0)
+		{
+			count += await this.DataAccess.UpdateAsync(Model.Naming.Get<UserProfile>(), new
+			{
+				UserId = data.GetValue(p => p.CreatorId),
+				MostRecentPostId = data.GetValue(p => p.PostId),
+				MostRecentPostTime = data.GetValue(p => p.CreatedTime),
+			}, cancellation: cancellation);
 		}
 
 		return count > 0;

@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -25,6 +25,8 @@
  */
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
@@ -60,6 +62,36 @@ public class FileService : DataServiceBase<File>
 		{
 			//调用基类同名方法
 			var count = base.OnInsert(data, schema, options);
+
+			if(count < 1)
+			{
+				//如果新增记录失败则删除刚创建的文件
+				if(!filePath.IsEmpty)
+					Utility.DeleteFile(filePath.Path);
+			}
+
+			return count;
+		}
+		catch
+		{
+			//删除新建的文件
+			if(!filePath.IsEmpty)
+				Utility.DeleteFile(filePath.Path);
+
+			throw;
+		}
+	}
+	#endregion
+	#region 异步业务路径
+	protected override async ValueTask<int> OnInsertAsync(IDataDictionary<File> data, ISchema schema, DataInsertOptions options, CancellationToken cancellation)
+	{
+		cancellation.ThrowIfCancellationRequested();
+		var filePath = data.GetValue(p => p.Path);
+
+		try
+		{
+			//调用基类同名方法
+			var count = await base.OnInsertAsync(data, schema, options, cancellation);
 
 			if(count < 1)
 			{

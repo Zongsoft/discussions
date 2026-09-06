@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -45,13 +45,13 @@ namespace Zongsoft.Discussions.Web.Controllers;
 [ControllerName("Users")]
 public class UserController : ServiceController<UserProfile, UserService>
 {
-    #region 公共方法
-    [ActionName("Count")]
-    [HttpGet("{id}/[action]/{args}")]
-    public IActionResult GetCount(uint id, string args)
-    {
-        if (string.IsNullOrEmpty(args))
-            return this.BadRequest("Missing arguments of the request.");
+	#region 公共方法
+	[ActionName("Count")]
+	[HttpGet("{id}/[action]/{args}")]
+	public IActionResult GetCount(uint id, string args)
+	{
+		if (string.IsNullOrEmpty(args))
+			return this.BadRequest("Missing arguments of the request.");
 
 		return args.ToLowerInvariant() switch
 		{
@@ -61,12 +61,18 @@ public class UserController : ServiceController<UserProfile, UserService>
 		};
 	}
 
-    [ActionName("Avatar")]
-    [HttpPost("{id}/[action]")]
-    public Task<IO.FileInfo> SetAvatar(uint id) => SetAvatar(id);
+	[ActionName("Avatar")]
+	[HttpPost("{id}/[action]")]
+	public Task<IO.FileInfo> SetAvatar(uint id) => this.UploadAsync(
+		this.DataService.GetFilePath(id, "avatar"),
+		(file, cancellation) => ValueTask.FromResult(file != null && this.DataService.SetAvatar(id, file.Path.Url)),
+		this.HttpContext.RequestAborted).AsTask();
 
-    [ActionName("Photo")]
-    [HttpPost("{id}/[action]")]
-    public Task<IO.FileInfo> SetPhoto(uint id) => SetPhoto(id);
-    #endregion
+	[ActionName("Photo")]
+	[HttpPost("{id}/[action]")]
+	public Task<IO.FileInfo> SetPhoto(uint id) => this.UploadAsync(
+		this.DataService.GetFilePath(id, "photo"),
+		(file, cancellation) => ValueTask.FromResult(file != null && this.DataService.SetPhotoPath(id, file.Path.Url)),
+		this.HttpContext.RequestAborted).AsTask();
+	#endregion
 }
