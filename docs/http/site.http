@@ -73,3 +73,24 @@ Host: {{host}}:{{port}}
 X-Data-Schema: *
 X-Export-Fields: *
 Authorization: Credential {{credentialId}}
+
+### 站点论坛
+GET /Discussions/Sites/{{id}}/Forums HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 站点论坛组
+GET /Discussions/Sites/{{id}}/ForumGroups HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 记录总数
+GET /Discussions/Sites/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:100003 }}
+GET /Discussions/Sites/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}

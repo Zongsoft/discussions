@@ -57,13 +57,12 @@ public class ForumService : DataServiceBase<Forum>
 			Condition.Equal(nameof(Forum.ForumUser.UserId), userId) & Condition.Equal(nameof(Forum.ForumUser.IsModerator), true));
 	}
 
-	public IEnumerable<UserProfile> GetModerators(ushort forumId, string schema)
-	{
-		return this.DataAccess.Select<UserProfile>(nameof(Forum.ForumUser),
+	public IEnumerable<UserProfile> GetModerators(ushort forumId, string schema) =>
+		this.DataAccess.Select<Forum.ForumUser>(
 			Condition.Equal(nameof(Forum.ForumUser.ForumId), forumId) &
 			Condition.Equal(nameof(Forum.ForumUser.IsModerator), true),
-			schema);
-	}
+			$"*,User{{{(string.IsNullOrWhiteSpace(schema) ? "*" : schema)}}}"
+		).Select(member => member.User).Where(user => user != null);
 
 	public IEnumerable<Models.Thread> GetGlobalThreads(ushort forumId, string schema, Paging paging = null)
 	{

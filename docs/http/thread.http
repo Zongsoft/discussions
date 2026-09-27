@@ -29,6 +29,8 @@ Authorization: Credential {{credentialId}}
 
 ### 创建操作
 @title = {{$input 主题标题 $value: }}
+@summary = {{$input 主题摘要 $value: }}
+@siteId = {{$input 站点编号 $value:100003 }}
 @forumId = {{$input 论坛编号 $value: }}
 @content = {{$input 主题正文 $value: }}
 POST /Discussions/Threads HTTP/1.1
@@ -37,8 +39,10 @@ Authorization: Credential {{credentialId}}
 Content-Type: application/json
 
 {
+	"SiteId": {{siteId}},
 	"ForumId": {{forumId}},
 	"Title": "{{title}}",
+	"Summary": "{{summary}}",
 	"Post": {
 		"Content": "{{content}}",
 		"ContentType": "text/plain+embedded"
@@ -77,4 +81,70 @@ GET /Discussions/Threads/Export?format=spreadsheet HTTP/1.1
 Host: {{host}}:{{port}}
 X-Data-Schema: *
 X-Export-Fields: *
+Authorization: Credential {{credentialId}}
+
+### 审批主题
+POST /Discussions/Threads/{{id}}/Approve HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 隐藏主题
+POST /Discussions/Threads/{{id}}/Hidden HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 显示主题
+POST /Discussions/Threads/{{id}}/Visible HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 锁定主题
+POST /Discussions/Threads/{{id}}/Lock HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 解锁主题
+POST /Discussions/Threads/{{id}}/Unlock HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 置顶主题
+POST /Discussions/Threads/{{id}}/Pin HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 取消置顶
+POST /Discussions/Threads/{{id}}/Unpin HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 加精主题
+POST /Discussions/Threads/{{id}}/Valued HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 取消加精
+POST /Discussions/Threads/{{id}}/Unvalued HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 全局主题
+POST /Discussions/Threads/{{id}}/Global HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 取消全局
+POST /Discussions/Threads/{{id}}/Unglobal HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 记录总数
+GET /Discussions/Threads/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:10000006 }}
+GET /Discussions/Threads/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
 Authorization: Credential {{credentialId}}

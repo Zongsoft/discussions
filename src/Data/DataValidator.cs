@@ -83,8 +83,8 @@ public class DataValidator : IDataValidator
 		if(UserIdentity.Current == null)
 			return criteria;
 
-		//调用方提供的站点条件不能替代当前身份的站点约束。
-		if(HasProperty(context, Fields.SiteId))
+		//调用方提供的站点条件不能替代当前身份的站点约束
+		if(UserIdentity.Current.SiteId > 0 && HasProperty(context, Fields.SiteId))
 			criteria &= Condition.Equal(Fields.SiteId, UserIdentity.Current.SiteId);
 
 		return criteria;
@@ -131,7 +131,7 @@ public class DataValidator : IDataValidator
 	private static bool TryGetSiteId(DataImportContextBase context, out object value)
 	{
 		value = UserIdentity.Current?.SiteId;
-		return value != null;
+		return value is uint siteId && siteId > 0;
 	}
 
 	private static bool TryGetUserId(DataImportContextBase context, out object value)
@@ -149,7 +149,14 @@ public class DataValidator : IDataValidator
 	private static bool TryGetSiteId(IDataMutateContextBase context, out object value)
 	{
 		value = UserIdentity.Current?.SiteId;
-		return value != null;
+		if(value is not uint siteId)
+			return false;
+
+		//全局管理员可创建站点，也可为指定站点写入数据
+		if(siteId == 0 && (context.Entity.Name == nameof(Site) || context.Data != null && DataDictionary.GetDictionary(context.Data).Contains(Fields.SiteId)))
+			return false;
+
+		return true;
 	}
 
 	private static bool TryGetUserId(IDataMutateContextBase context, out object value)

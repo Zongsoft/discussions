@@ -69,7 +69,7 @@ public class FileController : ServiceController<File, FileService>
 		var file = await this.DataService.GetAsync(id, $"{nameof(Models.File.FileId)},{nameof(Models.File.Path)}", Paging.Disabled, Array.Empty<Sorting>(), cancellation) as File;
 
 		if(file == null || string.IsNullOrWhiteSpace(file.Path))
-			return null;
+			return this.NotFound();
 
 		return this.Accessor.Read(file.Path);
 	}

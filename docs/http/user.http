@@ -1,0 +1,66 @@
+### 讨论用户列表
+GET /Discussions/Users?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 讨论用户详情
+@id = {{$input 用户编号 $value:1 }}
+GET /Discussions/Users/{{id}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 未读消息数
+GET /Discussions/Users/{{id}}/Count/unread HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 消息总数
+GET /Discussions/Users/{{id}}/Count/message HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 设置头像（在 HttpYac 中选择实际图片）
+POST /Discussions/Users/{{id}}/Avatar?overwrite=true HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: multipart/form-data; boundary=----ZongsoftAvatar
+
+------ZongsoftAvatar
+Content-Disposition: form-data; name="file"; filename="avatar.png"
+Content-Type: image/png
+
+< ./sample.png
+------ZongsoftAvatar--
+
+### 设置相片（在 HttpYac 中选择实际图片）
+POST /Discussions/Users/{{id}}/Photo?overwrite=true HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: multipart/form-data; boundary=----ZongsoftPhoto
+
+------ZongsoftPhoto
+Content-Disposition: form-data; name="file"; filename="photo.png"
+Content-Type: image/png
+
+< ./sample.png
+------ZongsoftPhoto--
+
+
+### 记录总数
+GET /Discussions/Users/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:1 }}
+GET /Discussions/Users/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 条件查询
+POST /Discussions/Users/Query?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{}

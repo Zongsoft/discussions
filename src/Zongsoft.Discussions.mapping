@@ -475,6 +475,7 @@
 			<property name="Email" type="varchar" length="50" nullable="true" />
 			<property name="Phone" type="varchar" length="50" nullable="true" />
 			<property name="Avatar" type="varchar" length="100" nullable="true" />
+			<property name="PhotoPath" type="varchar" length="200" nullable="true" />
 			<property name="Gender" type="byte" nullable="false" />
 			<property name="Grade" type="byte" nullable="false" />
 			<property name="TotalPosts" type="uint" nullable="false" />

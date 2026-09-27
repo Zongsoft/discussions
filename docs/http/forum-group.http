@@ -1,0 +1,51 @@
+### 论坛组列表
+GET /Discussions/ForumGroups?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 论坛组详情（键格式：站点编号-分组编号）
+@key = {{$input 论坛组键 $value:100003-1001 }}
+GET /Discussions/ForumGroups/{{key}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 论坛组论坛
+GET /Discussions/ForumGroups/{{key}}/Forums HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 条件查询
+POST /Discussions/ForumGroups/Query?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"Name":"%"}
+
+### 创建论坛组
+@name = {{$input 论坛组名称 $value:示例论坛组 }}
+POST /Discussions/ForumGroups HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"SiteId":100003,"Name":"{{name}}"}
+
+### 修改论坛组
+PATCH /Discussions/ForumGroups/{{key}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"Description":"更新后的说明"}
+
+### 记录总数
+GET /Discussions/ForumGroups/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:100003-1001 }}
+GET /Discussions/ForumGroups/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}

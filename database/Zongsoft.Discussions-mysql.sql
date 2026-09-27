@@ -241,6 +241,7 @@ CREATE TABLE IF NOT EXISTS `Discussions_UserProfile`
 	`Email`                 varchar(50)      NULL     COMMENT '邮箱地址' COLLATE 'ascii_general_ci',
 	`Phone`                 varchar(50)      NULL     COMMENT '手机号码' COLLATE 'ascii_general_ci',
 	`Avatar`                varchar(100)     NULL     COMMENT '用户头像' COLLATE 'ascii_general_ci',
+	`PhotoPath`             varchar(200)     NULL     COMMENT '照片路径' COLLATE 'ascii_general_ci',
 	`Gender`                tinyint unsigned NOT NULL COMMENT '用户性别' DEFAULT 0,
 	`Grade`                 tinyint unsigned NOT NULL COMMENT '用户等级' DEFAULT 0,
 	`TotalPosts`            int unsigned     NOT NULL COMMENT '累计回复总数' DEFAULT 0,

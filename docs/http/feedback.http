@@ -1,0 +1,37 @@
+### 反馈列表
+GET /Discussions/Feedbacks?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 反馈详情
+@id = {{$input 反馈编号 $value:100001 }}
+GET /Discussions/Feedbacks/{{id}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 条件查询
+POST /Discussions/Feedbacks/Query?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"Subject":"%"}
+
+### 提交反馈
+POST /Discussions/Feedbacks HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"SiteId":100003,"Kind":1,"Subject":"示例反馈","Content":"测试内容","ContentType":"text/plain+embedded","ContactName":"示例用户","ContactText":"user@example.com"}
+
+### 记录总数
+GET /Discussions/Feedbacks/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:10000002 }}
+GET /Discussions/Feedbacks/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}

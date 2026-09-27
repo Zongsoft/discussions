@@ -37,5 +37,5 @@ NuGet 版本由 `Directory.Packages.props` 集中管理。`Directory.Build.props
 - 文档改动检查相对链接、CRLF、`git diff --check` 和实际差异，不必运行构建。
 - 领域库改动优先构建 `src/Zongsoft.Discussions.csproj`；API 改动构建 `src/api/Zongsoft.Discussions.Web.csproj`。
 - 公共模型、映射或多目标依赖变化按需要分别验证 `net8.0`、`net9.0`、`net10.0`。
-- test/Zongsoft.Discussions.Regression.csproj 提供不访问外部资源的控制台回归检查（dotnet run，目标 net10.0）；数据库、文件存储和完整授权流程仍应使用临时资源与隔离身份验证，不能以一次成功构建替代业务契约检查。
+- 当前仓库没有独立的控制台回归项目；数据库、文件存储和完整授权流程应使用临时资源与隔离身份验证，不能以一次成功构建替代业务契约检查。
 - Avalonia 原型按其就近说明单独验证，不因后端改动默认构建 UI。

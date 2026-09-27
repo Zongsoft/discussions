@@ -222,6 +222,8 @@ public class ThreadService : DataServiceBase<Models.Thread>
 				if(count < 1)
 					return count;
 
+				this.LinkPost(data, post);
+
 				//更新发帖人关联的主题统计信息
 				this.SetMostRecentThread(data);
 
@@ -235,13 +237,38 @@ public class ThreadService : DataServiceBase<Models.Thread>
 	#endregion
 
 	#region 私有方法
-	[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-	private Zongsoft.Data.Condition GetIsModeratorCriteria()
+	private void LinkPost(IDataDictionary<Models.Thread> data, Post post)
 	{
-		return Condition.Exists("Forum.Users",
-		         Condition.Equal(nameof(Forum.ForumUser.UserId), this.Principal.Identity.GetIdentifier<uint>()) &
-		         Condition.Equal(nameof(Forum.ForumUser.IsModerator), true));
+		var postId = post.PostId;
+		var threadId = data.GetValue(p => p.ThreadId);
+
+		if(threadId == 0 || postId == 0 ||
+			this.DataAccess.Update<Models.Thread>(new { PostId = postId }, Condition.Equal(nameof(Models.Thread.ThreadId), threadId)) != 1 ||
+			this.DataAccess.Update<Post>(new { ThreadId = threadId }, Condition.Equal(nameof(Post.PostId), postId)) != 1)
+			throw new InvalidOperationException("Unable to link the thread and its post.");
+
+		data.SetValue(p => p.PostId, postId);
+		post.ThreadId = threadId;
 	}
+
+	private async ValueTask LinkPostAsync(IDataDictionary<Models.Thread> data, Post post, CancellationToken cancellation)
+	{
+		var postId = post.PostId;
+		var threadId = data.GetValue(p => p.ThreadId);
+
+		if(threadId == 0 || postId == 0 ||
+			await this.DataAccess.UpdateAsync<Models.Thread>(new { PostId = postId }, Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation: cancellation) != 1 ||
+			await this.DataAccess.UpdateAsync<Post>(new { ThreadId = threadId }, Condition.Equal(nameof(Post.PostId), postId), cancellation: cancellation) != 1)
+			throw new InvalidOperationException("Unable to link the thread and its post.");
+
+		data.SetValue(p => p.PostId, postId);
+		post.ThreadId = threadId;
+	}
+
+	[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+	private Zongsoft.Data.Condition GetIsModeratorCriteria() => Condition.Exists("Forum.Users",
+		Condition.Equal(nameof(Forum.ForumUser.UserId), this.Principal.Identity.GetIdentifier<uint>()) &
+		Condition.Equal(nameof(Forum.ForumUser.IsModerator), true));
 
 	private bool SetMostRecentThread(IDataDictionary<Models.Thread> data)
 	{
@@ -282,20 +309,34 @@ public class ThreadService : DataServiceBase<Models.Thread>
 
 	private void SetHistory(ulong threadId)
 	{
-		//新增或更新当前用户对指定主题的浏览记录（自动递增浏览次数）
-		this.DataAccess.Upsert<History>(new
+		var timestamp = DateTime.Now;
+		var userId = this.Principal.Identity.GetIdentifier<uint>();
+		var criteria = Condition.Equal(nameof(History.UserId), userId) & Condition.Equal(nameof(History.ThreadId), threadId);
+
+		//首次浏览时创建记录；并发创建以主键约束为准。
+		this.DataAccess.Insert<History>(new
 		{
-			UserId = this.Principal.Identity.GetIdentifier<uint>(),
+			UserId = userId,
 			ThreadId = threadId,
+			ViewedCount = 0u,
+			PostedCount = 0u,
+			FirstViewedTime = timestamp,
+			LastViewedTime = timestamp,
+		}, new DataInsertOptions { ConstraintIgnored = true });
+
+		this.DataAccess.Update<History>(new
+		{
 			ViewedCount = Operand.Field(nameof(History.ViewedCount)) + 1,
-			MostRecentViewedTime = DateTime.Now,
-		});
+			LastViewedTime = timestamp,
+		}, criteria);
 	}
 	#endregion
+
 	#region 异步业务路径
 	protected override async ValueTask<Models.Thread> OnGetAsync(ICondition criteria, ISchema schema, DataSelectOptions options, CancellationToken cancellation)
 	{
 		cancellation.ThrowIfCancellationRequested();
+
 		//调用基类同名方法
 		var thread = await base.OnGetAsync(criteria, schema, options, cancellation);
 
@@ -336,6 +377,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 	protected override async ValueTask<int> OnInsertAsync(IDataDictionary<Models.Thread> data, ISchema schema, DataInsertOptions options, CancellationToken cancellation)
 	{
 		cancellation.ThrowIfCancellationRequested();
+
 		if(!data.TryGetValue(p => p.Post, out var post) || post == null || string.IsNullOrEmpty(post.Content))
 			throw new InvalidOperationException("Missing content of the thread.");
 
@@ -359,6 +401,8 @@ public class ThreadService : DataServiceBase<Models.Thread>
 				if(count < 1)
 					return count;
 
+				await this.LinkPostAsync(data, post, cancellation);
+
 				//更新发帖人关联的主题统计信息
 				await this.SetMostRecentThreadAsync(data, cancellation: cancellation);
 
@@ -373,6 +417,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 	private async ValueTask<bool> SetMostRecentThreadAsync(IDataDictionary<Models.Thread> data, CancellationToken cancellation)
 	{
 		cancellation.ThrowIfCancellationRequested();
+
 		var count = 0;
 		var userId = data.GetValue(p => p.CreatorId, this.Principal.Identity.GetIdentifier<uint>());
 		var user = await this.DataAccess.SelectAsync<UserProfile>(
@@ -411,14 +456,27 @@ public class ThreadService : DataServiceBase<Models.Thread>
 	private async ValueTask SetHistoryAsync(ulong threadId, CancellationToken cancellation)
 	{
 		cancellation.ThrowIfCancellationRequested();
-		//新增或更新当前用户对指定主题的浏览记录（自动递增浏览次数）
-		await this.DataAccess.UpsertAsync<History>(new
+
+		var timestamp = DateTime.Now;
+		var userId = this.Principal.Identity.GetIdentifier<uint>();
+		var criteria = Condition.Equal(nameof(History.UserId), userId) & Condition.Equal(nameof(History.ThreadId), threadId);
+
+		//首次浏览时创建记录；并发创建以主键约束为准。
+		await this.DataAccess.InsertAsync<History>(new
 		{
-			UserId = this.Principal.Identity.GetIdentifier<uint>(),
+			UserId = userId,
 			ThreadId = threadId,
+			ViewedCount = 0u,
+			PostedCount = 0u,
+			FirstViewedTime = timestamp,
+			LastViewedTime = timestamp,
+		}, new DataInsertOptions { ConstraintIgnored = true }, cancellation);
+
+		await this.DataAccess.UpdateAsync<History>(new
+		{
 			ViewedCount = Operand.Field(nameof(History.ViewedCount)) + 1,
-			MostRecentViewedTime = DateTime.Now,
-		}, cancellation: cancellation);
+			LastViewedTime = timestamp,
+		}, criteria, cancellation);
 	}
 	#endregion
 }

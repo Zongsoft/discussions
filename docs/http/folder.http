@@ -1,0 +1,47 @@
+### 目录列表
+GET /Discussions/Folders?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 目录详情
+@id = {{$input 目录编号 $value:100001 }}
+GET /Discussions/Folders/{{id}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 创建目录
+POST /Discussions/Folders HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"Name":"示例目录","SiteId":100003}
+
+### 设置图标
+POST /Discussions/Folders/{{id}}/Icon/folder HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 设置分享性（Private、Internal、Friendly、All）
+POST /Discussions/Folders/{{id}}/Shareability/All HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 记录总数
+GET /Discussions/Folders/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:100002 }}
+GET /Discussions/Folders/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 条件查询
+POST /Discussions/Folders/Query?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{}

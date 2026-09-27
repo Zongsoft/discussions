@@ -430,6 +430,7 @@ CREATE TABLE IF NOT EXISTS "Discussions_UserProfile"
 	"Email"                 varchar(50)  NULL     COLLATE "C",
 	"Phone"                 varchar(50)  NULL     COLLATE "C",
 	"Avatar"                varchar(100) NULL     COLLATE "C",
+	"PhotoPath"             varchar(200) NULL     COLLATE "C",
 	"Gender"                smallint     NOT NULL DEFAULT 0,
 	"Grade"                 smallint     NOT NULL DEFAULT 0,
 	"TotalPosts"            int          NOT NULL DEFAULT 0,
@@ -460,6 +461,7 @@ COMMENT ON COLUMN "Discussions_UserProfile"."Nickname"              IS '用户�
 COMMENT ON COLUMN "Discussions_UserProfile"."Email"                 IS '邮箱地址';
 COMMENT ON COLUMN "Discussions_UserProfile"."Phone"                 IS '手机号码';
 COMMENT ON COLUMN "Discussions_UserProfile"."Avatar"                IS '用户头像';
+COMMENT ON COLUMN "Discussions_UserProfile"."PhotoPath"             IS '照片路径';
 COMMENT ON COLUMN "Discussions_UserProfile"."Gender"                IS '用户性别';
 COMMENT ON COLUMN "Discussions_UserProfile"."TotalPosts"            IS '累计回复总数';
 COMMENT ON COLUMN "Discussions_UserProfile"."TotalThreads"          IS '累计主题总数';

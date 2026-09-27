@@ -1,0 +1,70 @@
+### 帖子列表
+GET /Discussions/Posts?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 帖子详情
+@id = {{$input 帖子编号 $value:10000003 }}
+GET /Discussions/Posts/{{id}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 按主题查询帖子
+POST /Discussions/Posts/Query?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"ThreadId":10000003}
+
+### 发表回复
+POST /Discussions/Posts HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"ThreadId":10000003,"Content":"示例回复","ContentType":"text/plain+embedded"}
+
+### 更新帖子
+PATCH /Discussions/Posts/{{id}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"Content":"更新后的回复"}
+
+### 赞成与反对（value 可省略，默认 1）
+POST /Discussions/Posts/{{id}}/Upvote/1 HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 反对
+POST /Discussions/Posts/{{id}}/Downvote/1 HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 赞成记录
+GET /Discussions/Posts/{{id}}/Upvotes?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 反对记录
+GET /Discussions/Posts/{{id}}/Downvotes?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 评论列表
+GET /Discussions/Posts/{{id}}/Comments?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 记录总数
+GET /Discussions/Posts/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:10000007 }}
+GET /Discussions/Posts/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}

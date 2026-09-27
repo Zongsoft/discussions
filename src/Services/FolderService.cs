@@ -50,29 +50,12 @@ public class FolderService : DataServiceBase<Folder>
 		if(string.IsNullOrWhiteSpace(icon))
 			icon = null;
 
-		return this.DataAccess.Update(Model.Naming.Get<Folder>(), new
-		{
-			FolderId = folderId,
-			Icon = icon,
-		}) > 0;
+		return this.DataAccess.Update<Folder>(new { Icon = icon }, Condition.Equal(nameof(Folder.FolderId), folderId)) > 0;
 	}
 
-	public bool SetVisiblity(uint folderId, Visibility visiblity)
+	public bool SetShareability(uint folderId, Shareability shareability)
 	{
-		return this.DataAccess.Update(Model.Naming.Get<Folder>(), new
-		{
-			FolderId = folderId,
-			Visiblity = visiblity,
-		}) > 0;
-	}
-
-	public bool SetAccessibility(uint folderId, Accessibility accessibility)
-	{
-		return this.DataAccess.Update(Model.Naming.Get<Folder>(), new
-		{
-			FolderId = folderId,
-			Accessibility = accessibility,
-		}) > 0;
+		return this.DataAccess.Update<Folder>(new { Shareability = shareability }, Condition.Equal(nameof(Folder.FolderId), folderId)) > 0;
 	}
 	#endregion
 

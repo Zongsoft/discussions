@@ -29,12 +29,14 @@ Authorization: Credential {{credentialId}}
 
 ### 创建操作
 @name = {{$input 论坛名称 $value: }}
+@siteId = {{$input 站点编号 $value:100003 }}
 POST /Discussions/Forums HTTP/1.1
 Host: {{host}}:{{port}}
 Authorization: Credential {{credentialId}}
 Content-Type: application/json
 
 {
+	"SiteId": {{siteId}},
 	"Name": "{{name}}"
 }
 
@@ -70,4 +72,45 @@ GET /Discussions/Forums/Export?format=spreadsheet HTTP/1.1
 Host: {{host}}:{{port}}
 X-Data-Schema: *
 X-Export-Fields: *
+Authorization: Credential {{credentialId}}
+
+### 论坛版主
+@forumNumber = {{$input 论坛编号 $value:1001 }}
+GET /Discussions/Forums/{{forumNumber}}/Moderators HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 全局主题
+@forumNumber = {{$input 论坛编号 $value:1001 }}
+GET /Discussions/Forums/{{forumNumber}}/Globals?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 置顶主题
+@forumNumber = {{$input 论坛编号 $value:1001 }}
+GET /Discussions/Forums/{{forumNumber}}/Pinneds?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 顶部主题
+@forumNumber = {{$input 论坛编号 $value:1001 }}
+GET /Discussions/Forums/{{forumNumber}}/Topmosts?count=10 HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 论坛主题
+@forumNumber = {{$input 论坛编号 $value:1001 }}
+GET /Discussions/Forums/{{forumNumber}}/Threads?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 记录总数
+GET /Discussions/Forums/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:0-1001 }}
+GET /Discussions/Forums/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
 Authorization: Credential {{credentialId}}

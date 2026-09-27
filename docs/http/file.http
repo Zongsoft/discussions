@@ -1,0 +1,47 @@
+### 文件列表
+GET /Discussions/Files?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 文件详情
+@id = {{$input 文件编号 $value:100001 }}
+GET /Discussions/Files/{{id}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 下载文件
+GET /Discussions/Files/{{id}}/Download HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 上传文件（在 HttpYac 中选择实际文件）
+POST /Discussions/Files/Upload HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: multipart/form-data; boundary=----ZongsoftFile
+
+------ZongsoftFile
+Content-Disposition: form-data; name="file"; filename="example.txt"
+Content-Type: text/plain
+
+example
+------ZongsoftFile--
+
+### 记录总数
+GET /Discussions/Files/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:10000003 }}
+GET /Discussions/Files/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 条件查询
+POST /Discussions/Files/Query?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{}

@@ -1,0 +1,46 @@
+### 消息列表
+GET /Discussions/Messages?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 消息详情
+@id = {{$input 消息编号 $value:100001 }}
+GET /Discussions/Messages/{{id}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 条件查询
+POST /Discussions/Messages/Query?page={{page}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"Subject":"%"}
+
+### 创建消息
+POST /Discussions/Messages HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"SiteId":100003,"Subject":"示例消息","Content":"测试内容","ContentType":"text/plain+embedded"}
+
+### 记录总数
+GET /Discussions/Messages/Count HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 判断记录是否存在
+@existsKey = {{$input 记录编号 $value:10000003 }}
+GET /Discussions/Messages/{{existsKey}}/Exists HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+
+### 更新消息
+@id = {{$input 消息编号 $value:10000003 }}
+PATCH /Discussions/Messages/{{id}} HTTP/1.1
+Host: {{host}}:{{port}}
+Authorization: Credential {{credentialId}}
+Content-Type: application/json
+
+{"Subject":"更新后的消息主题"}

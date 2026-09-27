@@ -262,7 +262,10 @@ public class PostService : DataServiceBase<Post>
 			return false;
 
 		//递增新增贴所属的主题的累计回帖总数
-		if(this.DataAccess.Increase<Models.Thread>(nameof(Models.Thread.TotalReplies), Condition.Equal(nameof(Models.Thread.ThreadId), threadId)) < 0)
+		if(this.DataAccess.Update<Models.Thread>(new
+		{
+			TotalReplies = Operand.Field(nameof(Models.Thread.TotalReplies)) + 1,
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId)) < 1)
 			return false;
 
 		var userId = data.GetValue(p => p.CreatorId);
@@ -293,7 +296,10 @@ public class PostService : DataServiceBase<Post>
 		});
 
 		//递增当前发帖人的累计回帖数，并且更新发帖人的最后回帖信息
-		if(this.DataAccess.Increase<UserProfile>(nameof(UserProfile.TotalPosts), Condition.Equal(nameof(UserProfile.UserId), data.GetValue(p => p.CreatorId))) > 0)
+		if(this.DataAccess.Update<UserProfile>(new
+		{
+			TotalPosts = Operand.Field(nameof(UserProfile.TotalPosts)) + 1,
+		}, Condition.Equal(nameof(UserProfile.UserId), data.GetValue(p => p.CreatorId))) > 0)
 		{
 			count += this.DataAccess.Update(Model.Naming.Get<UserProfile>(), new
 			{
@@ -411,7 +417,10 @@ public class PostService : DataServiceBase<Post>
 			return false;
 
 		//递增新增贴所属的主题的累计回帖总数
-		if(await this.DataAccess.IncreaseAsync<Models.Thread>(nameof(Models.Thread.TotalReplies), Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation: cancellation) < 0)
+		if(await this.DataAccess.UpdateAsync<Models.Thread>(new
+		{
+			TotalReplies = Operand.Field(nameof(Models.Thread.TotalReplies)) + 1,
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation: cancellation) < 1)
 			return false;
 
 		var userId = data.GetValue(p => p.CreatorId);
@@ -442,7 +451,10 @@ public class PostService : DataServiceBase<Post>
 		}, cancellation: cancellation);
 
 		//递增当前发帖人的累计回帖数，并且更新发帖人的最后回帖信息
-		if(await this.DataAccess.IncreaseAsync<UserProfile>(nameof(UserProfile.TotalPosts), Condition.Equal(nameof(UserProfile.UserId), data.GetValue(p => p.CreatorId)), cancellation: cancellation) > 0)
+		if(await this.DataAccess.UpdateAsync<UserProfile>(new
+		{
+			TotalPosts = Operand.Field(nameof(UserProfile.TotalPosts)) + 1,
+		}, Condition.Equal(nameof(UserProfile.UserId), data.GetValue(p => p.CreatorId)), cancellation: cancellation) > 0)
 		{
 			count += await this.DataAccess.UpdateAsync(Model.Naming.Get<UserProfile>(), new
 			{
