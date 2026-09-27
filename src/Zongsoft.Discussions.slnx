@@ -1,0 +1,4 @@
+<Solution>
+	<Project Path="Zongsoft.Discussions.csproj" />
+	<Project Path="api/Zongsoft.Discussions.Web.csproj" />
+</Solution>
