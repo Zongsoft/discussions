@@ -280,7 +280,7 @@ internal static class Utility
 	/// </remarks>
 	public static string GetFilePath(uint siteId, uint userId, string relativePath = null)
 	{
-		var basePath = ApplicationContext.Current.Configuration.GetOptionValue<string>("/Discussions/General.BasePath");
+		var basePath = ApplicationContext.Current.Configuration.GetOptionValue<string>("/Discussions/General:BasePath");
 
 		if(string.IsNullOrWhiteSpace(basePath))
 			return string.Empty;

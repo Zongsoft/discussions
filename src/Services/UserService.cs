@@ -137,7 +137,10 @@ public class UserService : DataServiceBase<UserProfile>
 			throw new ArgumentNullException(nameof(name));
 
 		if(string.Equals(name, "avatar", StringComparison.OrdinalIgnoreCase) || string.Equals(name, "photo", StringComparison.OrdinalIgnoreCase))
-			return Zongsoft.IO.Path.Combine(_basePath, name.Trim() + "-" + userId.ToString());
+		{
+			var basePath = string.IsNullOrWhiteSpace(_basePath) ? Utility.GetFilePath(0, userId) : _basePath;
+			return Zongsoft.IO.Path.Combine(basePath, name.Trim() + "-" + userId.ToString());
+		}
 
 		throw new ArgumentNullException($"Invalid '{name}' value of the name argument.");
 	}

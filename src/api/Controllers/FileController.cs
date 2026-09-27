@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -48,8 +48,11 @@ namespace Zongsoft.Discussions.Web.Controllers;
 [ControllerName("Files")]
 public class FileController : ServiceController<File, FileService>
 {
+	#region 构造函数
+	public FileController() => this.Accessor = WebFileAccessor.Default;
+	#endregion
+
 	#region 公共属性
-	[Zongsoft.Services.ServiceDependency(IsRequired = true)]
 	public WebFileAccessor Accessor { get; set; }
 	#endregion
 
