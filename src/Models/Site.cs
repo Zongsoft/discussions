@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -31,9 +31,7 @@ using Zongsoft.Data;
 
 namespace Zongsoft.Discussions.Models;
 
-/// <summary>
-/// 表示站点的实体类。
-/// </summary>
+/// <summary>表示站点的实体类。</summary>
 public abstract class Site
 {
 	#region 普通属性
@@ -61,9 +59,7 @@ public abstract class Site
 	#endregion
 
 	#region 嵌套结构
-	/// <summary>
-	/// 表示站点用户的结构。
-	/// </summary>
+	/// <summary>表示站点用户的结构。</summary>
 	public struct SiteUser : IEquatable<SiteUser>
 	{
 		#region 构造函数
@@ -96,11 +92,10 @@ public abstract class Site
 	#endregion
 }
 
-/// <summary>
-/// 表示站点查询条件的实体类。
-/// </summary>
+/// <summary>表示站点查询条件的实体类。</summary>
 public abstract class SiteCriteria : CriteriaBase
 {
+	#region 公共属性
 	/// <summary>获取或设置站点代号。</summary>
 	public abstract string SiteNo { get; set; }
 	/// <summary>获取或设置站点名称。</summary>
@@ -109,4 +104,5 @@ public abstract class SiteCriteria : CriteriaBase
 	public abstract string Host { get; set; }
 	/// <summary>获取或设置所属领域。</summary>
 	public abstract string Domain { get; set; }
+	#endregion
 }

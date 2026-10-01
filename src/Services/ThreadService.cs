@@ -70,8 +70,8 @@ public class ThreadService : DataServiceBase<Models.Thread>
 	public bool Approve(ulong threadId)
 	{
 		var criteria = Condition.Equal(nameof(Models.Thread.ThreadId), threadId) &
-		               Condition.Equal(nameof(Models.Thread.Approved), false) &
-		               GetIsModeratorCriteria();
+					   Condition.Equal(nameof(Models.Thread.Approved), false) &
+					   this.GetIsModeratorCriteria();
 
 		return this.DataAccess.Update<Models.Thread>(new
 		{
@@ -93,7 +93,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		return this.DataAccess.Update<Models.Thread>(new
 		{
 			Visible = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & GetIsModeratorCriteria()) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria()) > 0;
 	}
 
 	/// <summary>设置指定主题是否锁定，注：只有版主才具备调用该方法的权限。</summary>
@@ -105,7 +105,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		return this.DataAccess.Update<Models.Thread>(new
 		{
 			IsLocked = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & GetIsModeratorCriteria()) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria()) > 0;
 	}
 
 	/// <summary>设置指定主题是否置顶，注：只有版主才具备调用该方法的权限。</summary>
@@ -117,7 +117,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		return this.DataAccess.Update<Models.Thread>(new
 		{
 			IsPinned = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & GetIsModeratorCriteria()) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria()) > 0;
 	}
 
 	/// <summary>设置指定主题是否为精华帖，注：只有版主才具备调用该方法的权限。</summary>
@@ -129,7 +129,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		return this.DataAccess.Update<Models.Thread>(new
 		{
 			IsValued = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & GetIsModeratorCriteria()) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria()) > 0;
 	}
 
 	/// <summary>设置指定主题是否为全局帖，注：只有超级管理员才能调用该方法。</summary>
@@ -200,7 +200,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 	protected override int OnInsert(IDataDictionary<Models.Thread> data, ISchema schema, DataInsertOptions options)
 	{
 		if(!data.TryGetValue(p => p.Post, out var post) || post == null || string.IsNullOrEmpty(post.Content))
-			throw new InvalidOperationException("Missing content of the thread.");
+			throw new InvalidOperationException(Properties.Resources.ThreadMissingContent);
 
 		//确保数据模式含有“主题内容贴”复合属性
 		schema.Include("Post{*}");
@@ -245,7 +245,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		if(threadId == 0 || postId == 0 ||
 			this.DataAccess.Update<Models.Thread>(new { PostId = postId }, Condition.Equal(nameof(Models.Thread.ThreadId), threadId)) != 1 ||
 			this.DataAccess.Update<Post>(new { ThreadId = threadId }, Condition.Equal(nameof(Post.PostId), postId)) != 1)
-			throw new InvalidOperationException("Unable to link the thread and its post.");
+			throw new InvalidOperationException(Properties.Resources.ThreadPostLinkFailed);
 
 		data.SetValue(p => p.PostId, postId);
 		post.ThreadId = threadId;
@@ -259,7 +259,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		if(threadId == 0 || postId == 0 ||
 			await this.DataAccess.UpdateAsync<Models.Thread>(new { PostId = postId }, Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation: cancellation) != 1 ||
 			await this.DataAccess.UpdateAsync<Post>(new { ThreadId = threadId }, Condition.Equal(nameof(Post.PostId), postId), cancellation: cancellation) != 1)
-			throw new InvalidOperationException("Unable to link the thread and its post.");
+			throw new InvalidOperationException(Properties.Resources.ThreadPostLinkFailed);
 
 		data.SetValue(p => p.PostId, postId);
 		post.ThreadId = threadId;
@@ -379,7 +379,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		cancellation.ThrowIfCancellationRequested();
 
 		if(!data.TryGetValue(p => p.Post, out var post) || post == null || string.IsNullOrEmpty(post.Content))
-			throw new InvalidOperationException("Missing content of the thread.");
+			throw new InvalidOperationException(Properties.Resources.ThreadMissingContent);
 
 		//确保数据模式含有“主题内容贴”复合属性
 		schema.Include("Post{*}");

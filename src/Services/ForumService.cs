@@ -123,7 +123,7 @@ public class ForumService : DataServiceBase<Forum>
 	{
 		var forum = this.DataAccess.Select<Forum>(GetForumCriteria(thread), nameof(Forum.Approvable)).FirstOrDefault();
 		if(forum == null)
-			throw new InvalidOperationException("The specified forum does not exist.");
+			throw new InvalidOperationException(Properties.Resources.ForumNotFound);
 
 		return !forum.Approvable || this.Principal?.Identity?.IsAuthenticated == true && this.IsModerator(thread.GetValue(p => p.ForumId));
 	}
@@ -133,7 +133,7 @@ public class ForumService : DataServiceBase<Forum>
 		cancellation.ThrowIfCancellationRequested();
 		var forum = await this.DataAccess.SelectAsync<Forum>(GetForumCriteria(thread), nameof(Forum.Approvable), cancellation: cancellation).FirstOrDefault(cancellation);
 		if(forum == null)
-			throw new InvalidOperationException("The specified forum does not exist.");
+			throw new InvalidOperationException(Properties.Resources.ForumNotFound);
 
 		return !forum.Approvable || this.Principal?.Identity?.IsAuthenticated == true && await this.IsModeratorAsync(thread.GetValue(p => p.ForumId), cancellation: cancellation);
 	}
@@ -141,7 +141,7 @@ public class ForumService : DataServiceBase<Forum>
 	private static ICondition GetForumCriteria(IDataDictionary<Models.Thread> thread)
 	{
 		if(thread == null || !thread.TryGetValue(p => p.ForumId, out var forumId) || forumId == 0)
-			throw new InvalidOperationException("Missing forum of the thread.");
+			throw new InvalidOperationException(Properties.Resources.ThreadMissingForum);
 
 		ICondition criteria = Condition.Equal(nameof(Forum.ForumId), forumId);
 		if(thread.TryGetValue(p => p.SiteId, out var siteId))

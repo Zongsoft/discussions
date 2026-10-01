@@ -50,7 +50,7 @@ public class UserController : ServiceController<UserProfile, UserService>
 	[HttpGet("{id}/[action]/{args}")]
 	public IActionResult GetCount(uint id, string args)
 	{
-		if (string.IsNullOrEmpty(args))
+		if(string.IsNullOrEmpty(args))
 			return this.BadRequest("Missing arguments of the request.");
 
 		return args.ToLowerInvariant() switch

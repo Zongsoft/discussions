@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -31,9 +31,7 @@ using Zongsoft.Data;
 
 namespace Zongsoft.Discussions.Models;
 
-/// <summary>
-/// 表示文件夹的业务实体类。
-/// </summary>
+/// <summary>表示文件夹的业务实体类。</summary>
 public abstract class Folder
 {
 	#region 公共属性
@@ -71,9 +69,7 @@ public abstract class Folder
 	#endregion
 
 	#region 嵌套结构
-	/// <summary>
-	/// 表示文件夹用户的实体结构。
-	/// </summary>
+	/// <summary>表示文件夹用户的实体结构。</summary>
 	public struct FolderUser : IEquatable<FolderUser>
 	{
 		#region 公共字段
@@ -108,9 +104,7 @@ public abstract class Folder
 	#endregion
 }
 
-/// <summary>
-/// 表示文件夹的查询条件实体类。
-/// </summary>
+/// <summary>表示文件夹的查询条件实体类。</summary>
 public abstract class FolderCriteria : CriteriaBase
 {
 	#region 公共属性

@@ -43,7 +43,11 @@ namespace Zongsoft.Discussions;
 
 internal static class Utility
 {
+	#region 常量定义
 	private const string CONTENT_TYPE_EMBEDDED_SUFFIX = "+embedded";
+	#endregion
+
+	#region 内容处理
 
 	public static bool IsContentEmbedded(string contentType)
 	{
@@ -127,6 +131,7 @@ internal static class Utility
 	public static int MutateContent(IDataDictionary data, Func<string> getFilePath, Func<int> mutate)
 	{
 		var filePath = SetContent(data, getFilePath);
+
 		try
 		{
 			var count = mutate();
@@ -145,6 +150,7 @@ internal static class Utility
 	{
 		cancellation.ThrowIfCancellationRequested();
 		var filePath = SetContent(data, getFilePath);
+
 		try
 		{
 			var count = await mutate();
@@ -198,6 +204,9 @@ internal static class Utility
 			return Array.Empty<string>();
 	}
 
+	#endregion
+
+	#region 文件操作
 	public static bool DeleteFile(string path)
 	{
 		if(string.IsNullOrWhiteSpace(path))
@@ -206,7 +215,7 @@ internal static class Utility
 		try
 		{
 			var task = Zongsoft.IO.FileSystem.File.DeleteAsync(path);
-			return task.IsCompletedSuccessfully ? task.Result : task.GetAwaiter().GetResult();
+			return task.IsCompletedSuccessfully ? task.Result : task.AsTask().GetAwaiter().GetResult();
 		}
 		catch
 		{
@@ -337,4 +346,5 @@ internal static class Utility
 				return Zongsoft.IO.Path.Combine(basePath, "site-" + siteId.ToString(), "user-" + userId.ToString(), relativePath);
 		}
 	}
+	#endregion
 }

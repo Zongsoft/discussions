@@ -10,8 +10,8 @@
 
 namespace Zongsoft.Discussions.Properties {
     using System;
-    
-    
+
+
     /// <summary>
     ///   一个强类型的资源类，用于查找本地化的字符串等。
     /// </summary>
@@ -19,19 +19,19 @@ namespace Zongsoft.Discussions.Properties {
     // 类通过类似于 ResGen 或 Visual Studio 的工具自动生成的。
     // 若要添加或移除成员，请编辑 .ResX 文件，然后重新运行 ResGen
     // (以 /str 作为命令选项)，或重新生成 VS 项目。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
-        
+
         /// <summary>
         ///   返回此类使用的缓存的 ResourceManager 实例。
         /// </summary>
@@ -45,10 +45,10 @@ namespace Zongsoft.Discussions.Properties {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
-        ///   重写当前线程的 CurrentUICulture 属性，对
-        ///   使用此强类型资源类的所有资源查找执行重写。
+        ///   使用此强类型资源类，为所有资源查找
+        ///   重写当前线程的 CurrentUICulture 属性。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static global::System.Globalization.CultureInfo Culture {
@@ -59,7 +59,7 @@ namespace Zongsoft.Discussions.Properties {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   查找类似 可访问性 的本地化字符串。
         /// </summary>
@@ -68,7 +68,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Accessibility", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 内部人员 的本地化字符串。
         /// </summary>
@@ -77,7 +77,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Accessibility.Internal", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 版主 的本地化字符串。
         /// </summary>
@@ -86,7 +86,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Accessibility.Moderator", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 限定人员 的本地化字符串。
         /// </summary>
@@ -95,7 +95,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Accessibility.Specified", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 缩写 的本地化字符串。
         /// </summary>
@@ -104,7 +104,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Acronym", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否审核 的本地化字符串。
         /// </summary>
@@ -113,7 +113,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Approvable", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 已审核 的本地化字符串。
         /// </summary>
@@ -122,7 +122,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Approved", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 审核时间 的本地化字符串。
         /// </summary>
@@ -131,7 +131,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ApprovedTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 附件 的本地化字符串。
         /// </summary>
@@ -140,7 +140,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Attachment", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 附件目录 的本地化字符串。
         /// </summary>
@@ -149,7 +149,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("AttachmentFolder", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 附件目录编号 的本地化字符串。
         /// </summary>
@@ -158,7 +158,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("AttachmentFolderId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 附件编号 的本地化字符串。
         /// </summary>
@@ -167,7 +167,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("AttachmentId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 头像 的本地化字符串。
         /// </summary>
@@ -176,7 +176,16 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Avatar", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   查找类似 Missing arguments of the command. 的本地化字符串。
+        /// </summary>
+        internal static string CommandMissingArguments {
+            get {
+                return ResourceManager.GetString("CommandMissingArguments", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 联系人名 的本地化字符串。
         /// </summary>
@@ -185,7 +194,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ContactName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 联系方式 的本地化字符串。
         /// </summary>
@@ -194,7 +203,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ContactText", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 内容 的本地化字符串。
         /// </summary>
@@ -203,7 +212,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Content", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 内容类型 的本地化字符串。
         /// </summary>
@@ -212,7 +221,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ContentType", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 封面图片 的本地化字符串。
         /// </summary>
@@ -221,7 +230,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("CoverPicture", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 封面路径 的本地化字符串。
         /// </summary>
@@ -230,7 +239,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("CoverPicturePath", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 创建时间 的本地化字符串。
         /// </summary>
@@ -239,7 +248,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("CreatedTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 创建 的本地化字符串。
         /// </summary>
@@ -248,7 +257,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Creation", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 创建人 的本地化字符串。
         /// </summary>
@@ -257,7 +266,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Creator", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 创建人编号 的本地化字符串。
         /// </summary>
@@ -266,7 +275,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("CreatorId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 描述说明 的本地化字符串。
         /// </summary>
@@ -275,7 +284,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Description", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 社区论坛 的本地化字符串。
         /// </summary>
@@ -284,7 +293,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Discussions", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 提供社区站点、论坛、主题、发帖等功能。 的本地化字符串。
         /// </summary>
@@ -293,7 +302,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Discussions.Description", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 领域 的本地化字符串。
         /// </summary>
@@ -302,7 +311,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Domain", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 电子邮箱 的本地化字符串。
         /// </summary>
@@ -311,7 +320,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Email", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 过期时间 的本地化字符串。
         /// </summary>
@@ -320,7 +329,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Expiration", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 反馈 的本地化字符串。
         /// </summary>
@@ -329,7 +338,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Feedback", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 反馈编号 的本地化字符串。
         /// </summary>
@@ -338,7 +347,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("FeedbackId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件 的本地化字符串。
         /// </summary>
@@ -347,7 +356,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("File", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件名称 的本地化字符串。
         /// </summary>
@@ -356,7 +365,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("File.Name", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件大小 的本地化字符串。
         /// </summary>
@@ -365,7 +374,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("File.Size", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件类型 的本地化字符串。
         /// </summary>
@@ -374,7 +383,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("File.Type", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件编号 的本地化字符串。
         /// </summary>
@@ -383,7 +392,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("FileId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件名称 的本地化字符串。
         /// </summary>
@@ -392,7 +401,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("FileName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件路径 的本地化字符串。
         /// </summary>
@@ -401,7 +410,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("FilePath", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件大小 的本地化字符串。
         /// </summary>
@@ -410,7 +419,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("FileSize", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件类型 的本地化字符串。
         /// </summary>
@@ -419,7 +428,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("FileType", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 首次浏览时间 的本地化字符串。
         /// </summary>
@@ -428,7 +437,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("FirstViewedTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 文件夹 的本地化字符串。
         /// </summary>
@@ -437,7 +446,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Folder", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 目录编号 的本地化字符串。
         /// </summary>
@@ -446,7 +455,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("FolderId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 论坛 的本地化字符串。
         /// </summary>
@@ -455,7 +464,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Forum", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 论坛组 的本地化字符串。
         /// </summary>
@@ -464,7 +473,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Forum.Group", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 论坛组号 的本地化字符串。
         /// </summary>
@@ -473,7 +482,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Forum.GroupId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 论坛组 的本地化字符串。
         /// </summary>
@@ -482,7 +491,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ForumGroup", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 论坛组号 的本地化字符串。
         /// </summary>
@@ -491,7 +500,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ForumGroupId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 论坛编号 的本地化字符串。
         /// </summary>
@@ -500,7 +509,16 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ForumId", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   查找类似 The specified forum does not exist. 的本地化字符串。
+        /// </summary>
+        internal static string ForumNotFound {
+            get {
+                return ResourceManager.GetString("ForumNotFound", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 性别 的本地化字符串。
         /// </summary>
@@ -509,7 +527,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Gender", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 女士 的本地化字符串。
         /// </summary>
@@ -518,7 +536,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Gender.Female", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 男士 的本地化字符串。
         /// </summary>
@@ -527,7 +545,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Gender.Male", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 未定义 的本地化字符串。
         /// </summary>
@@ -536,7 +554,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Gender.None", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 未知 的本地化字符串。
         /// </summary>
@@ -545,7 +563,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Gender.Unknown", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 等级 的本地化字符串。
         /// </summary>
@@ -554,7 +572,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Grade", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 主机域名 的本地化字符串。
         /// </summary>
@@ -563,7 +581,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Host", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 图标 的本地化字符串。
         /// </summary>
@@ -572,7 +590,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Icon", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否全局 的本地化字符串。
         /// </summary>
@@ -581,7 +599,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("IsGlobal", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否锁定 的本地化字符串。
         /// </summary>
@@ -590,7 +608,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("IsLocked", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否版主 的本地化字符串。
         /// </summary>
@@ -599,7 +617,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("IsModerator", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否置顶 的本地化字符串。
         /// </summary>
@@ -608,7 +626,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("IsPinned", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否热门 的本地化字符串。
         /// </summary>
@@ -617,7 +635,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("IsPopular", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否已读 的本地化字符串。
         /// </summary>
@@ -626,7 +644,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("IsRead", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否精华 的本地化字符串。
         /// </summary>
@@ -635,7 +653,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("IsValued", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最后浏览时间 的本地化字符串。
         /// </summary>
@@ -644,7 +662,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("LastViewedTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 链接地址 的本地化字符串。
         /// </summary>
@@ -653,7 +671,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("LinkUrl", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 消息 的本地化字符串。
         /// </summary>
@@ -662,7 +680,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Message", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 消息编号 的本地化字符串。
         /// </summary>
@@ -671,7 +689,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MessageId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 消息类型 的本地化字符串。
         /// </summary>
@@ -680,7 +698,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MessageType", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 修改 的本地化字符串。
         /// </summary>
@@ -689,7 +707,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Modification", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最后回帖作者 的本地化字符串。
         /// </summary>
@@ -698,7 +716,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentPostAuthor", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最后回帖作者头像 的本地化字符串。
         /// </summary>
@@ -707,7 +725,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentPostAuthorAvatar", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最后回帖作者编号 的本地化字符串。
         /// </summary>
@@ -716,7 +734,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentPostAuthorId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最后回帖作者名称 的本地化字符串。
         /// </summary>
@@ -725,7 +743,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentPostAuthorName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最后回帖编号 的本地化字符串。
         /// </summary>
@@ -734,7 +752,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentPostId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最后回帖时间 的本地化字符串。
         /// </summary>
@@ -743,7 +761,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentPostTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最近主题作者 的本地化字符串。
         /// </summary>
@@ -752,7 +770,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentThreadAuthor", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最近主题作者头像 的本地化字符串。
         /// </summary>
@@ -761,7 +779,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentThreadAuthorAvatar", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最近主题作者编号 的本地化字符串。
         /// </summary>
@@ -770,7 +788,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentThreadAuthorId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最近主题作者名称 的本地化字符串。
         /// </summary>
@@ -779,7 +797,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentThreadAuthorName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最近主题编号 的本地化字符串。
         /// </summary>
@@ -788,7 +806,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentThreadId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最近主题时间 的本地化字符串。
         /// </summary>
@@ -797,7 +815,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentThreadTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最近主题标题 的本地化字符串。
         /// </summary>
@@ -806,7 +824,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentThreadTitle", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 最近浏览时间 的本地化字符串。
         /// </summary>
@@ -815,7 +833,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("MostRecentViewedTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 名称 的本地化字符串。
         /// </summary>
@@ -824,7 +842,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Name", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 昵称 的本地化字符串。
         /// </summary>
@@ -833,7 +851,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Nickname", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 序号 的本地化字符串。
         /// </summary>
@@ -842,7 +860,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Ordinal", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 路径 的本地化字符串。
         /// </summary>
@@ -851,7 +869,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Path", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 权限 的本地化字符串。
         /// </summary>
@@ -860,7 +878,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Permission", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 无权限 的本地化字符串。
         /// </summary>
@@ -869,7 +887,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Permission.None", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 可读 的本地化字符串。
         /// </summary>
@@ -878,7 +896,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Permission.Read", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 可写 的本地化字符串。
         /// </summary>
@@ -887,7 +905,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Permission.Write", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 电话 的本地化字符串。
         /// </summary>
@@ -896,7 +914,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Phone", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 电话号码 的本地化字符串。
         /// </summary>
@@ -905,7 +923,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("PhoneNumber", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 照片 的本地化字符串。
         /// </summary>
@@ -914,7 +932,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Photo", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 照片路径 的本地化字符串。
         /// </summary>
@@ -923,7 +941,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("PhotoPath", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 帖子 的本地化字符串。
         /// </summary>
@@ -932,7 +950,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Post", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 帖子编号 的本地化字符串。
         /// </summary>
@@ -941,7 +959,16 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("PostId", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   查找类似 Missing thread of the post. 的本地化字符串。
+        /// </summary>
+        internal static string PostMissingThread {
+            get {
+                return ResourceManager.GetString("PostMissingThread", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 引用 的本地化字符串。
         /// </summary>
@@ -950,7 +977,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Referer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 引用编号 的本地化字符串。
         /// </summary>
@@ -959,7 +986,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("RefererId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 备注 的本地化字符串。
         /// </summary>
@@ -968,7 +995,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Remark", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 可分享性 的本地化字符串。
         /// </summary>
@@ -977,7 +1004,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Shareability", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 所有 的本地化字符串。
         /// </summary>
@@ -986,7 +1013,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Shareability.All", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 好友 的本地化字符串。
         /// </summary>
@@ -995,7 +1022,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Shareability.Friendly", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 内部 的本地化字符串。
         /// </summary>
@@ -1004,7 +1031,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Shareability.Internal", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 私有 的本地化字符串。
         /// </summary>
@@ -1013,7 +1040,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Shareability.Private", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 公共 的本地化字符串。
         /// </summary>
@@ -1022,7 +1049,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Shareability.Public", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 站点 的本地化字符串。
         /// </summary>
@@ -1031,7 +1058,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Site", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 站点编号 的本地化字符串。
         /// </summary>
@@ -1040,7 +1067,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("SiteId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 大小 的本地化字符串。
         /// </summary>
@@ -1049,7 +1076,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Size", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 概述简要 的本地化字符串。
         /// </summary>
@@ -1058,7 +1085,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Summary", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 标签 的本地化字符串。
         /// </summary>
@@ -1067,7 +1094,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Tags", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 主题 的本地化字符串。
         /// </summary>
@@ -1076,7 +1103,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Thread", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 主题编号 的本地化字符串。
         /// </summary>
@@ -1085,7 +1112,43 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ThreadId", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   查找类似 Missing content of the thread. 的本地化字符串。
+        /// </summary>
+        internal static string ThreadMissingContent {
+            get {
+                return ResourceManager.GetString("ThreadMissingContent", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   查找类似 Missing forum of the thread. 的本地化字符串。
+        /// </summary>
+        internal static string ThreadMissingForum {
+            get {
+                return ResourceManager.GetString("ThreadMissingForum", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   查找类似 The specified thread does not exist. 的本地化字符串。
+        /// </summary>
+        internal static string ThreadNotFound {
+            get {
+                return ResourceManager.GetString("ThreadNotFound", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   查找类似 Unable to link the thread and its post. 的本地化字符串。
+        /// </summary>
+        internal static string ThreadPostLinkFailed {
+            get {
+                return ResourceManager.GetString("ThreadPostLinkFailed", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   查找类似 主题状态 的本地化字符串。
         /// </summary>
@@ -1094,7 +1157,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ThreadStatus", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 已取消 的本地化字符串。
         /// </summary>
@@ -1103,7 +1166,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ThreadStatus.Cancelled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 待处理 的本地化字符串。
         /// </summary>
@@ -1112,7 +1175,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ThreadStatus.None", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 已发布 的本地化字符串。
         /// </summary>
@@ -1121,7 +1184,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ThreadStatus.Published", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 时间戳 的本地化字符串。
         /// </summary>
@@ -1130,7 +1193,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Tiemstamp", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 标题 的本地化字符串。
         /// </summary>
@@ -1139,7 +1202,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Title", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 被踩总数 的本地化字符串。
         /// </summary>
@@ -1148,7 +1211,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("TotalDownvotes", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 帖子总数 的本地化字符串。
         /// </summary>
@@ -1157,7 +1220,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("TotalPosts", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 回复总数 的本地化字符串。
         /// </summary>
@@ -1166,7 +1229,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("TotalReplies", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 主题总数 的本地化字符串。
         /// </summary>
@@ -1175,7 +1238,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("TotalThreads", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 点赞总数 的本地化字符串。
         /// </summary>
@@ -1184,7 +1247,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("TotalUpvotes", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 浏览总数 的本地化字符串。
         /// </summary>
@@ -1193,7 +1256,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("TotalViews", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 类型 的本地化字符串。
         /// </summary>
@@ -1202,7 +1265,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Type", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户 的本地化字符串。
         /// </summary>
@@ -1211,7 +1274,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("User", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 创建时间 的本地化字符串。
         /// </summary>
@@ -1220,7 +1283,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("User.Creation", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户邮箱 的本地化字符串。
         /// </summary>
@@ -1229,7 +1292,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("User.Email", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 修改时间 的本地化字符串。
         /// </summary>
@@ -1238,7 +1301,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("User.Modification", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户电话 的本地化字符串。
         /// </summary>
@@ -1247,7 +1310,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("User.Phone", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户头像 的本地化字符串。
         /// </summary>
@@ -1256,7 +1319,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("UserAvatar", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户编号 的本地化字符串。
         /// </summary>
@@ -1265,7 +1328,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("UserId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户名称 的本地化字符串。
         /// </summary>
@@ -1274,7 +1337,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("UserName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户信息 的本地化字符串。
         /// </summary>
@@ -1283,7 +1346,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("UserProfile", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户邮箱 的本地化字符串。
         /// </summary>
@@ -1292,7 +1355,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("UserProfile.Email", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 用户电话 的本地化字符串。
         /// </summary>
@@ -1301,7 +1364,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("UserProfile.Phone", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 查看时间 的本地化字符串。
         /// </summary>
@@ -1310,7 +1373,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("ViewedTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 可见性 的本地化字符串。
         /// </summary>
@@ -1319,7 +1382,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Visibility", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 所有 的本地化字符串。
         /// </summary>
@@ -1328,7 +1391,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Visibility.All", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 隐藏 的本地化字符串。
         /// </summary>
@@ -1337,7 +1400,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Visibility.Hidden", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 内部 的本地化字符串。
         /// </summary>
@@ -1346,7 +1409,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Visibility.Internal", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 公共 的本地化字符串。
         /// </summary>
@@ -1355,7 +1418,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Visibility.Public", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 限定 的本地化字符串。
         /// </summary>
@@ -1364,7 +1427,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Visibility.Specified", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 是否可见 的本地化字符串。
         /// </summary>
@@ -1373,7 +1436,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("Visible", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 访客地址 的本地化字符串。
         /// </summary>
@@ -1382,7 +1445,7 @@ namespace Zongsoft.Discussions.Properties {
                 return ResourceManager.GetString("VisitorAddress", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   查找类似 访客描述 的本地化字符串。
         /// </summary>

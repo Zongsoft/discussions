@@ -19,16 +19,24 @@
 
 	<PropertyGroup>
 		<IsTestProject>$(MSBuildProjectName.Contains('Tests'))</IsTestProject>
+		<OutputType Condition="$(MSBuildProjectName.EndsWith('.Tests'))">Exe</OutputType>
 		<NoWarn>$(NoWarn);1701;1702;CS1591;NU1701;NU5048;SYSLIB0001;NETSDK1138;</NoWarn>
 		<GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<ZongsoftCodeStyleStrict>true</ZongsoftCodeStyleStrict>
+		<ZongsoftGuidelinesSynchronization>$(MSBuildThisFileDirectory)</ZongsoftGuidelinesSynchronization>
+
 		<ZongsoftFrameworkPath>$([System.IO.Path]::Combine($(MSBuildThisFileDirectory), `..\framework`))</ZongsoftFrameworkPath>
 		<ZongsoftFrameworkPathReferenced>false</ZongsoftFrameworkPathReferenced>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="$(MSBuildThisFileDirectory)zongsoft-logo.png" Pack="true" PackagePath="\" Visible="false"  />    
+		<None Include="$(MSBuildThisFileDirectory)zongsoft-logo.png" Pack="true" PackagePath="\" Visible="false"  />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+		<PackageReference Include="Zongsoft.CodeAnalysis" PrivateAssets="all" />
 	</ItemGroup>
 </Project>

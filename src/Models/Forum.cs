@@ -31,9 +31,7 @@ using Zongsoft.Data;
 
 namespace Zongsoft.Discussions.Models;
 
-/// <summary>
-/// 表示论坛的业务实体类。
-/// </summary>
+/// <summary>表示论坛的业务实体类。</summary>
 public abstract class Forum
 {
 	#region 公共属性
@@ -134,9 +132,7 @@ public abstract class Forum
 	#endregion
 
 	#region 嵌套结构
-	/// <summary>
-	/// 表示论坛用户的业务实体结构。
-	/// </summary>
+	/// <summary>表示论坛用户的业务实体结构。</summary>
 	public struct ForumUser : IEquatable<ForumUser>
 	{
 		#region 公共字段
@@ -232,9 +228,7 @@ public abstract class Forum
 	#endregion
 }
 
-/// <summary>
-/// 表示论坛查询条件的实体类。
-/// </summary>
+/// <summary>表示论坛查询条件的实体类。</summary>
 public abstract class ForumCriteria : CriteriaBase
 {
 	#region 公共属性

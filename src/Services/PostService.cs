@@ -155,15 +155,16 @@ public class PostService : DataServiceBase<Post>
 
 		options.Parameters.TryGetValue("Thread", out var threadObject);
 		var thread = threadObject as IDataDictionary<Models.Thread> ?? (threadObject == null ? null : DataDictionary.GetDictionary<Models.Thread>(threadObject));
+
 		if(thread == null)
 		{
 			var threadId = data.GetValue(p => p.ThreadId, 0UL);
 			if(threadId == 0)
-				throw new InvalidOperationException("Missing thread of the post.");
+				throw new InvalidOperationException(Properties.Resources.PostMissingThread);
 
 			var parent = this.DataAccess.Select<Models.Thread>(Condition.Equal(nameof(Models.Thread.ThreadId), threadId), "SiteId,ForumId").FirstOrDefault();
 			if(parent == null)
-				throw new InvalidOperationException("The specified thread does not exist.");
+				throw new InvalidOperationException(Properties.Resources.ThreadNotFound);
 			thread = DataDictionary.GetDictionary<Models.Thread>(parent);
 		}
 
@@ -216,7 +217,10 @@ public class PostService : DataServiceBase<Post>
 	}
 	#endregion
 
+	#region 内部方法
 	internal string GetContentFilePath(IDataDictionary<Post> data) => this.GetContentFilePath(data.GetValue(p => p.PostId, 0UL), data.GetValue(p => p.ContentType, null));
+
+	#endregion
 
 	#region 虚拟方法
 	protected virtual string GetContentFilePath(ulong postId, string contentType)
@@ -336,15 +340,16 @@ public class PostService : DataServiceBase<Post>
 
 		options.Parameters.TryGetValue("Thread", out var threadObject);
 		var thread = threadObject as IDataDictionary<Models.Thread> ?? (threadObject == null ? null : DataDictionary.GetDictionary<Models.Thread>(threadObject));
+
 		if(thread == null)
 		{
 			var threadId = data.GetValue(p => p.ThreadId, 0UL);
 			if(threadId == 0)
-				throw new InvalidOperationException("Missing thread of the post.");
+				throw new InvalidOperationException(Properties.Resources.PostMissingThread);
 
 			var parent = await this.DataAccess.SelectAsync<Models.Thread>(Condition.Equal(nameof(Models.Thread.ThreadId), threadId), "SiteId,ForumId", cancellation: cancellation).FirstOrDefault(cancellation);
 			if(parent == null)
-				throw new InvalidOperationException("The specified thread does not exist.");
+				throw new InvalidOperationException(Properties.Resources.ThreadNotFound);
 			thread = DataDictionary.GetDictionary<Models.Thread>(parent);
 		}
 

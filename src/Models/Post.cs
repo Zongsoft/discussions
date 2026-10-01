@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -32,9 +32,7 @@ using Zongsoft.Data;
 
 namespace Zongsoft.Discussions.Models;
 
-/// <summary>
-/// 表示帖子的业务实体类。
-/// </summary>
+/// <summary>表示帖子的业务实体类。</summary>
 public abstract class Post
 {
 	#region 公共属性
@@ -116,9 +114,7 @@ public abstract class Post
 	#endregion
 
 	#region 嵌套子类
-	/// <summary>
-	/// 表示帖子投票的业务实体类。
-	/// </summary>
+	/// <summary>表示帖子投票的业务实体类。</summary>
 	public abstract class PostVoting
 	{
 		#region 公共属性
@@ -137,9 +133,7 @@ public abstract class Post
 	#endregion
 }
 
-/// <summary>
-/// 表示帖子查询条件的实体。
-/// </summary>
+/// <summary>表示帖子查询条件的实体。</summary>
 public abstract class PostCriteria : CriteriaBase
 {
 	#region 公共属性
@@ -169,9 +163,7 @@ public abstract class PostCriteria : CriteriaBase
 	#endregion
 }
 
-/// <summary>
-/// 表示帖子附件的关联实体类。
-/// </summary>
+/// <summary>表示帖子附件的关联实体类。</summary>
 public class PostAttachment : IAttachedAttachment
 {
 	#region 构造函数

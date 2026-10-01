@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -29,9 +29,7 @@ using System.Collections.Generic;
 
 namespace Zongsoft.Discussions.Models.Statistics;
 
-/// <summary>
-/// 表示按状态分组统计结果的实体类。
-/// </summary>
+/// <summary>表示按状态分组统计结果的实体类。</summary>
 public struct StatusStatisticResult<TStatus> where TStatus : struct
 {
 	public TStatus Status { get; set; }

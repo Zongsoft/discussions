@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -40,13 +40,13 @@ namespace Zongsoft.Discussions.Web.Controllers;
 [ControllerName("Sites")]
 public class SiteController : ServiceController<Site, SiteService>
 {
-    #region 公共方法
-    [ActionName("Forums")]
-    [HttpGet("{siteId}/[action]")]
-    public IEnumerable<Forum> GetForums(uint siteId, [FromQuery]ushort group = 0) => this.DataService.GetForums(siteId, group);
+	#region 公共方法
+	[ActionName("Forums")]
+	[HttpGet("{siteId}/[action]")]
+	public IEnumerable<Forum> GetForums(uint siteId, [FromQuery] ushort group = 0) => this.DataService.GetForums(siteId, group);
 
-    [ActionName("ForumGroups")]
-    [HttpGet("{siteId}/[action]")]
-    public IEnumerable<ForumGroup> GetForumGroups(uint siteId) => this.DataService.GetForumGroups(siteId);
-    #endregion
+	[ActionName("ForumGroups")]
+	[HttpGet("{siteId}/[action]")]
+	public IEnumerable<ForumGroup> GetForumGroups(uint siteId) => this.DataService.GetForumGroups(siteId);
+	#endregion
 }

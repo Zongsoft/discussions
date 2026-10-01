@@ -98,6 +98,7 @@ public class FolderService : DataServiceBase<Folder>
 		cancellation.ThrowIfCancellationRequested();
 		await using var transaction = new Transaction();
 		var count = await base.OnUpdateAsync(data, criteria, schema, options, cancellation);
+
 		if(count < 1)
 			return count;
 

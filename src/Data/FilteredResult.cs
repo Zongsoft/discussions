@@ -44,8 +44,16 @@ internal static class FilteredResult
 		public bool Suppressed => (source as IPageable)?.Suppressed ?? false;
 		public event EventHandler<PagingEventArgs> Paginated
 		{
-			add { if(source is IPageable pageable) pageable.Paginated += value; }
-			remove { if(source is IPageable pageable) pageable.Paginated -= value; }
+			add
+			{
+				if(source is IPageable pageable)
+					pageable.Paginated += value;
+			}
+			remove
+			{
+				if(source is IPageable pageable)
+					pageable.Paginated -= value;
+			}
 		}
 
 		public IEnumerator<T> GetEnumerator() => Collections.Enumerable.Enumerate<T>(source.Filter(filter)).GetEnumerator();
