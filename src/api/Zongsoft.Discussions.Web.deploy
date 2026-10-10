@@ -1,5 +1,5 @@
 artifacts/Zongsoft.Discussions.Web.plugin
-lib/$(Framework)/Zongsoft.Discussions.Web.*
+lib/${Framework}/Zongsoft.Discussions.Web.*
 
 [templates]
 artifacts/templates/*.xlsx
