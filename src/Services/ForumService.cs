@@ -47,58 +47,59 @@ public class ForumService : DataServiceBase<Forum>
 	#endregion
 
 	#region 公共方法
-	public bool IsModerator(ushort forumId, uint? userId = null)
-	{
-		if(userId == null || userId.Value == 0)
-			userId = this.Principal.Identity.GetIdentifier<uint>();
-
-		return this.DataAccess.Exists<Forum.ForumUser>(
-			Condition.Equal(nameof(Forum.ForumUser.ForumId), forumId) &
-			Condition.Equal(nameof(Forum.ForumUser.UserId), userId) & Condition.Equal(nameof(Forum.ForumUser.IsModerator), true));
-	}
-
-	public IEnumerable<UserProfile> GetModerators(ushort forumId, string schema) =>
-		this.DataAccess.Select<Forum.ForumUser>(
+	public IAsyncEnumerable<UserProfile> GetModeratorsAsync(ushort forumId, string schema, CancellationToken cancellation = default) =>
+		this.DataAccess.SelectAsync<Forum.ForumUser>(
 			Condition.Equal(nameof(Forum.ForumUser.ForumId), forumId) &
 			Condition.Equal(nameof(Forum.ForumUser.IsModerator), true),
-			$"*,User{{{(string.IsNullOrWhiteSpace(schema) ? "*" : schema)}}}"
-		).Select(member => member.User).Where(user => user != null);
+			$"*,User{{{(string.IsNullOrWhiteSpace(schema) ? "*" : schema)}}}", cancellation)
+			.Map(member => member.User).Filter((ref UserProfile user) => user != null);
 
-	public IEnumerable<Models.Thread> GetGlobalThreads(ushort forumId, string schema, Paging paging = null)
+	public IAsyncEnumerable<Models.Thread> GetGlobalThreadsAsync(ushort forumId, string schema, CancellationToken cancellation = default) => this.GetGlobalThreadsAsync(forumId, schema, null, cancellation);
+	public IAsyncEnumerable<Models.Thread> GetGlobalThreadsAsync(ushort forumId, string schema, Paging paging, CancellationToken cancellation = default)
 	{
 		if(forumId == 0)
-			return this.DataAccess.Select<Models.Thread>(
+			return this.DataAccess.SelectAsync<Models.Thread>(
 				Condition.Equal(nameof(Models.Thread.IsGlobal), true) &
 				Condition.Equal(nameof(Models.Thread.Visible), true),
-				schema, paging, Sorting.Descending(nameof(Models.Thread.ThreadId)));
+				schema, paging, [Sorting.Descending(nameof(Models.Thread.ThreadId))], cancellation);
 		else
-			return this.DataAccess.Select<Models.Thread>(
+			return this.DataAccess.SelectAsync<Models.Thread>(
 				Condition.Equal(nameof(Models.Thread.ForumId), forumId) &
 				Condition.Equal(nameof(Models.Thread.IsGlobal), true) &
 				Condition.Equal(nameof(Models.Thread.Visible), true),
-				schema, paging, Sorting.Descending(nameof(Models.Thread.ThreadId)));
+				schema, paging, [Sorting.Descending(nameof(Models.Thread.ThreadId))], cancellation);
 	}
 
-	public IEnumerable<Models.Thread> GetPinnedThreads(ushort forumId, string schema, Paging paging = null)
+	public IAsyncEnumerable<Models.Thread> GetPinnedThreadsAsync(ushort forumId, string schema, CancellationToken cancellation = default) => this.GetPinnedThreadsAsync(forumId, schema, null, cancellation);
+	public IAsyncEnumerable<Models.Thread> GetPinnedThreadsAsync(ushort forumId, string schema, Paging paging, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Select<Models.Thread>(
+		return this.DataAccess.SelectAsync<Models.Thread>(
 			Condition.Equal(nameof(Models.Thread.ForumId), forumId) &
 			Condition.Equal(nameof(Models.Thread.IsPinned), true) &
 			Condition.Equal(nameof(Models.Thread.Visible), true),
-			schema, paging, Sorting.Descending(nameof(Models.Thread.ThreadId)));
+			schema, paging, [Sorting.Descending(nameof(Models.Thread.ThreadId))], cancellation);
 	}
 
-	public Models.Thread[] GetTopmosts(ushort forumId, string schema, int count = 10)
+	public ValueTask<Models.Thread[]> GetTopmostsAsync(ushort forumId, string schema, CancellationToken cancellation = default) =>
+		this.GetTopmostsAsync(forumId, schema, 10, cancellation);
+
+	public async ValueTask<Models.Thread[]> GetTopmostsAsync(ushort forumId, string schema, int count, CancellationToken cancellation = default)
 	{
 		count = Math.Max(5, Math.Min(50, count));
+		var globals = new List<Models.Thread>();
+		var pinneds = new List<Models.Thread>();
 
-		var globals = this.GetGlobalThreads(0, schema, Paging.Page(1, count));
-		var pinneds = this.GetPinnedThreads(forumId, schema, Paging.Page(1, count));
+		await foreach(var thread in this.GetGlobalThreadsAsync(0, schema, Paging.Page(1, count), cancellation))
+			globals.Add(thread);
+
+		await foreach(var thread in this.GetPinnedThreadsAsync(forumId, schema, Paging.Page(1, count), cancellation))
+			pinneds.Add(thread);
 
 		return globals.Union(pinneds).OrderByDescending(t => t.ThreadId).Take(count).ToArray();
 	}
 
-	public IEnumerable<Models.Thread> GetThreads(ushort forumId, string schema, Paging paging = null)
+	public ValueTask<IAsyncEnumerable<Models.Thread>> GetThreadsAsync(ushort forumId, string schema, CancellationToken cancellation = default) => this.GetThreadsAsync(forumId, schema, null, cancellation);
+	public async ValueTask<IAsyncEnumerable<Models.Thread>> GetThreadsAsync(ushort forumId, string schema, Paging paging, CancellationToken cancellation = default)
 	{
 		var criteria =
 			Condition.Equal(nameof(Models.Thread.ForumId), forumId) &
@@ -108,34 +109,25 @@ public class ForumService : DataServiceBase<Forum>
 		if(paging == null || paging.Index == 1)
 		{
 			//获取指定论坛中最顶部的主题集（全局贴+本论坛的置顶贴）
-			var topmosts = this.GetTopmosts(forumId, schema);
+			var topmosts = await this.GetTopmostsAsync(forumId, schema, cancellation);
 
 			if(topmosts != null && topmosts.Length > 0)
 				criteria.Add(Condition.NotIn(nameof(Models.Thread.ThreadId), topmosts.Select(p => p.ThreadId)));
 		}
 
-		return this.DataAccess.Select<Models.Thread>(criteria, schema, paging);
+		return this.DataAccess.SelectAsync<Models.Thread>(criteria, schema, paging, cancellation);
 	}
 	#endregion
 
 	#region 重写方法
-	internal bool CanPublish(IDataDictionary<Models.Thread> thread)
-	{
-		var forum = this.DataAccess.Select<Forum>(GetForumCriteria(thread), nameof(Forum.Approvable)).FirstOrDefault();
-		if(forum == null)
-			throw new InvalidOperationException(Properties.Resources.ForumNotFound);
-
-		return !forum.Approvable || this.Principal?.Identity?.IsAuthenticated == true && this.IsModerator(thread.GetValue(p => p.ForumId));
-	}
-
 	internal async ValueTask<bool> CanPublishAsync(IDataDictionary<Models.Thread> thread, CancellationToken cancellation)
 	{
 		cancellation.ThrowIfCancellationRequested();
-		var forum = await this.DataAccess.SelectAsync<Forum>(GetForumCriteria(thread), nameof(Forum.Approvable), cancellation: cancellation).FirstOrDefault(cancellation);
+		var forum = await this.DataAccess.SelectAsync<Forum>(GetForumCriteria(thread), nameof(Forum.Approvable), cancellation).FirstOrDefault(cancellation);
 		if(forum == null)
 			throw new InvalidOperationException(Properties.Resources.ForumNotFound);
 
-		return !forum.Approvable || this.Principal?.Identity?.IsAuthenticated == true && await this.IsModeratorAsync(thread.GetValue(p => p.ForumId), cancellation: cancellation);
+		return !forum.Approvable || this.Principal?.Identity?.IsAuthenticated == true && await this.IsModeratorAsync(thread.GetValue(p => p.ForumId), cancellation);
 	}
 
 	private static ICondition GetForumCriteria(IDataDictionary<Models.Thread> thread)
@@ -149,10 +141,10 @@ public class ForumService : DataServiceBase<Forum>
 		return criteria;
 	}
 
-	protected override ICondition OnValidate(DataServiceMethod method, ICondition criteria, IDataOptions options)
+	protected override async ValueTask<ICondition> OnValidateAsync(DataServiceMethod method, ICondition criteria, IDataOptions options, CancellationToken cancellation = default)
 	{
 		//调用基类同名方法
-		criteria = base.OnValidate(method, criteria, options);
+		criteria = await base.OnValidateAsync(method, criteria, options, cancellation);
 
 		//匿名用户只能获取公共数据
 		if(!this.Principal.Identity.IsAuthenticated)
@@ -172,7 +164,10 @@ public class ForumService : DataServiceBase<Forum>
 	}
 	#endregion
 	#region 异步业务路径
-	public async ValueTask<bool> IsModeratorAsync(ushort forumId, uint? userId = null, CancellationToken cancellation = default)
+	public ValueTask<bool> IsModeratorAsync(ushort forumId, CancellationToken cancellation = default) =>
+		this.IsModeratorAsync(forumId, null, cancellation);
+
+	public async ValueTask<bool> IsModeratorAsync(ushort forumId, uint? userId, CancellationToken cancellation = default)
 	{
 		cancellation.ThrowIfCancellationRequested();
 		if(userId == null || userId.Value == 0)
@@ -180,7 +175,7 @@ public class ForumService : DataServiceBase<Forum>
 
 		return await this.DataAccess.ExistsAsync<Forum.ForumUser>(
 			Condition.Equal(nameof(Forum.ForumUser.ForumId), forumId) &
-			Condition.Equal(nameof(Forum.ForumUser.UserId), userId) & Condition.Equal(nameof(Forum.ForumUser.IsModerator), true), cancellation: cancellation);
+			Condition.Equal(nameof(Forum.ForumUser.UserId), userId) & Condition.Equal(nameof(Forum.ForumUser.IsModerator), true), cancellation);
 	}
 	#endregion
 }

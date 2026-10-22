@@ -15,6 +15,25 @@
 **_文档正在撰写中，代码也还在持续完善中。请关注我们的微信公号和知识星球以获得最新进展及通知！_**
 
 
+## 异步数据服务
+
+领域服务的数据操作使用 Async 方法，取消令牌位于末尾。查询结果通过 await foreach 读取，例如：
+
+```csharp
+await foreach(var thread in forumService.GetPinnedThreadsAsync(forumId, "*", cancellation))
+{
+	Console.WriteLine(thread.Title);
+}
+
+var threads = await forumService.GetThreadsAsync(forumId, "*", cancellation);
+await foreach(var thread in threads.WithCancellation(cancellation))
+{
+	Console.WriteLine(thread.Title);
+}
+```
+
+`GetTopmostsAsync` 返回已经读取完成的主题数组；`GetThreadsAsync` 先准备首页的排除条件，再返回可枚举的查询结果。Web 路由与响应的数据形状保持一致，请求取消会传递给数据操作。帖子与主题内容遵循审核状态、作者和版主权限。
+
 ## 本地构建与验证
 
 依赖版本以 `Directory.Packages.props` 为准，默认从 NuGet 还原。使用 .NET 10 SDK，在 discussions 根目录执行：
@@ -38,7 +57,13 @@ dotnet build src/api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFrame
 
 本地引用不会自动构建 framework；目录、配置和目标框架必须与其输出一致。验证其他目标框架时，同步调整上述三条命令中的目标框架。
 
-当前仓库没有独立的回归测试项目。构建通过只验证编译和代码规范，不代表数据库、插件加载、真实请求或 Avalonia 界面已通过运行验证。
+离线回归测试覆盖站点隔离、内容可见性、异步文件读写、分页及投票事务。先构建相邻 Core 项目的对应目标框架，再运行：
+
+```powershell
+dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:GeneratePackageOnBuild=false
+```
+
+测试项目使用本地框架程序集和隔离的内存依赖。数据库集成、插件加载、真实 HTTP 请求与 Avalonia 界面需要单独进行运行验证。
 
 <a name="contribution"></a>
 ## 贡献

@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -26,6 +26,8 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
@@ -45,37 +47,37 @@ public class ForumController : ServiceController<Forum, ForumService>
 	#region 公共方法
 	[ActionName("Moderators")]
 	[HttpGet("{id}/[action]")]
-	public IEnumerable<UserProfile> GetModerators(ushort id)
+	public IAsyncEnumerable<UserProfile> GetModerators(ushort id, CancellationToken cancellation = default)
 	{
-		return this.DataService.GetModerators(id, this.Request.Headers.GetDataSchema());
+		return this.DataService.GetModeratorsAsync(id, this.Request.Headers.GetDataSchema(), cancellation);
 	}
 
 	[ActionName("Globals")]
 	[HttpGet("{id}/[action]")]
-	public IEnumerable<Thread> GetGlobalThreads(ushort id, [FromQuery] Paging page = null)
+	public IAsyncEnumerable<Models.Thread> GetGlobalThreads(ushort id, [FromQuery] Paging page = null, CancellationToken cancellation = default)
 	{
-		return this.DataService.GetGlobalThreads(id, this.Request.Headers.GetDataSchema(), page);
+		return this.DataService.GetGlobalThreadsAsync(id, this.Request.Headers.GetDataSchema(), page, cancellation);
 	}
 
 	[ActionName("Pinneds")]
 	[HttpGet("{id}/[action]")]
-	public IEnumerable<Thread> GetPinnedThreads(ushort id, [FromQuery] Paging page = null)
+	public IAsyncEnumerable<Models.Thread> GetPinnedThreads(ushort id, [FromQuery] Paging page = null, CancellationToken cancellation = default)
 	{
-		return this.DataService.GetPinnedThreads(id, this.Request.Headers.GetDataSchema(), page);
+		return this.DataService.GetPinnedThreadsAsync(id, this.Request.Headers.GetDataSchema(), page, cancellation);
 	}
 
 	[ActionName("Topmosts")]
 	[HttpGet("{id}/[action]")]
-	public IEnumerable<Thread> GetTopmosts(ushort id, [FromQuery]int count = 0)
+	public async ValueTask<IEnumerable<Models.Thread>> GetTopmosts(ushort id, [FromQuery]int count = 0, CancellationToken cancellation = default)
 	{
-		return this.DataService.GetTopmosts(id, this.Request.Headers.GetDataSchema(), count);
+		return await this.DataService.GetTopmostsAsync(id, this.Request.Headers.GetDataSchema(), count, cancellation);
 	}
 
 	[ActionName("Threads")]
 	[HttpGet("{id}/[action]")]
-	public object GetThreads(ushort id, [FromQuery] Paging page = null)
+	public async ValueTask<object> GetThreads(ushort id, [FromQuery] Paging page = null, CancellationToken cancellation = default)
 	{
-		return this.Paginate(page ??= Paging.First(), this.DataService.GetThreads(id, this.Request.Headers.GetDataSchema(), page));
+		return this.Paginate(page ??= Paging.First(), await this.DataService.GetThreadsAsync(id, this.Request.Headers.GetDataSchema(), page, cancellation));
 	}
 	#endregion
 }

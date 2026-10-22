@@ -25,6 +25,8 @@
  */
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
@@ -43,9 +45,9 @@ public class ForumGroupController : ServiceController<ForumGroup, ForumGroupServ
 	#region 公共方法
 	[ActionName("Forums")]
 	[HttpGet("{siteId}-{groupId}/[action]")]
-	public IEnumerable<Forum> GetForums(uint siteId, ushort groupId)
+	public IAsyncEnumerable<Forum> GetForums(uint siteId, ushort groupId, CancellationToken cancellation = default)
 	{
-		return this.DataService.GetForums(siteId, groupId);
+		return this.DataService.GetForumsAsync(siteId, groupId, cancellation);
 	}
 	#endregion
 }

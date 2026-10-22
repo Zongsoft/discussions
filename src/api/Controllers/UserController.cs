@@ -48,15 +48,15 @@ public class UserController : ServiceController<UserProfile, UserService>
 	#region 公共方法
 	[ActionName("Count")]
 	[HttpGet("{id}/[action]/{args}")]
-	public IActionResult GetCount(uint id, string args)
+	public async ValueTask<IActionResult> GetCount(uint id, string args, CancellationToken cancellation = default)
 	{
 		if(string.IsNullOrEmpty(args))
 			return this.BadRequest("Missing arguments of the request.");
 
 		return args.ToLowerInvariant() switch
 		{
-			"unread" or "message-unread" => this.Ok(this.DataService.GetMessageUnreadCount(id)),
-			"message" or "message-total" => this.Ok(this.DataService.GetMessageTotalCount(id)),
+			"unread" or "message-unread" => this.Ok(await this.DataService.GetMessageUnreadCountAsync(id, cancellation)),
+			"message" or "message-total" => this.Ok(await this.DataService.GetMessageTotalCountAsync(id, cancellation)),
 			_ => this.BadRequest("Invalid argument value."),
 		};
 	}
@@ -65,14 +65,14 @@ public class UserController : ServiceController<UserProfile, UserService>
 	[HttpPost("{id}/[action]")]
 	public Task<IO.FileInfo> SetAvatar(uint id) => this.UploadAsync(
 		this.DataService.GetFilePath(id, "avatar"),
-		(file, cancellation) => ValueTask.FromResult(file != null && this.DataService.SetAvatar(id, file.Path.Url)),
+		(file, cancellation) => file != null ? this.DataService.SetAvatarAsync(id, file.Path.Url, cancellation) : ValueTask.FromResult(false),
 		this.HttpContext.RequestAborted).AsTask();
 
 	[ActionName("Photo")]
 	[HttpPost("{id}/[action]")]
 	public Task<IO.FileInfo> SetPhoto(uint id) => this.UploadAsync(
 		this.DataService.GetFilePath(id, "photo"),
-		(file, cancellation) => ValueTask.FromResult(file != null && this.DataService.SetPhotoPath(id, file.Path.Url)),
+		(file, cancellation) => file != null ? this.DataService.SetPhotoPathAsync(id, file.Path.Url, cancellation) : ValueTask.FromResult(false),
 		this.HttpContext.RequestAborted).AsTask();
 	#endregion
 }

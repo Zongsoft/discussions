@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <zongsoft@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -26,6 +26,8 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
@@ -44,29 +46,30 @@ public class SiteService : DataServiceBase<Site>
 	#endregion
 
 	#region 公共方法
-	public IEnumerable<ForumGroup> GetForumGroups(uint siteId) =>
-		this.DataAccess.Select<ForumGroup>(Condition.Equal(nameof(ForumGroup.SiteId), siteId));
+	public IAsyncEnumerable<ForumGroup> GetForumGroupsAsync(uint siteId, CancellationToken cancellation = default) =>
+		this.DataAccess.SelectAsync<ForumGroup>(Condition.Equal(nameof(ForumGroup.SiteId), siteId), cancellation);
 
-	public IEnumerable<Forum> GetForums(uint siteId, ushort groupId = 0)
+	public IAsyncEnumerable<Forum> GetForumsAsync(uint siteId, CancellationToken cancellation = default) => this.GetForumsAsync(siteId, 0, cancellation);
+	public IAsyncEnumerable<Forum> GetForumsAsync(uint siteId, ushort groupId, CancellationToken cancellation = default)
 	{
 		return groupId == 0 ?
-			this.DataAccess.Select<Forum>(
-				Condition.Equal(nameof(Forum.SiteId), siteId)) :
-			this.DataAccess.Select<Forum>(
+			this.DataAccess.SelectAsync<Forum>(
+				Condition.Equal(nameof(Forum.SiteId), siteId), cancellation) :
+			this.DataAccess.SelectAsync<Forum>(
 				Condition.Equal(nameof(Forum.SiteId), siteId) &
-				Condition.Equal(nameof(Forum.GroupId), groupId));
+				Condition.Equal(nameof(Forum.GroupId), groupId), cancellation);
 	}
 	#endregion
 
 	#region 重写方法
-	protected override void OnValidate(DataServiceMethod method, ISchema schema, IDataDictionary<Site> data, IDataMutateOptions options)
+	protected override async ValueTask OnValidateAsync(DataServiceMethod method, ISchema schema, IDataDictionary<Site> data, IDataMutateOptions options, CancellationToken cancellation = default)
 	{
 		if(method.IsInsert)
 		{
 			data.TrySetValue(nameof(Site.SiteNo), () => $"S{Randomizer.GenerateString()}", string.IsNullOrWhiteSpace);
 		}
 
-		base.OnValidate(method, schema, data, options);
+		await base.OnValidateAsync(method, schema, data, options, cancellation);
 	}
 	#endregion
 }

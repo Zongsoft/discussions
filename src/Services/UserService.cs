@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using Zongsoft.Data;
 using Zongsoft.Services;
 using Zongsoft.Security;
+using Zongsoft.Collections;
 using Zongsoft.Discussions.Models;
 
 namespace Zongsoft.Discussions.Services;
@@ -64,31 +65,37 @@ public class UserService : DataServiceBase<UserProfile>
 	#endregion
 
 	#region 公共方法
-	public IEnumerable<History> GetHistories(uint userId, Paging paging = null)
+	public IAsyncEnumerable<History> GetHistoriesAsync(uint userId, CancellationToken cancellation = default) => this.GetHistoriesAsync(userId, null, cancellation);
+	public IAsyncEnumerable<History> GetHistoriesAsync(uint userId, Paging paging, CancellationToken cancellation = default)
 	{
 		if(userId == 0)
 			userId = this.Principal.Identity.GetIdentifier<uint>();
 
-		return this.DataAccess.Select<History>(Condition.Equal(nameof(History.UserId), userId), $"*, {nameof(History.Thread)}" + "{*}", paging);
+		return this.DataAccess.SelectAsync<History>(Condition.Equal(nameof(History.UserId), userId), $"*, {nameof(History.Thread)}" + "{*}", paging, cancellation);
 	}
 
-	public int GetMessageTotalCount(uint userId = 0)
+	public ValueTask<int> GetMessageTotalCountAsync(CancellationToken cancellation = default) => this.GetMessageTotalCountAsync(0, cancellation);
+	public async ValueTask<int> GetMessageTotalCountAsync(uint userId, CancellationToken cancellation = default)
 	{
 		if(userId == 0)
 			userId = this.Principal.Identity.GetIdentifier<uint>();
 
-		return this.DataAccess.Count<UserMessage>(Condition.Equal(nameof(UserMessage.UserId), userId));
+		return await this.DataAccess.CountAsync<UserMessage>(Condition.Equal(nameof(UserMessage.UserId), userId), cancellation);
 	}
 
-	public int GetMessageUnreadCount(uint userId = 0)
+	public ValueTask<int> GetMessageUnreadCountAsync(CancellationToken cancellation = default) => this.GetMessageUnreadCountAsync(0, cancellation);
+	public async ValueTask<int> GetMessageUnreadCountAsync(uint userId, CancellationToken cancellation = default)
 	{
 		if(userId == 0)
 			userId = this.Principal.Identity.GetIdentifier<uint>();
 
-		return this.DataAccess.Count<UserMessage>(Condition.Equal(nameof(UserMessage.UserId), userId) & Condition.Equal(nameof(UserMessage.IsRead), false));
+		return await this.DataAccess.CountAsync<UserMessage>(Condition.Equal(nameof(UserMessage.UserId), userId) & Condition.Equal(nameof(UserMessage.IsRead), false), cancellation);
 	}
 
-	public IEnumerable<Message> GetMessages(uint userId = 0, bool? isRead = null, Paging paging = null)
+	public IAsyncEnumerable<Message> GetMessagesAsync(CancellationToken cancellation) => this.GetMessagesAsync(0, null, null, cancellation);
+	public IAsyncEnumerable<Message> GetMessagesAsync(uint userId, CancellationToken cancellation) => this.GetMessagesAsync(userId, null, null, cancellation);
+	public IAsyncEnumerable<Message> GetMessagesAsync(uint userId, bool? isRead, CancellationToken cancellation) => this.GetMessagesAsync(userId, isRead, null, cancellation);
+	public IAsyncEnumerable<Message> GetMessagesAsync(uint userId = 0, bool? isRead = null, Paging paging = null, CancellationToken cancellation = default)
 	{
 		if(userId == 0)
 			userId = this.Principal.Identity.GetIdentifier<uint>();
@@ -98,35 +105,23 @@ public class UserService : DataServiceBase<UserProfile>
 		if(isRead.HasValue)
 			conditions.Add(Condition.Equal(nameof(UserMessage.IsRead), isRead.Value));
 
-		return this.DataAccess.Select<UserMessage>(conditions, $"*, {nameof(UserMessage.Message)}" + "{*}", paging).Select(p => p.Message);
+		return this.DataAccess.SelectAsync<UserMessage>(conditions, $"*, {nameof(UserMessage.Message)}" + "{*}", paging, cancellation).Map(p => p.Message);
 	}
 
-	public bool SetAvatar(uint userId, string avatar)
+	public async ValueTask<bool> SetAvatarAsync(uint userId, string avatar, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Update(this.Name, new
+		return await this.DataAccess.UpdateAsync(this.Name, new
 		{
 			Avatar = avatar
-		}, Condition.Equal(nameof(UserProfile.UserId), userId)) > 0;
+		}, Condition.Equal(nameof(UserProfile.UserId), userId), cancellation) > 0;
 	}
 
-	public bool SetPhotoPath(uint userId, string path)
+	public async ValueTask<bool> SetPhotoPathAsync(uint userId, string path, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Update(this.Name, new
+		return await this.DataAccess.UpdateAsync(this.Name, new
 		{
 			PhotoPath = path
-		}, Condition.Equal(nameof(UserProfile.UserId), userId)) > 0;
-	}
-	#endregion
-
-	#region 重写方法
-	protected override int OnUpdate(IDataDictionary<UserProfile> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
-	{
-		//如果没有指定用户编号或指定的用户编号为零，则显式指定为当前用户编号
-		if(!data.TryGetValue(p => p.UserId, out var userId) || userId == 0)
-			data.SetValue(p => p.UserId, userId = this.Principal.Identity.GetIdentifier<uint>());
-
-		//调用基类同名方法
-		return base.OnUpdate(data, criteria, schema, options);
+		}, Condition.Equal(nameof(UserProfile.UserId), userId), cancellation) > 0;
 	}
 	#endregion
 

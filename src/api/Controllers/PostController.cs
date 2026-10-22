@@ -25,6 +25,8 @@
  */
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
@@ -43,37 +45,37 @@ public class PostController : ServiceController<Post, PostService>
 	#region 公共方法
 	[ActionName("Upvote")]
 	[HttpPost("{id}/[action]/{value?}")]
-	public IActionResult Upvote(ulong id, byte value = 1)
+	public async ValueTask<IActionResult> Upvote(ulong id, byte value = 1, CancellationToken cancellation = default)
 	{
-		return this.DataService.Upvote(id, value) ? this.NoContent() : this.NotFound();
+		return await this.DataService.UpvoteAsync(id, value, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Downvote")]
 	[HttpPost("{id}/[action]/{value?}")]
-	public IActionResult Downvote(ulong id, byte value = 1)
+	public async ValueTask<IActionResult> Downvote(ulong id, byte value = 1, CancellationToken cancellation = default)
 	{
-		return this.DataService.Downvote(id, value) ? this.NoContent() : this.NotFound();
+		return await this.DataService.DownvoteAsync(id, value, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Upvotes")]
 	[HttpGet("{id}/[action]")]
-	public IEnumerable<Post.PostVoting> GetUpvotes(ulong id, [FromQuery] Paging page = null)
+	public IAsyncEnumerable<Post.PostVoting> GetUpvotes(ulong id, [FromQuery] Paging page = null, CancellationToken cancellation = default)
 	{
-		return this.DataService.GetUpvotes(id, page);
+		return this.DataService.GetUpvotesAsync(id, page, cancellation);
 	}
 
 	[ActionName("Downvotes")]
 	[HttpGet("{id}/[action]")]
-	public IEnumerable<Post.PostVoting> GetDownvotes(ulong id, [FromQuery] Paging page = null)
+	public IAsyncEnumerable<Post.PostVoting> GetDownvotes(ulong id, [FromQuery] Paging page = null, CancellationToken cancellation = default)
 	{
-		return this.DataService.GetDownvotes(id, page);
+		return this.DataService.GetDownvotesAsync(id, page, cancellation);
 	}
 
 	[ActionName("Comments")]
 	[HttpGet("{id}/[action]")]
-	public IEnumerable<Post> GetComments(ulong id, [FromQuery] Paging page = null)
+	public IAsyncEnumerable<Post> GetComments(ulong id, [FromQuery] Paging page = null, CancellationToken cancellation = default)
 	{
-		return this.DataService.GetComments(id, page);
+		return this.DataService.GetCommentsAsync(id, page, cancellation);
 	}
 	#endregion
 }

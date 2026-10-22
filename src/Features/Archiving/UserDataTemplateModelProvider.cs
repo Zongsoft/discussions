@@ -26,6 +26,8 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 using System.IO;
 using Zongsoft.Data;
@@ -51,18 +53,18 @@ public class UserDataTemplateModelProvider : DataTemplateModelProviderBase
 	#endregion
 
 	#region 公共方法
-	public override IDataTemplateModel GetModel(IDataTemplate template, object argument)
+	public override async ValueTask<IDataTemplateModel> GetModelAsync(IDataTemplate template, object argument, CancellationToken cancellation = default)
 	{
 		var schema = $"*, {nameof(UserProfile.Site)}" + "{*}";
 
 		if(argument is Stream stream)
-			argument = Serializer.Json.Deserialize<UserProfileCriteria>(stream);
+			argument = await Serializer.Json.DeserializeAsync<UserProfileCriteria>(stream, cancellation);
 
-		var data = argument switch
+		object data = argument switch
 		{
-			string key => this.Services.ResolveRequired<UserService>().Get(key, schema),
-			IModel model => this.Services.ResolveRequired<UserService>().Select(Criteria.Transform(model), schema),
-			_ => this.Services.ResolveRequired<UserService>().Select(null, schema),
+			string key => await this.Services.ResolveRequired<UserService>().GetAsync(key, schema, cancellation),
+			IModel model => this.Services.ResolveRequired<UserService>().SelectAsync(Criteria.Transform(model), schema, cancellation),
+			_ => this.Services.ResolveRequired<UserService>().SelectAsync(null, schema, cancellation),
 		};
 
 		return new DataTemplateModel(new { Users = data });

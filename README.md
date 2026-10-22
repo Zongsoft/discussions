@@ -13,6 +13,25 @@
 
 **_The documentation and implementation are still being improved. Follow the Zongsoft WeChat account and Knowledge Planet community for project updates._**
 
+## Asynchronous data services
+
+Domain data operations use Async methods, with cancellation tokens last. Consume query results with await foreach:
+
+```csharp
+await foreach(var thread in forumService.GetPinnedThreadsAsync(forumId, "*", cancellation))
+{
+	Console.WriteLine(thread.Title);
+}
+
+var threads = await forumService.GetThreadsAsync(forumId, "*", cancellation);
+await foreach(var thread in threads.WithCancellation(cancellation))
+{
+	Console.WriteLine(thread.Title);
+}
+```
+
+`GetTopmostsAsync` returns a materialized array. `GetThreadsAsync` prepares the exclusions for the first page before returning an asynchronous query sequence. Web routes and response data shapes remain consistent, and request cancellation reaches data operations. Post and thread content respects approval status, authorship, and moderator access.
+
 ## Local build and validation
 
 Dependency versions are defined in `Directory.Packages.props` and are restored from NuGet by default. From the discussions root, use the .NET 10 SDK:
@@ -36,7 +55,13 @@ dotnet build src/api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFrame
 
 Local references do not build framework automatically. Output directories, configurations, and target frameworks must match. To validate another target framework, change the target in all three commands together.
 
-There is currently no separate regression test project in this repository. A successful build validates compilation and code rules; it does not validate database operations, plugin loading, live requests, or the Avalonia interface at runtime.
+Offline regression tests cover site isolation, content visibility, asynchronous file handling, pagination, and transactional voting. Build the adjacent Core project for the same target framework, then run:
+
+```powershell
+dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:GeneratePackageOnBuild=false
+```
+
+The test project uses local framework assemblies and isolated in-memory dependencies. Database integration, plugin loading, live HTTP requests, and the Avalonia interface require separate runtime validation.
 
 <a name="contribution"></a>
 ## Contributing

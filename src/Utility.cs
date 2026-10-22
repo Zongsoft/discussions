@@ -48,7 +48,6 @@ internal static class Utility
 	#endregion
 
 	#region 内容处理
-
 	public static bool IsContentEmbedded(string contentType)
 	{
 		if(string.IsNullOrEmpty(contentType))
@@ -88,68 +87,41 @@ internal static class Utility
 		}
 	}
 
-	public static string SetContent(IDataDictionary data, Func<string> getFilePath)
+	public static async ValueTask<string> SetContentAsync(IDataDictionary data, Func<string> getFilePath, CancellationToken cancellation)
 	{
-		var filePath = string.Empty;
+		string content = null;
+		if(!data.TryGetValue<string>("Content", value => content = value))
+			return string.Empty;
 
-		data.TryGetValue<string>("Content", content =>
+		var rawType = data.GetValue<string>("ContentType", null);
+
+		if(string.IsNullOrEmpty(content) || content.Length < 500)
 		{
-			var rawType = data.GetValue<string>("ContentType", null);
+			data.TrySetValue("ContentType", GetContentType(rawType, true));
+			return string.Empty;
+		}
 
-			if(string.IsNullOrEmpty(content) || content.Length < 500)
-			{
-				//调整内容类型为嵌入格式
-				data.TrySetValue("ContentType", Utility.GetContentType(rawType, true));
-
-				return;
-			}
-
-			//设置内容文件的存储路径
-			filePath = getFilePath();
-
-			//将内容文本写入到文件中
-			try
-			{
-				Utility.WriteTextFile(filePath, content);
-			}
-			catch
-			{
-				Utility.DeleteFile(filePath);
-				throw;
-			}
-
-			//更新内容文件的存储路径
-			data.SetValue("Content", filePath);
-
-			//更新内容类型为非嵌入格式（即外部文件）
-			data.SetValue("ContentType", Utility.GetContentType(rawType, false));
-		});
-
-		return filePath;
-	}
-
-	public static int MutateContent(IDataDictionary data, Func<string> getFilePath, Func<int> mutate)
-	{
-		var filePath = SetContent(data, getFilePath);
+		var filePath = getFilePath();
 
 		try
 		{
-			var count = mutate();
-			if(count > 0)
-				filePath = null;
-			return count;
+			await WriteTextFileAsync(filePath, content, cancellation);
 		}
-		finally
+		catch
 		{
-			if(!string.IsNullOrEmpty(filePath))
-				DeleteFile(filePath);
+			await DeleteFileAsync(filePath, CancellationToken.None);
+			throw;
 		}
+
+		data.SetValue("Content", filePath);
+		data.SetValue("ContentType", GetContentType(rawType, false));
+		return filePath;
 	}
 
 	public static async ValueTask<int> MutateContentAsync(IDataDictionary data, Func<string> getFilePath, Func<ValueTask<int>> mutate, CancellationToken cancellation)
 	{
 		cancellation.ThrowIfCancellationRequested();
-		var filePath = SetContent(data, getFilePath);
+		var filePath = await SetContentAsync(data, getFilePath, cancellation);
 
 		try
 		{
@@ -161,16 +133,16 @@ internal static class Utility
 		finally
 		{
 			if(!string.IsNullOrEmpty(filePath))
-				DeleteFile(filePath);
+				await DeleteFileAsync(filePath, CancellationToken.None);
 		}
 	}
 
-	public static bool DeleteContentFile(IDataDictionary data)
+	public static async ValueTask<bool> DeleteContentFileAsync(IDataDictionary data, CancellationToken cancellation)
 	{
 		if(data.TryGetValue<string>("ContentType", out var contentType) && IsContentFile(contentType) &&
 		   data.TryGetValue<string>("Content", out var content))
 		{
-			return DeleteFile(content);
+			return await DeleteFileAsync(content, cancellation);
 		}
 
 		return false;
@@ -203,19 +175,17 @@ internal static class Utility
 		else
 			return Array.Empty<string>();
 	}
-
 	#endregion
 
 	#region 文件操作
-	public static bool DeleteFile(string path)
+	public static async ValueTask<bool> DeleteFileAsync(string path, CancellationToken cancellation)
 	{
 		if(string.IsNullOrWhiteSpace(path))
 			return false;
 
 		try
 		{
-			var task = Zongsoft.IO.FileSystem.File.DeleteAsync(path);
-			return task.IsCompletedSuccessfully ? task.Result : task.AsTask().GetAwaiter().GetResult();
+			return await FileSystem.File.DeleteAsync(path, cancellation);
 		}
 		catch
 		{
@@ -223,23 +193,23 @@ internal static class Utility
 		}
 	}
 
-	public static string ReadTextFile(string path)
+	public static async ValueTask<string> ReadTextFileAsync(string path, CancellationToken cancellation)
 	{
 		if(string.IsNullOrWhiteSpace(path))
 			throw new ArgumentNullException(nameof(path));
 
 		try
 		{
-			if(!FileSystem.File.Exists(path))
+			if(!await FileSystem.File.ExistsAsync(path, cancellation))
 				return string.Empty;
 
-			using(var stream = FileSystem.File.Open(path, FileMode.Open, FileAccess.Read))
-			{
-				using(var reader = new StreamReader(stream, System.Text.Encoding.UTF8))
-				{
-					return reader.ReadToEnd();
-				}
-			}
+			await using var stream = await FileSystem.File.OpenAsync(path, FileMode.Open, FileAccess.Read, cancellation);
+			using var reader = new StreamReader(stream, System.Text.Encoding.UTF8, true, 1024, true);
+			return await reader.ReadToEndAsync(cancellation);
+		}
+		catch(OperationCanceledException) when(cancellation.IsCancellationRequested)
+		{
+			throw;
 		}
 		catch
 		{
@@ -247,7 +217,7 @@ internal static class Utility
 		}
 	}
 
-	public static bool WriteTextFile(string path, string content)
+	public static async ValueTask<bool> WriteTextFileAsync(string path, string content, CancellationToken cancellation)
 	{
 		if(string.IsNullOrWhiteSpace(path))
 			throw new ArgumentNullException(nameof(path));
@@ -255,14 +225,9 @@ internal static class Utility
 		if(string.IsNullOrWhiteSpace(content))
 			return false;
 
-		using(var stream = FileSystem.File.Open(path, FileMode.Create, FileAccess.Write))
-		{
-			using(var writer = new StreamWriter(stream, System.Text.Encoding.UTF8))
-			{
-				writer.Write(content);
-			}
-		}
-
+		await using var stream = await FileSystem.File.OpenAsync(path, FileMode.Create, FileAccess.Write, cancellation);
+		await using var writer = new StreamWriter(stream, System.Text.Encoding.UTF8, 1024, true);
+		await writer.WriteAsync(content.AsMemory(), cancellation);
 		return true;
 	}
 

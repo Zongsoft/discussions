@@ -26,6 +26,8 @@
 
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections;
 using System.Runtime.CompilerServices;
 
@@ -45,19 +47,21 @@ public class ThreadFilter : IDataAccessFilter<DataSelectContextBase>
 	#endregion
 
 	#region 过滤方法
-	public void OnFiltering(DataSelectContextBase context) { }
-	public void OnFiltered(DataSelectContextBase context)
+	public ValueTask OnFilteringAsync(DataSelectContextBase context, CancellationToken cancellation = default) => ValueTask.CompletedTask;
+	public ValueTask OnFilteredAsync(DataSelectContextBase context, CancellationToken cancellation = default)
 	{
 		if(context.Result == null)
-			return;
+			return ValueTask.CompletedTask;
 
 		var identity = context.Principal?.Identity;
-		context.Result = FilteredResult.Create(context, item => Filter(item, identity));
+		context.Result = FilteredResult.Create(context, (item, token) => FilterAsync(item, identity, token));
+
+		return ValueTask.CompletedTask;
 	}
 	#endregion
 
 	#region 私有方法
-	internal static void RestoreContent(Models.Thread thread)
+	internal static async ValueTask RestoreContentAsync(Models.Thread thread, CancellationToken cancellation)
 	{
 		if(thread == null || !_contents.TryGetValue(thread, out var content))
 			return;
@@ -66,11 +70,11 @@ public class ThreadFilter : IDataAccessFilter<DataSelectContextBase>
 		if(!ReferenceEquals(thread.Post, content.Post))
 			return;
 
-		thread.Post.Content = string.IsNullOrEmpty(content.Text) || Utility.IsContentEmbedded(content.Type) ? content.Text : Utility.ReadTextFile(content.Text);
+		thread.Post.Content = string.IsNullOrEmpty(content.Text) || Utility.IsContentEmbedded(content.Type) ? content.Text : await Utility.ReadTextFileAsync(content.Text, cancellation);
 		thread.Post.ContentType = Utility.GetContentType(content.Type, true);
 	}
 
-	private static bool Filter(object item, System.Security.Principal.IIdentity identity)
+	private static async ValueTask<bool> FilterAsync(object item, System.Security.Principal.IIdentity identity, CancellationToken cancellation)
 	{
 		var dictionary = DataDictionary.GetDictionary<Models.Thread>(item);
 		if(!dictionary.TryGetValue(p => p.Post, out var post) || post == null)
@@ -87,7 +91,7 @@ public class ThreadFilter : IDataAccessFilter<DataSelectContextBase>
 		}
 		else if(!string.IsNullOrEmpty(post.Content) && !Utility.IsContentEmbedded(post.ContentType))
 		{
-			post.Content = Utility.ReadTextFile(post.Content);
+			post.Content = await Utility.ReadTextFileAsync(post.Content, cancellation);
 			post.ContentType = Utility.GetContentType(post.ContentType, true);
 		}
 

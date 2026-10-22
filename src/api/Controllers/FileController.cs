@@ -105,7 +105,7 @@ public class FileController : ServiceController<File, FileService>
 				file.Size = (uint)Math.Max(0, info.Size);
 			});
 
-			if(this.DataService.Insert(attachment) > 0)
+			if(await this.DataService.InsertAsync(attachment, cancellation) > 0)
 				files.Add(attachment);
 			else
 				await this.Accessor.Delete(info.Path.FullPath);

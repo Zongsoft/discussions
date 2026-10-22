@@ -46,7 +46,7 @@ public class MessageService : DataServiceBase<Message>
 	#endregion
 
 	#region 公共方法
-	public int Send(Message message, IEnumerable<uint> users)
+	public async ValueTask<int> SendAsync(Message message, IEnumerable<uint> users, CancellationToken cancellation = default)
 	{
 		if(message == null)
 			throw new ArgumentNullException(nameof(message));
@@ -54,55 +54,20 @@ public class MessageService : DataServiceBase<Message>
 		if(users == null || !users.Any())
 			return 0;
 
-		using(var transaction = new Transaction())
+		await using(var transaction = new Transaction())
 		{
 			//插入消息
-			if(this.Insert(message) < 1)
+			if(await this.InsertAsync(message, cancellation) < 1)
 				return 0;
 
 			//插入用户消息
-			var count = this.DataAccess.InsertMany(users.Select(uid => new UserMessage(uid, message.MessageId)));
+			var count = await this.DataAccess.InsertManyAsync(users.Select(uid => new UserMessage(uid, message.MessageId)), cancellation);
 
 			//提交事务
-			transaction.Commit();
+			await transaction.CommitAsync(cancellation);
 
 			return count;
 		}
-	}
-	#endregion
-
-	#region 重写方法
-	protected override Message OnGet(ICondition criteria, ISchema schema, DataSelectOptions options)
-	{
-		//调用基类同名方法
-		var message = base.OnGet(criteria, schema, options);
-
-		if(message == null)
-			return null;
-
-		//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
-		if(!Utility.IsContentEmbedded(message.ContentType))
-			message.Content = Utility.ReadTextFile(message.Content);
-
-		//更新当前用户对该消息的读取状态
-		this.DataAccess.Update(Model.Naming.Get<UserMessage>(), new
-		{
-			IsRead = true,
-		},
-		Condition.Equal(nameof(UserMessage.MessageId), message.MessageId) &
-		Condition.Equal(nameof(UserMessage.UserId), this.Principal.Identity.GetIdentifier<uint>()));
-
-		return message;
-	}
-
-	protected override int OnInsert(IDataDictionary<Message> data, ISchema schema, DataInsertOptions options)
-	{
-		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.MessageId, 0UL), data.GetValue(p => p.ContentType, null)), () => base.OnInsert(data, schema, options));
-	}
-
-	protected override int OnUpdate(IDataDictionary<Message> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
-	{
-		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.MessageId, 0UL), data.GetValue(p => p.ContentType, null)), () => base.OnUpdate(data, criteria, schema, options));
 	}
 	#endregion
 
@@ -124,7 +89,7 @@ public class MessageService : DataServiceBase<Message>
 
 		//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
 		if(!Utility.IsContentEmbedded(message.ContentType))
-			message.Content = Utility.ReadTextFile(message.Content);
+			message.Content = await Utility.ReadTextFileAsync(message.Content, cancellation);
 
 		//更新当前用户对该消息的读取状态
 		await this.DataAccess.UpdateAsync(Model.Naming.Get<UserMessage>(), new
@@ -132,7 +97,7 @@ public class MessageService : DataServiceBase<Message>
 			IsRead = true,
 		},
 		Condition.Equal(nameof(UserMessage.MessageId), message.MessageId) &
-		Condition.Equal(nameof(UserMessage.UserId), this.Principal.Identity.GetIdentifier<uint>()), cancellation: cancellation);
+		Condition.Equal(nameof(UserMessage.UserId), this.Principal.Identity.GetIdentifier<uint>()), cancellation);
 
 		return message;
 	}

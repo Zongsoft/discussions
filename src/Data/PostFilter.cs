@@ -25,6 +25,8 @@
  */
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections;
 
 using Zongsoft.Data;
@@ -40,19 +42,21 @@ public class PostFilter : IDataAccessFilter<DataSelectContextBase>
 	#endregion
 
 	#region 过滤方法
-	public void OnFiltering(DataSelectContextBase context) { }
-	public void OnFiltered(DataSelectContextBase context)
+	public ValueTask OnFilteringAsync(DataSelectContextBase context, CancellationToken cancellation = default) => ValueTask.CompletedTask;
+	public ValueTask OnFilteredAsync(DataSelectContextBase context, CancellationToken cancellation = default)
 	{
 		if(context.Result == null)
-			return;
+			return ValueTask.CompletedTask;
 
 		var identity = context.Principal?.Identity;
-		context.Result = FilteredResult.Create(context, item => Filter(item, identity));
+		context.Result = FilteredResult.Create(context, (item, token) => FilterAsync(item, identity, token));
+
+		return ValueTask.CompletedTask;
 	}
 	#endregion
 
 	#region 私有方法
-	private static bool Filter(object item, System.Security.Principal.IIdentity identity)
+	private static async ValueTask<bool> FilterAsync(object item, System.Security.Principal.IIdentity identity, CancellationToken cancellation)
 	{
 		var dictionary = DataDictionary.GetDictionary<Models.Post>(item);
 		if(!dictionary.TryGetValue(p => p.Content, out var content))
@@ -67,7 +71,7 @@ public class PostFilter : IDataAccessFilter<DataSelectContextBase>
 		}
 		else if(dictionary.TryGetValue(p => p.ContentType, out var contentType) && !Utility.IsContentEmbedded(contentType))
 		{
-			dictionary.SetValue(p => p.Content, string.IsNullOrEmpty(content) ? string.Empty : Utility.ReadTextFile(content));
+			dictionary.SetValue(p => p.Content, string.IsNullOrEmpty(content) ? string.Empty : await Utility.ReadTextFileAsync(content, cancellation));
 			dictionary.SetValue(p => p.ContentType, Utility.GetContentType(contentType, true));
 		}
 

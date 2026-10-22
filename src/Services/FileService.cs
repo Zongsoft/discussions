@@ -53,36 +53,7 @@ public class FileService : DataServiceBase<File>
 	}
 	#endregion
 
-	#region 重写方法
-	protected override int OnInsert(IDataDictionary<File> data, ISchema schema, DataInsertOptions options)
-	{
-		var filePath = data.GetValue(p => p.Path);
-
-		try
-		{
-			//调用基类同名方法
-			var count = base.OnInsert(data, schema, options);
-
-			if(count < 1)
-			{
-				//如果新增记录失败则删除刚创建的文件
-				if(!filePath.IsEmpty)
-					Utility.DeleteFile(filePath.Path);
-			}
-
-			return count;
-		}
-		catch
-		{
-			//删除新建的文件
-			if(!filePath.IsEmpty)
-				Utility.DeleteFile(filePath.Path);
-
-			throw;
-		}
-	}
-	#endregion
-	#region 异步业务路径
+	#region 业务路径
 	protected override async ValueTask<int> OnInsertAsync(IDataDictionary<File> data, ISchema schema, DataInsertOptions options, CancellationToken cancellation)
 	{
 		cancellation.ThrowIfCancellationRequested();
@@ -97,7 +68,7 @@ public class FileService : DataServiceBase<File>
 			{
 				//如果新增记录失败则删除刚创建的文件
 				if(!filePath.IsEmpty)
-					Utility.DeleteFile(filePath.Path);
+					await Utility.DeleteFileAsync(filePath.Path, CancellationToken.None);
 			}
 
 			return count;
@@ -106,7 +77,7 @@ public class FileService : DataServiceBase<File>
 		{
 			//删除新建的文件
 			if(!filePath.IsEmpty)
-				Utility.DeleteFile(filePath.Path);
+				await Utility.DeleteFileAsync(filePath.Path, CancellationToken.None);
 
 			throw;
 		}

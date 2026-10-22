@@ -45,54 +45,20 @@ public class FolderService : DataServiceBase<Folder>
 	#endregion
 
 	#region 公共方法
-	public bool SetIcon(uint folderId, string icon)
+	public async ValueTask<bool> SetIconAsync(uint folderId, string icon, CancellationToken cancellation = default)
 	{
 		if(string.IsNullOrWhiteSpace(icon))
 			icon = null;
 
-		return this.DataAccess.Update<Folder>(new { Icon = icon }, Condition.Equal(nameof(Folder.FolderId), folderId)) > 0;
+		return await this.DataAccess.UpdateAsync<Folder>(new { Icon = icon }, Condition.Equal(nameof(Folder.FolderId), folderId), cancellation) > 0;
 	}
 
-	public bool SetShareability(uint folderId, Shareability shareability)
+	public async ValueTask<bool> SetShareabilityAsync(uint folderId, Shareability shareability, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Update<Folder>(new { Shareability = shareability }, Condition.Equal(nameof(Folder.FolderId), folderId)) > 0;
+		return await this.DataAccess.UpdateAsync<Folder>(new { Shareability = shareability }, Condition.Equal(nameof(Folder.FolderId), folderId), cancellation) > 0;
 	}
 	#endregion
 
-	#region 重写方法
-	protected override int OnUpdate(IDataDictionary<Folder> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
-	{
-		using(var transaction = new Transaction())
-		{
-			//调用基类同名方法
-			var count = base.OnUpdate(data, criteria, schema, options);
-
-			if(count < 1)
-				return count;
-
-			//获取新增的文件夹用户集，并尝试插入该用户集
-			data.TryGetValue(p => p.Users, (key, users) =>
-			{
-				if(users == null)
-					return;
-
-				var folderId = data.GetValue(p => p.FolderId);
-
-				//首先清除该文件夹的所有用户集
-				this.DataAccess.Delete<Folder.FolderUser>(Condition.Equal(nameof(Folder.FolderUser.FolderId), folderId));
-
-				//新增该文件夹的用户集
-				this.DataAccess.InsertMany(users.Where(p => p.FolderId == folderId));
-			});
-
-			//提交事务
-			transaction.Commit();
-
-			//返回主表插入的记录数
-			return count;
-		}
-	}
-	#endregion
 	protected override async ValueTask<int> OnUpdateAsync(IDataDictionary<Folder> data, ICondition criteria, ISchema schema, DataUpdateOptions options, CancellationToken cancellation)
 	{
 		cancellation.ThrowIfCancellationRequested();
@@ -105,8 +71,8 @@ public class FolderService : DataServiceBase<Folder>
 		if(data.TryGetValue(p => p.Users, out var users) && users != null)
 		{
 			var folderId = data.GetValue(p => p.FolderId);
-			await this.DataAccess.DeleteAsync<Folder.FolderUser>(Condition.Equal(nameof(Folder.FolderUser.FolderId), folderId), cancellation: cancellation);
-			await this.DataAccess.InsertManyAsync(users.Where(p => p.FolderId == folderId), cancellation: cancellation);
+			await this.DataAccess.DeleteAsync<Folder.FolderUser>(Condition.Equal(nameof(Folder.FolderUser.FolderId), folderId), cancellation);
+			await this.DataAccess.InsertManyAsync(users.Where(p => p.FolderId == folderId), cancellation);
 		}
 
 		await transaction.CommitAsync(cancellation);

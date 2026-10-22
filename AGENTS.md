@@ -1,5 +1,6 @@
 ## 硬性要求
 
+- C# 不使用 using 类型或命名空间别名；名称冲突处使用相对命名空间或完整限定类型名。
 - 文本文件使用 CRLF 换行符，代码文件使用 Tab 缩进；`.cmd` 文件必须使用 CRLF，`.sh` 文件遵循 `.gitattributes` 使用 LF。
 - 代码中不允许连续两个及以上空行；不做与任务无关的重排。
 - 开始工作前阅读目标目录就近的 `AGENTS.md`、`SKILL.md`、项目文件、插件产物和相关文档。
@@ -34,8 +35,9 @@ NuGet 版本由 `Directory.Packages.props` 集中管理。`Directory.Build.props
 
 ## 验证
 
+- ASP.NET API 项目不编写单元测试；通过定向构建和具备环境后的 HTTP 集成验证检查。业务库单元测试不引用 API 程序集。
 - 文档改动检查相对链接、CRLF、`git diff --check` 和实际差异，不必运行构建。
 - 领域库改动优先构建 `src/Zongsoft.Discussions.csproj`；API 改动构建 `src/api/Zongsoft.Discussions.Web.csproj`。
 - 公共模型、映射或多目标依赖变化按需要分别验证 `net8.0`、`net9.0`、`net10.0`。
-- 当前仓库没有独立的控制台回归项目；数据库、文件存储和完整授权流程应使用临时资源与隔离身份验证，不能以一次成功构建替代业务契约检查。
+- 离线回归项目为 `test/Zongsoft.Discussions.Tests.csproj`，覆盖站点验证、内容过滤、文件写入、分页及事务顺序。先构建相邻 framework 的 Core 对应目标程序集，再运行测试；测试使用内存数据与文件提供程序，不启动插件宿主或连接外部服务。数据库、文件存储和完整授权流程的集成验证应使用临时资源与隔离身份。
 - Avalonia 原型按其就近说明单独验证，不因后端改动默认构建 UI。

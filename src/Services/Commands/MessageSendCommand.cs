@@ -60,7 +60,7 @@ public class MessageSendCommand : CommandBase<CommandContext>
 	#endregion
 
 	#region 执行方法
-	protected override ValueTask<object> OnExecuteAsync(CommandContext context, CancellationToken cancellation)
+	protected override async ValueTask<object> OnExecuteAsync(CommandContext context, CancellationToken cancellation)
 	{
 		if(context.Arguments == null || context.Arguments.IsEmpty)
 			throw new CommandException(Properties.Resources.CommandMissingArguments);
@@ -69,7 +69,18 @@ public class MessageSendCommand : CommandBase<CommandContext>
 		var contentType = context.Options.GetValue<string>(CONTENTTYPE_OPTION);
 
 		//根据内容类型解析得到真实内容
-		content = GetContent(content, ref contentType);
+		if(!string.IsNullOrWhiteSpace(content) && !string.IsNullOrWhiteSpace(contentType) &&
+			contentType.Length > 5 && contentType.EndsWith("+file", StringComparison.OrdinalIgnoreCase))
+		{
+			contentType = contentType.Substring(0, contentType.Length - 5);
+
+			if(await Zongsoft.IO.FileSystem.File.ExistsAsync(content, cancellation))
+			{
+				await using var stream = await Zongsoft.IO.FileSystem.File.OpenAsync(content, System.IO.FileMode.Open, cancellation);
+				using var reader = new System.IO.StreamReader(stream, leaveOpen: true);
+				content = await reader.ReadToEndAsync(cancellation);
+			}
+		}
 
 		var message = Zongsoft.Data.Model.Build<Models.Message>(entity =>
 		{
@@ -80,38 +91,14 @@ public class MessageSendCommand : CommandBase<CommandContext>
 			entity.MessageType = context.Options.GetValue<string>(MESSAGETYPE_OPTION);
 		});
 
-		if(this.Service.Send(message, GetUsers(context.Arguments)) > 0)
-			return ValueTask.FromResult<object>(message);
+		if(await this.Service.SendAsync(message, GetUsers(context.Arguments), cancellation) > 0)
+			return message;
 
-		return ValueTask.FromResult<object>(null);
+		return null;
 	}
 	#endregion
 
 	#region 私有方法
-	private static string GetContent(string content, ref string contentType)
-	{
-		if(string.IsNullOrWhiteSpace(content) || string.IsNullOrWhiteSpace(contentType))
-			return content;
-
-		if(contentType.Length > 5 && contentType.EndsWith("+file", StringComparison.OrdinalIgnoreCase))
-		{
-			contentType = contentType.Substring(0, contentType.Length - 5);
-
-			if(Zongsoft.IO.FileSystem.File.Exists(content))
-			{
-				using(var stream = Zongsoft.IO.FileSystem.File.Open(content, System.IO.FileMode.Open))
-				{
-					using(var reader = new System.IO.StreamReader(stream))
-					{
-						content = reader.ReadToEnd();
-					}
-				}
-			}
-		}
-
-		return content;
-	}
-
 	private static IEnumerable<uint> GetUsers(string[] args)
 	{
 		if(args == null)

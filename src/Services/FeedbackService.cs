@@ -44,38 +44,6 @@ public class FeedbackService : DataServiceBase<Feedback>
 	public FeedbackService(IServiceProvider serviceProvider) : base(serviceProvider) { }
 	#endregion
 
-	#region 重写方法
-	protected override Feedback OnGet(ICondition criteria, ISchema schema, DataSelectOptions options)
-	{
-		//调用基类同名方法
-		var feedback = base.OnGet(criteria, schema, options);
-
-		if(feedback == null)
-			return null;
-
-		//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
-		if(!Utility.IsContentEmbedded(feedback.ContentType))
-			feedback.Content = Utility.ReadTextFile(feedback.Content);
-
-		return feedback;
-	}
-
-	protected override int OnInsert(IDataDictionary<Feedback> data, ISchema schema, DataInsertOptions options)
-	{
-		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnInsert(data, schema, options));
-	}
-
-	protected override int OnUpdate(IDataDictionary<Feedback> data, ICondition criteria, ISchema schema, DataUpdateOptions options)
-	{
-		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnUpdate(data, criteria, schema, options));
-	}
-
-	protected override int OnUpsert(IDataDictionary<Feedback> data, ISchema schema, DataUpsertOptions options)
-	{
-		return Utility.MutateContent(data, () => this.GetContentFilePath(data.GetValue(p => p.FeedbackId, 0UL)), () => base.OnUpsert(data, schema, options));
-	}
-	#endregion
-
 	#region 虚拟方法
 	protected virtual string GetContentFilePath(ulong feedbackId)
 	{
@@ -94,7 +62,7 @@ public class FeedbackService : DataServiceBase<Feedback>
 
 		//如果内容类型是外部文件（即非嵌入格式），则读取文件内容
 		if(!Utility.IsContentEmbedded(feedback.ContentType))
-			feedback.Content = Utility.ReadTextFile(feedback.Content);
+			feedback.Content = await Utility.ReadTextFileAsync(feedback.Content, cancellation);
 
 		return feedback;
 	}

@@ -33,8 +33,16 @@ description: 在 Zongsoft discussions 仓库中修改、审查或排障论坛领
 
 - 纯文档：检查链接、CRLF 和差异。
 - 领域逻辑：构建 `src/Zongsoft.Discussions.csproj`，并对受影响服务使用隔离数据做聚焦验证。
-- API：构建 `src/api/Zongsoft.Discussions.Web.csproj`，在本地宿主验证变更路由和授权分支。
+- API：不编写单元测试；构建 `src/api/Zongsoft.Discussions.Web.csproj`，在本地宿主验证变更路由和授权分支。
 - 映射或 SQL：至少对照全部数据库方言做静态检查；只有具备临时数据库时才执行脚本。
 - Avalonia：使用 `src/ui/avalonia/Zongsoft.Discussions.Presentation.sln` 单独构建对应平台项目。
 
 未经明确要求，不运行 Cake 的 `pack`、真实数据库脚本、外部对象存储请求或带真实身份信息的 HTTP 请求。
+
+## 异步服务与内容
+
+- 数据操作、条件/字段验证、授权及生命周期钩子使用 Async 契约；CancellationToken 位于最后，控制器等待标量结果，查询以 IAsyncEnumerable 返回。常用参数前缀支持直接传入令牌。
+- 查询过滤器在异步枚举时处理记录，保留分页事件，逐条等待允许读取的外置正文。未审核内容先按身份脱敏；ThreadService 仅在作者或版主权限成立后恢复相应内容，保持 SiteId 限制。
+- GetTopmostsAsync 依次读取全局主题与置顶主题，再按既有 Union、ThreadId 降序与数量限制返回数组；GetThreadsAsync 在首查询条件准备后返回原可分页查询对象。
+- 内容字典回调只执行本地取值；文件写入在回调外等待。长正文的写入失败须阻止数据库写入，数据库失败或未写入时删除新建正文文件；清理使用不可取消标记，保留原错误。读取取消向上传播，其余读取失败保持空文本结果。
+- 事务范围、提交条件和统计更新顺序按业务服务维护。返回失败或抛出异常时由 await using 等待未提交事务的释放；不把已有失败分支变成提交。

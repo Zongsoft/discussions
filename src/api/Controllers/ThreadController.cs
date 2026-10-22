@@ -8,13 +8,13 @@
  *
  * Authors:
  *   钟峰(Popeye Zhong) <9555843@qq.com>
- * 
+ *
  * Copyright (C) 2015-2025 Zongsoft Corporation. All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -25,6 +25,8 @@
  */
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -39,84 +41,84 @@ namespace Zongsoft.Discussions.Web.Controllers;
 
 [Authorization]
 [ControllerName("Threads")]
-public class ThreadController : ServiceController<Thread, ThreadService>
+public class ThreadController : ServiceController<Models.Thread, ThreadService>
 {
 	#region 公共方法
 	[ActionName("Approve")]
 	[HttpPost("{id}/Approve")]
-	public object Approve(ulong id)
+	public async ValueTask<object> Approve(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.Approve(id) ? this.NoContent() : this.NotFound();
+		return await this.DataService.ApproveAsync(id, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Hidden")]
 	[HttpPost("{id}/Hidden")]
-	public object Hidden(ulong id)
+	public async ValueTask<object> Hidden(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.Visible(id, false) ? this.NoContent() : this.NotFound();
+		return await this.DataService.VisibleAsync(id, false, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Visible")]
 	[HttpPost("{id}/Visible")]
-	public object Visible(ulong id)
+	public async ValueTask<object> Visible(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.Visible(id, true) ? this.NoContent() : this.NotFound();
+		return await this.DataService.VisibleAsync(id, true, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Lock")]
 	[HttpPost("{id}/Lock")]
-	public object Lock(ulong id)
+	public async ValueTask<object> Lock(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetLocked(id, true) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetLockedAsync(id, true, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Unlock")]
 	[HttpPost("{id}/Unlock")]
-	public object Unlock(ulong id)
+	public async ValueTask<object> Unlock(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetLocked(id, false) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetLockedAsync(id, false, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Pin")]
 	[HttpPost("{id}/Pin")]
-	public object Pin(ulong id)
+	public async ValueTask<object> Pin(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetPinned(id, true) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetPinnedAsync(id, true, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Unpin")]
 	[HttpPost("{id}/Unpin")]
-	public object Unpin(ulong id)
+	public async ValueTask<object> Unpin(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetPinned(id, false) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetPinnedAsync(id, false, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Valued")]
 	[HttpPost("{id}/Valued")]
-	public object Valued(ulong id)
+	public async ValueTask<object> Valued(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetValued(id, true) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetValuedAsync(id, true, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Unvalued")]
 	[HttpPost("{id}/Unvalued")]
-	public object Unvalued(ulong id)
+	public async ValueTask<object> Unvalued(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetValued(id, false) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetValuedAsync(id, false, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Global")]
 	[HttpPost("{id}/Global")]
-	public object Global(ulong id)
+	public async ValueTask<object> Global(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetGlobal(id, true) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetGlobalAsync(id, true, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Unglobal")]
 	[HttpPost("{id}/Unglobal")]
-	public object Unglobal(ulong id)
+	public async ValueTask<object> Unglobal(ulong id, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetGlobal(id, false) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetGlobalAsync(id, false, cancellation) ? this.NoContent() : this.NotFound();
 	}
 	#endregion
 }

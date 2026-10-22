@@ -25,6 +25,8 @@
  */
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
@@ -78,43 +80,34 @@ public class DataValidator : IDataValidator
 	#endregion
 
 	#region 公共方法
-	public ICondition Validate(IDataAccessContextBase context, ICondition criteria)
+	public ValueTask<ICondition> ValidateAsync(IDataAccessContextBase context, ICondition criteria, CancellationToken cancellation = default)
 	{
 		if(UserIdentity.Current == null)
-			return criteria;
+			return ValueTask.FromResult(criteria);
 
 		//调用方提供的站点条件不能替代当前身份的站点约束
 		if(UserIdentity.Current.SiteId > 0 && HasProperty(context, Fields.SiteId))
 			criteria &= Condition.Equal(Fields.SiteId, UserIdentity.Current.SiteId);
 
-		return criteria;
+		return ValueTask.FromResult(criteria);
 	}
 
-	public bool OnImport(DataImportContextBase context, IDataEntityProperty property, out object value)
+	public ValueTask<DataValidatorResult> OnImportAsync(DataImportContextBase context, IDataEntityProperty property, CancellationToken cancellation = default)
 	{
-		if(_imports.TryGetValue(property.Name, out var factory))
-			return factory.Invoke(context, out value);
-
-		value = null;
-		return false;
+		return ValueTask.FromResult(_imports.TryGetValue(property.Name, out var factory) && factory(context, out var value) ?
+			new DataValidatorResult { HasValue = true, Value = value } : default);
 	}
 
-	public bool OnInsert(IDataMutateContextBase context, IDataEntityProperty property, out object value)
+	public ValueTask<DataValidatorResult> OnInsertAsync(IDataMutateContextBase context, IDataEntityProperty property, CancellationToken cancellation = default)
 	{
-		if(_inserts.TryGetValue(property.Name, out var factory))
-			return factory.Invoke(context, out value);
-
-		value = null;
-		return false;
+		return ValueTask.FromResult(_inserts.TryGetValue(property.Name, out var factory) && factory(context, out var value) ?
+			new DataValidatorResult { HasValue = true, Value = value } : default);
 	}
 
-	public bool OnUpdate(IDataMutateContextBase context, IDataEntityProperty property, out object value)
+	public ValueTask<DataValidatorResult> OnUpdateAsync(IDataMutateContextBase context, IDataEntityProperty property, CancellationToken cancellation = default)
 	{
-		if(_updates.TryGetValue(property.Name, out var factory))
-			return factory.Invoke(context, out value);
-
-		value = null;
-		return false;
+		return ValueTask.FromResult(_updates.TryGetValue(property.Name, out var factory) && factory(context, out var value) ?
+			new DataValidatorResult { HasValue = true, Value = value } : default);
 	}
 	#endregion
 

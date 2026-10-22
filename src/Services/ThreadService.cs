@@ -66,14 +66,15 @@ public class ThreadService : DataServiceBase<Models.Thread>
 	#region 公共方法
 	/// <summary>审核批准指定的主题，注：只有版主才具备调用该方法的权限。</summary>
 	/// <param name="threadId">指定要审核批准的主题编号。</param>
+	/// <param name="cancellation">指定取消操作的令牌。</param>
 	/// <returns>如果审核批准成功则返回真(True)，否则返回假(False)。</returns>
-	public bool Approve(ulong threadId)
+	public async ValueTask<bool> ApproveAsync(ulong threadId, CancellationToken cancellation = default)
 	{
 		var criteria = Condition.Equal(nameof(Models.Thread.ThreadId), threadId) &
 					   Condition.Equal(nameof(Models.Thread.Approved), false) &
 					   this.GetIsModeratorCriteria();
 
-		return this.DataAccess.Update<Models.Thread>(new
+		return await this.DataAccess.UpdateAsync<Models.Thread>(new
 		{
 			Approved = true,
 			ApprovedTime = DateTime.Now,
@@ -81,184 +82,97 @@ public class ThreadService : DataServiceBase<Models.Thread>
 			{
 				Approved = true,
 			}
-		}, criteria, "*,Post{Approved}") > 0;
+		}, criteria, "*,Post{Approved}", cancellation) > 0;
 	}
 
 	/// <summary>设置指定主题可见，注：只有版主才具备调用该方法的权限。</summary>
 	/// <param name="threadId">指定要设置的主题编号。</param>
 	/// <param name="value">指定一个值，指示是否可见。</param>
+	/// <param name="cancellation">指定取消操作的令牌。</param>
 	/// <returns>如果设置成功则返回真(True)，否则返回假(False)。</returns>
-	public bool Visible(ulong threadId, bool value)
+	public async ValueTask<bool> VisibleAsync(ulong threadId, bool value, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Update<Models.Thread>(new
+		return await this.DataAccess.UpdateAsync<Models.Thread>(new
 		{
 			Visible = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria()) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria(), cancellation) > 0;
 	}
 
 	/// <summary>设置指定主题是否锁定，注：只有版主才具备调用该方法的权限。</summary>
 	/// <param name="threadId">指定要设置的主题编号。</param>
 	/// <param name="value">指定一个值，指示是否锁定。</param>
+	/// <param name="cancellation">指定取消操作的令牌。</param>
 	/// <returns>如果设置成功则返回真(True)，否则返回假(False)。</returns>
-	public bool SetLocked(ulong threadId, bool value)
+	public async ValueTask<bool> SetLockedAsync(ulong threadId, bool value, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Update<Models.Thread>(new
+		return await this.DataAccess.UpdateAsync<Models.Thread>(new
 		{
 			IsLocked = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria()) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria(), cancellation) > 0;
 	}
 
 	/// <summary>设置指定主题是否置顶，注：只有版主才具备调用该方法的权限。</summary>
 	/// <param name="threadId">指定要设置的主题编号。</param>
 	/// <param name="value">指定一个值，指示是否置顶。</param>
+	/// <param name="cancellation">指定取消操作的令牌。</param>
 	/// <returns>如果设置成功则返回真(True)，否则返回假(False)。</returns>
-	public bool SetPinned(ulong threadId, bool value)
+	public async ValueTask<bool> SetPinnedAsync(ulong threadId, bool value, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Update<Models.Thread>(new
+		return await this.DataAccess.UpdateAsync<Models.Thread>(new
 		{
 			IsPinned = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria()) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria(), cancellation) > 0;
 	}
 
 	/// <summary>设置指定主题是否为精华帖，注：只有版主才具备调用该方法的权限。</summary>
 	/// <param name="threadId">指定要设置的主题编号。</param>
 	/// <param name="value">指定一个值，指示是否为精华帖。</param>
+	/// <param name="cancellation">指定取消操作的令牌。</param>
 	/// <returns>如果设置成功则返回真(True)，否则返回假(False)。</returns>
-	public bool SetValued(ulong threadId, bool value)
+	public async ValueTask<bool> SetValuedAsync(ulong threadId, bool value, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Update<Models.Thread>(new
+		return await this.DataAccess.UpdateAsync<Models.Thread>(new
 		{
 			IsValued = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria()) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId) & this.GetIsModeratorCriteria(), cancellation) > 0;
 	}
 
 	/// <summary>设置指定主题是否为全局帖，注：只有超级管理员才能调用该方法。</summary>
 	/// <param name="threadId">指定要设置的主题编号。</param>
 	/// <param name="value">指定一个值，指示是否为全局帖。</param>
+	/// <param name="cancellation">指定取消操作的令牌。</param>
 	/// <returns>如果设置成功则返回真(True)，否则返回假(False)。</returns>
-	public bool SetGlobal(ulong threadId, bool value)
+	public async ValueTask<bool> SetGlobalAsync(ulong threadId, bool value, CancellationToken cancellation = default)
 	{
 		if(!this.Principal.IsAdministrator())
 			return false;
 
-		return this.DataAccess.Update<Models.Thread>(new
+		return await this.DataAccess.UpdateAsync<Models.Thread>(new
 		{
 			IsGlobal = value,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId)) > 0;
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation) > 0;
 	}
 
-	public IEnumerable<Post> GetPosts(ulong threadId, string schema, Paging paging = null)
+	public IAsyncEnumerable<Post> GetPostsAsync(ulong threadId, string schema, CancellationToken cancellation = default) => this.GetPostsAsync(threadId, schema, null, cancellation);
+	public IAsyncEnumerable<Post> GetPostsAsync(ulong threadId, string schema, Paging paging, CancellationToken cancellation = default)
 	{
-		return this.DataAccess.Select<Post>(
+		return this.DataAccess.SelectAsync<Post>(
 			Condition.Equal(nameof(Post.ThreadId), threadId) &
 			Condition.GreaterThan(nameof(Post.RefererId), 0) &
 			Condition.Equal(nameof(Post.Visible), true),
-			schema, paging, Sorting.Descending(nameof(Post.PostId)));
-	}
-	#endregion
-
-	#region 重写方法
-	protected override Models.Thread OnGet(ICondition criteria, ISchema schema, DataSelectOptions options)
-	{
-		//调用基类同名方法
-		var thread = base.OnGet(criteria, schema, options);
-
-		if(thread == null)
-			return null;
-
-		//如果指定主题尚未审核通过并且创建人不是当前用户，则需要进行权限判断
-		if(!thread.Approved && (this.Principal.Identity.GetIdentifier<uint>() != thread.CreatorId))
-		{
-			//判断当前用户是否为该论坛的版主
-			var isModerator = this.ServiceProvider.ResolveRequired<ForumService>().IsModerator(thread.ForumId);
-
-			//当前用户不是版主，并且该主题未审核通过则抛出授权异常
-			if(!isModerator && !thread.Approved)
-				throw new Zongsoft.Security.Privileges.AuthorizationException("The specified thread has not been approved, so it cannot be viewed.");
-
-			//查询过滤器已脱敏正文，只有完成版主授权后才恢复当前实例的内容。
-			Data.ThreadFilter.RestoreContent(thread);
-		}
-
-		//递增当前主题的累计阅读量并更新最后查看时间
-		this.DataAccess.Update<Models.Thread>(new
-		{
-			TotalViews = Operand.Field(nameof(Models.Thread.TotalViews)) + 1,
-			ViewedTime = DateTime.Now,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), thread.ThreadId));
-
-		//更新查询到的实体属性
-		thread.TotalViews += 1;
-		thread.ViewedTime = DateTime.Now;
-
-		//更新当前用户的浏览记录
-		this.SetHistory(thread.ThreadId);
-
-		return thread;
-	}
-
-	protected override int OnInsert(IDataDictionary<Models.Thread> data, ISchema schema, DataInsertOptions options)
-	{
-		if(!data.TryGetValue(p => p.Post, out var post) || post == null || string.IsNullOrEmpty(post.Content))
-			throw new InvalidOperationException(Properties.Resources.ThreadMissingContent);
-
-		//确保数据模式含有“主题内容贴”复合属性
-		schema.Include("Post{*}");
-
-		//更新主题内容贴的相关属性
-		post.Visible = false;
-		post.Approved = this.ServiceProvider.ResolveRequired<ForumService>().CanPublish(data);
-		data.SetValue(p => p.Approved, post.Approved);
-		schema.Include(nameof(Models.Thread.Approved));
-
-		var content = DataDictionary.GetDictionary<Post>(post);
-		return Utility.MutateContent(content, () => this.Posting.GetContentFilePath(content), () =>
-		{
-			using(var transaction = new Transaction())
-			{
-				//调用基类同名方法，插入主题数据
-				var count = base.OnInsert(data, schema, options);
-
-				if(count < 1)
-					return count;
-
-				this.LinkPost(data, post);
-
-				//更新发帖人关联的主题统计信息
-				this.SetMostRecentThread(data);
-
-				//提交事务
-				transaction.Commit();
-
-				return count;
-			}
-		});
+			schema, paging, [Sorting.Descending(nameof(Post.PostId))], cancellation);
 	}
 	#endregion
 
 	#region 私有方法
-	private void LinkPost(IDataDictionary<Models.Thread> data, Post post)
-	{
-		var postId = post.PostId;
-		var threadId = data.GetValue(p => p.ThreadId);
-
-		if(threadId == 0 || postId == 0 ||
-			this.DataAccess.Update<Models.Thread>(new { PostId = postId }, Condition.Equal(nameof(Models.Thread.ThreadId), threadId)) != 1 ||
-			this.DataAccess.Update<Post>(new { ThreadId = threadId }, Condition.Equal(nameof(Post.PostId), postId)) != 1)
-			throw new InvalidOperationException(Properties.Resources.ThreadPostLinkFailed);
-
-		data.SetValue(p => p.PostId, postId);
-		post.ThreadId = threadId;
-	}
-
 	private async ValueTask LinkPostAsync(IDataDictionary<Models.Thread> data, Post post, CancellationToken cancellation)
 	{
 		var postId = post.PostId;
 		var threadId = data.GetValue(p => p.ThreadId);
 
 		if(threadId == 0 || postId == 0 ||
-			await this.DataAccess.UpdateAsync<Models.Thread>(new { PostId = postId }, Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation: cancellation) != 1 ||
-			await this.DataAccess.UpdateAsync<Post>(new { ThreadId = threadId }, Condition.Equal(nameof(Post.PostId), postId), cancellation: cancellation) != 1)
+			await this.DataAccess.UpdateAsync<Models.Thread>(new { PostId = postId }, Condition.Equal(nameof(Models.Thread.ThreadId), threadId), cancellation) != 1 ||
+			await this.DataAccess.UpdateAsync<Post>(new { ThreadId = threadId }, Condition.Equal(nameof(Post.PostId), postId), cancellation) != 1)
 			throw new InvalidOperationException(Properties.Resources.ThreadPostLinkFailed);
 
 		data.SetValue(p => p.PostId, postId);
@@ -269,67 +183,6 @@ public class ThreadService : DataServiceBase<Models.Thread>
 	private Zongsoft.Data.Condition GetIsModeratorCriteria() => Condition.Exists("Forum.Users",
 		Condition.Equal(nameof(Forum.ForumUser.UserId), this.Principal.Identity.GetIdentifier<uint>()) &
 		Condition.Equal(nameof(Forum.ForumUser.IsModerator), true));
-
-	private bool SetMostRecentThread(IDataDictionary<Models.Thread> data)
-	{
-		var count = 0;
-		var userId = data.GetValue(p => p.CreatorId, this.Principal.Identity.GetIdentifier<uint>());
-		var user = this.DataAccess.Select<UserProfile>(
-			Condition.Equal(nameof(UserProfile.UserId), userId),
-			$"{nameof(UserProfile.UserId)}," +
-			$"{nameof(UserProfile.Name)}," +
-			$"{nameof(UserProfile.Nickname)}," +
-			$"{nameof(UserProfile.Avatar)}").FirstOrDefault();
-
-		//更新当前主题所属论坛的最后发帖信息
-		count += this.DataAccess.Update<Forum>(new
-		{
-			SiteId = data.GetValue(p => p.SiteId),
-			ForumId = data.GetValue(p => p.ForumId),
-			MostRecentThreadId = data.GetValue(p => p.ThreadId),
-			MostRecentThreadTitle = data.GetValue(p => p.Title),
-			MostRecentThreadTime = data.GetValue(p => p.CreatedTime),
-			MostRecentThreadAuthorId = userId,
-			MostRecentThreadAuthorName = user?.Nickname,
-			MostRecentThreadAuthorAvatar = user?.Avatar,
-		});
-
-		//递增当前发帖人的累计主题数及最后发表的主题信息
-		count += this.DataAccess.Update<UserProfile>(new
-		{
-			UserId = userId,
-			TotalThreads = Operand.Field(nameof(UserProfile.TotalThreads)) + 1,
-			MostRecentThreadId = data.GetValue(p => p.ThreadId),
-			MostRecentThreadTitle = data.GetValue(p => p.Title),
-			MostRecentThreadTime = data.GetValue(p => p.CreatedTime),
-		});
-
-		return count > 0;
-	}
-
-	private void SetHistory(ulong threadId)
-	{
-		var timestamp = DateTime.Now;
-		var userId = this.Principal.Identity.GetIdentifier<uint>();
-		var criteria = Condition.Equal(nameof(History.UserId), userId) & Condition.Equal(nameof(History.ThreadId), threadId);
-
-		//首次浏览时创建记录；并发创建以主键约束为准。
-		this.DataAccess.Insert<History>(new
-		{
-			UserId = userId,
-			ThreadId = threadId,
-			ViewedCount = 0u,
-			PostedCount = 0u,
-			FirstViewedTime = timestamp,
-			LastViewedTime = timestamp,
-		}, new DataInsertOptions { ConstraintIgnored = true });
-
-		this.DataAccess.Update<History>(new
-		{
-			ViewedCount = Operand.Field(nameof(History.ViewedCount)) + 1,
-			LastViewedTime = timestamp,
-		}, criteria);
-	}
 	#endregion
 
 	#region 异步业务路径
@@ -347,14 +200,14 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		if(!thread.Approved && (this.Principal.Identity.GetIdentifier<uint>() != thread.CreatorId))
 		{
 			//判断当前用户是否为该论坛的版主
-			var isModerator = await this.ServiceProvider.ResolveRequired<ForumService>().IsModeratorAsync(thread.ForumId, cancellation: cancellation);
+			var isModerator = await this.ServiceProvider.ResolveRequired<ForumService>().IsModeratorAsync(thread.ForumId, cancellation);
 
 			//当前用户不是版主，并且该主题未审核通过则抛出授权异常
 			if(!isModerator && !thread.Approved)
 				throw new Zongsoft.Security.Privileges.AuthorizationException("The specified thread has not been approved, so it cannot be viewed.");
 
 			//查询过滤器已脱敏正文，只有完成版主授权后才恢复当前实例的内容。
-			Data.ThreadFilter.RestoreContent(thread);
+			await Data.ThreadFilter.RestoreContentAsync(thread, cancellation);
 		}
 
 		//递增当前主题的累计阅读量并更新最后查看时间
@@ -362,14 +215,14 @@ public class ThreadService : DataServiceBase<Models.Thread>
 		{
 			TotalViews = Operand.Field(nameof(Models.Thread.TotalViews)) + 1,
 			ViewedTime = DateTime.Now,
-		}, Condition.Equal(nameof(Models.Thread.ThreadId), thread.ThreadId), cancellation: cancellation);
+		}, Condition.Equal(nameof(Models.Thread.ThreadId), thread.ThreadId), cancellation);
 
 		//更新查询到的实体属性
 		thread.TotalViews += 1;
 		thread.ViewedTime = DateTime.Now;
 
 		//更新当前用户的浏览记录
-		await this.SetHistoryAsync(thread.ThreadId, cancellation: cancellation);
+		await this.SetHistoryAsync(thread.ThreadId, cancellation);
 
 		return thread;
 	}
@@ -404,7 +257,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 				await this.LinkPostAsync(data, post, cancellation);
 
 				//更新发帖人关联的主题统计信息
-				await this.SetMostRecentThreadAsync(data, cancellation: cancellation);
+				await this.SetMostRecentThreadAsync(data, cancellation);
 
 				//提交事务
 				await transaction.CommitAsync(cancellation);
@@ -425,7 +278,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 			$"{nameof(UserProfile.UserId)}," +
 			$"{nameof(UserProfile.Name)}," +
 			$"{nameof(UserProfile.Nickname)}," +
-			$"{nameof(UserProfile.Avatar)}", cancellation: cancellation).FirstOrDefault(cancellation);
+			$"{nameof(UserProfile.Avatar)}", cancellation).FirstOrDefault(cancellation);
 
 		//更新当前主题所属论坛的最后发帖信息
 		count += await this.DataAccess.UpdateAsync<Forum>(new
@@ -438,7 +291,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 			MostRecentThreadAuthorId = userId,
 			MostRecentThreadAuthorName = user?.Nickname,
 			MostRecentThreadAuthorAvatar = user?.Avatar,
-		}, cancellation: cancellation);
+		}, cancellation);
 
 		//递增当前发帖人的累计主题数及最后发表的主题信息
 		count += await this.DataAccess.UpdateAsync<UserProfile>(new
@@ -448,7 +301,7 @@ public class ThreadService : DataServiceBase<Models.Thread>
 			MostRecentThreadId = data.GetValue(p => p.ThreadId),
 			MostRecentThreadTitle = data.GetValue(p => p.Title),
 			MostRecentThreadTime = data.GetValue(p => p.CreatedTime),
-		}, cancellation: cancellation);
+		}, cancellation);
 
 		return count > 0;
 	}

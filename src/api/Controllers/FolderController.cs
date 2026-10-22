@@ -26,15 +26,17 @@
 
 using System;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 
 using Zongsoft.Web;
+using Zongsoft.Web.Security;
 using Zongsoft.Security.Privileges;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
-using Zongsoft.Web.Security;
 
 namespace Zongsoft.Discussions.Web.Controllers;
 
@@ -45,16 +47,16 @@ public class FolderController : ServiceController<Folder, FolderService>
 	#region 公共方法
 	[ActionName("Icon")]
 	[HttpPost("{id}/[action]/{value}")]
-	public IActionResult SetIcon(uint id, string value = null)
+	public async ValueTask<IActionResult> SetIcon(uint id, string value = null, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetIcon(id, value) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetIconAsync(id, value, cancellation) ? this.NoContent() : this.NotFound();
 	}
 
 	[ActionName("Shareability")]
 	[HttpPost("{id}/[action]/{value}")]
-	public IActionResult SetShareability(uint id, Shareability value)
+	public async ValueTask<IActionResult> SetShareability(uint id, Shareability value, CancellationToken cancellation = default)
 	{
-		return this.DataService.SetShareability(id, value) ? this.NoContent() : this.NotFound();
+		return await this.DataService.SetShareabilityAsync(id, value, cancellation) ? this.NoContent() : this.NotFound();
 	}
 	#endregion
 }

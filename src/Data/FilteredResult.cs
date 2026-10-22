@@ -26,23 +26,22 @@
 
 using System;
 using System.Threading;
-using System.Collections;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Zongsoft.Data;
 
 namespace Zongsoft.Discussions.Data;
 
-// 查询上下文接收 IEnumerable；此适配层保留实际模型类型和异步接口，枚举与过滤交给 Core。
 internal static class FilteredResult
 {
-	public static IEnumerable Create(DataSelectContextBase context, Func<object, bool> filter) =>
-		(IEnumerable)Activator.CreateInstance(typeof(Result<>).MakeGenericType(context.ModelType ?? typeof(object)), context.Result, filter);
+	public static object Create(DataSelectContextBase context, Func<object, CancellationToken, ValueTask<bool>> filter) =>
+		Activator.CreateInstance(typeof(Result<>).MakeGenericType(context.ModelType ?? typeof(object)), context.Result, filter);
 
-	private sealed class Result<T>(IEnumerable source, Func<object, bool> filter) : IEnumerable<T>, IAsyncEnumerable<T>, IPageable
+	private sealed class Result<T>(object source, Func<object, CancellationToken, ValueTask<bool>> filter) : IAsyncEnumerable<T>, IPageable
 	{
 		public bool Suppressed => (source as IPageable)?.Suppressed ?? false;
-		public event EventHandler<PagingEventArgs> Paginated
+		public event Func<object, PagingEventArgs, CancellationToken, ValueTask> Paginated
 		{
 			add
 			{
@@ -56,11 +55,9 @@ internal static class FilteredResult
 			}
 		}
 
-		public IEnumerator<T> GetEnumerator() => Collections.Enumerable.Enumerate<T>(source.Filter(filter)).GetEnumerator();
-
-		IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
 		public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellation = default) =>
-			Collections.Enumerable.EnumerateAsync<T>(source).Filter((ref T item) => filter(item)).GetAsyncEnumerator(cancellation);
+			Collections.Enumerable.EnumerateAsync<T>(source, cancellation)
+				.FilterAsync(async (item, token) => new Pageable.FilterResult<T> { Accepted = await filter(item, token), Data = item })
+				.GetAsyncEnumerator(cancellation);
 	}
 }

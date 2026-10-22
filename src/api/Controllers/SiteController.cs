@@ -25,6 +25,8 @@
  */
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Mvc;
@@ -43,10 +45,10 @@ public class SiteController : ServiceController<Site, SiteService>
 	#region 公共方法
 	[ActionName("Forums")]
 	[HttpGet("{siteId}/[action]")]
-	public IEnumerable<Forum> GetForums(uint siteId, [FromQuery] ushort group = 0) => this.DataService.GetForums(siteId, group);
+	public IAsyncEnumerable<Forum> GetForums(uint siteId, [FromQuery] ushort group = 0, CancellationToken cancellation = default) => this.DataService.GetForumsAsync(siteId, group, cancellation);
 
 	[ActionName("ForumGroups")]
 	[HttpGet("{siteId}/[action]")]
-	public IEnumerable<ForumGroup> GetForumGroups(uint siteId) => this.DataService.GetForumGroups(siteId);
+	public IAsyncEnumerable<ForumGroup> GetForumGroups(uint siteId, CancellationToken cancellation = default) => this.DataService.GetForumGroupsAsync(siteId, cancellation);
 	#endregion
 }
