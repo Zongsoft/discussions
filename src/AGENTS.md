@@ -1,6 +1,6 @@
 ## 概述
 
-本目录遵循 [../AGENTS.md](../AGENTS.md)，是 Discussions 领域模块和 Web 扩展的源码根。领域协作流程见 [../SKILL.md](../SKILL.md)。
+本目录遵循 [../AGENTS.md](../AGENTS.md)，是 Discussions 领域模块的源码根。领域协作流程见 [../SKILL.md](../SKILL.md)。
 
 ## 职责边界
 
@@ -8,7 +8,7 @@
 - `Services` 负责数据访问与业务动作；控制器应保持为薄适配层。
 - `Data` 负责站点条件注入和查询结果过滤；`Security` 负责论坛身份质询与声明转换。
 - `Features` 放置对 Framework 扩展点的业务实现；`Module.cs` 暴露模块访问器、事件和属性。
-- `api` 与 `ui` 有独立的就近说明，不应被主库项目编译进来。
+- `../api` 与 `../ui` 位于仓库根目录，有独立的就近说明。
 
 ## 插件和数据产物
 

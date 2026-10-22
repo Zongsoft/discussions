@@ -34,13 +34,15 @@ await foreach(var thread in threads.WithCancellation(cancellation))
 
 ## Local build and validation
 
+The root solution `Zongsoft.Discussions.slnx` includes the domain library, Web API, and unit test projects. The Avalonia prototype has its own solution under `ui/avalonia`.
+
 Dependency versions are defined in `Directory.Packages.props` and are restored from NuGet by default. From the discussions root, use the .NET 10 SDK:
 
 ```powershell
 dotnet build src/Zongsoft.Discussions.csproj -p:GeneratePackageOnBuild=false
-dotnet build src/api/Zongsoft.Discussions.Web.csproj -p:GeneratePackageOnBuild=false
-dotnet build src/ui/avalonia/desktop/Zongsoft.Discussions.Presentation.Desktop.csproj
-dotnet build src/ui/avalonia/browser/Zongsoft.Discussions.Presentation.Browser.csproj
+dotnet build api/Zongsoft.Discussions.Web.csproj -p:GeneratePackageOnBuild=false
+dotnet build ui/avalonia/desktop/Zongsoft.Discussions.Presentation.Desktop.csproj
+dotnet build ui/avalonia/browser/Zongsoft.Discussions.Presentation.Browser.csproj
 ```
 
 The browser project requires a WebAssembly workload matching the SDK. The backend and Web API use their configured target frameworks; Avalonia projects declare their own targets.
@@ -50,7 +52,7 @@ To validate source outputs from the adjacent framework checkout, build the corre
 ```powershell
 dotnet build ../framework/Zongsoft.Core/src/Zongsoft.Core.csproj -f net10.0 -p:GeneratePackageOnBuild=false
 dotnet build ../framework/Zongsoft.Web/src/Zongsoft.Web.csproj -f net10.0 -p:GeneratePackageOnBuild=false
-dotnet build src/api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
+dotnet build api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
 ```
 
 Local references do not build framework automatically. Output directories, configurations, and target frameworks must match. To validate another target framework, change the target in all three commands together.

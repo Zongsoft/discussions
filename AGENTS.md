@@ -11,10 +11,10 @@
 本仓库是基于 Zongsoft Framework 的社区论坛示例与业务模块，不是 Framework 公共契约的归属地。
 
 - `src`：领域模型、数据服务、数据过滤、安全身份和插件模块；主库支持 .NET 8、9、10。
-- `src/api`：基于 `Zongsoft.Web` 的 Web 控制器与 Web 插件产物。
+- `api`：基于 `Zongsoft.Web` 的 Web 控制器与 Web 插件产物。
 - `database`：ClickHouse、SQL Server、MySQL、PostgreSQL 的建库脚本与说明。
 - `docs/http`：API 调试请求；`docs/templates`：归档等功能使用的打包模板。
-- `src/ui/avalonia`：独立的 Avalonia 桌面与浏览器原型，不属于主解决方案。
+- `ui/avalonia`：独立的 Avalonia 桌面与浏览器原型，不属于主解决方案。
 
 NuGet 版本由 `Directory.Packages.props` 集中管理。`Directory.Build.props` 默认引用 NuGet 包；只有明确设置 `ZongsoftFrameworkPathReferenced=true` 且相邻 `../framework` 存在时，项目才改用本地 Framework 程序集。
 
@@ -37,7 +37,7 @@ NuGet 版本由 `Directory.Packages.props` 集中管理。`Directory.Build.props
 
 - ASP.NET API 项目不编写单元测试；通过定向构建和具备环境后的 HTTP 集成验证检查。业务库单元测试不引用 API 程序集。
 - 文档改动检查相对链接、CRLF、`git diff --check` 和实际差异，不必运行构建。
-- 领域库改动优先构建 `src/Zongsoft.Discussions.csproj`；API 改动构建 `src/api/Zongsoft.Discussions.Web.csproj`。
+- 领域库改动优先构建 `src/Zongsoft.Discussions.csproj`；API 改动构建 `api/Zongsoft.Discussions.Web.csproj`。
 - 公共模型、映射或多目标依赖变化按需要分别验证 `net8.0`、`net9.0`、`net10.0`。
 - 离线回归项目为 `test/Zongsoft.Discussions.Tests.csproj`，覆盖站点验证、内容过滤、文件写入、分页及事务顺序。先构建相邻 framework 的 Core 对应目标程序集，再运行测试；测试使用内存数据与文件提供程序，不启动插件宿主或连接外部服务。数据库、文件存储和完整授权流程的集成验证应使用临时资源与隔离身份。
 - Avalonia 原型按其就近说明单独验证，不因后端改动默认构建 UI。

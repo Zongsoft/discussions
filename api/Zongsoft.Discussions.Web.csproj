@@ -7,12 +7,12 @@
 		<IsPackable>true</IsPackable>
 		<IncludeSymbols>true</IncludeSymbols>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<RepositoryUrl>https://github.com/Zongsoft/Zongsoft.Discussions/tree/main/src/api</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Zongsoft/Zongsoft.Discussions/tree/main/api</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/Zongsoft/Zongsoft.Discussions</PackageProjectUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Zongsoft.Discussions.csproj" />
+		<ProjectReference Include="..\src\Zongsoft.Discussions.csproj" />
 	</ItemGroup>
 
 	<Choose>
@@ -37,7 +37,7 @@
 	<ItemGroup>
 		<None Include="$(MSBuildProjectName).deploy" Link=".deploy" Pack="true" PackagePath="\.deploy" />
 		<None Include="$(MSBuildProjectName).plugin" Pack="true" PackagePath="\artifacts" />
-		<None Include="..\..\docs\http\*" Pack="true" PackagePath="\artifacts\http" Visible="false" />
-		<None Include="..\..\docs\templates\*.xlsx" Pack="true" PackagePath="\artifacts\templates" Visible="false" />
+		<None Include="..\docs\http\*" Pack="true" PackagePath="\artifacts\http" Visible="false" />
+		<None Include="..\docs\templates\*.xlsx" Pack="true" PackagePath="\artifacts\templates" Visible="false" />
 	</ItemGroup>
 </Project>

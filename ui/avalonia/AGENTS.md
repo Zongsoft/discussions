@@ -1,6 +1,6 @@
 ## 概述
 
-本目录遵循 [../../../AGENTS.md](../../../AGENTS.md)，是与后端主解决方案分离的 Avalonia UI 原型。
+本目录遵循 [../../AGENTS.md](../../AGENTS.md)，是与后端主解决方案分离的 Avalonia UI 原型。
 
 ## 项目边界
 

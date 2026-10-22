@@ -36,13 +36,15 @@ await foreach(var thread in threads.WithCancellation(cancellation))
 
 ## 本地构建与验证
 
+根目录的 `Zongsoft.Discussions.slnx` 包含领域库、Web API 和单元测试项目。Avalonia 原型的独立解决方案位于 `ui/avalonia`。
+
 依赖版本以 `Directory.Packages.props` 为准，默认从 NuGet 还原。使用 .NET 10 SDK，在 discussions 根目录执行：
 
 ```powershell
 dotnet build src/Zongsoft.Discussions.csproj -p:GeneratePackageOnBuild=false
-dotnet build src/api/Zongsoft.Discussions.Web.csproj -p:GeneratePackageOnBuild=false
-dotnet build src/ui/avalonia/desktop/Zongsoft.Discussions.Presentation.Desktop.csproj
-dotnet build src/ui/avalonia/browser/Zongsoft.Discussions.Presentation.Browser.csproj
+dotnet build api/Zongsoft.Discussions.Web.csproj -p:GeneratePackageOnBuild=false
+dotnet build ui/avalonia/desktop/Zongsoft.Discussions.Presentation.Desktop.csproj
+dotnet build ui/avalonia/browser/Zongsoft.Discussions.Presentation.Browser.csproj
 ```
 
 浏览器项目需要安装与 SDK 匹配的 WebAssembly 工作负载。后端和 Web API 的目标框架由项目配置决定，Avalonia 项目使用其自身声明的目标框架。
@@ -52,7 +54,7 @@ dotnet build src/ui/avalonia/browser/Zongsoft.Discussions.Presentation.Browser.c
 ```powershell
 dotnet build ../framework/Zongsoft.Core/src/Zongsoft.Core.csproj -f net10.0 -p:GeneratePackageOnBuild=false
 dotnet build ../framework/Zongsoft.Web/src/Zongsoft.Web.csproj -f net10.0 -p:GeneratePackageOnBuild=false
-dotnet build src/api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
+dotnet build api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
 ```
 
 本地引用不会自动构建 framework；目录、配置和目标框架必须与其输出一致。验证其他目标框架时，同步调整上述三条命令中的目标框架。

@@ -14,9 +14,9 @@ description: 在 Zongsoft discussions 仓库中修改、审查或排障论坛领
 	- 查询、写入和业务动作：`src/Services`。
 	- 租户条件、结果过滤和身份模型：`src/Data`、`src/Security`。
 	- 数据结构：`src/Zongsoft.Discussions.mapping` 与 `database`。
-	- HTTP 表面：`src/api/Controllers`、`docs/http`。
+	- HTTP 表面：`api/Controllers`、`docs/http`。
 	- 插件装配和交付：`src/*.plugin`、`src/*.option`、`src/*.deploy`、对应项目文件。
-	- UI 原型：`src/ui/avalonia`，与后端主解决方案分开处理。
+	- UI 原型：`ui/avalonia`，与后端主解决方案分开处理。
 2. 搜索模型属性、映射成员、SQL 列、服务选择字段和控制器动作的全部引用，再确定最窄修改范围。
 3. 若需求属于 Zongsoft 通用数据、Web、插件或安全机制，应在 Framework 仓库处理；本仓只承载论坛业务规则及其适配。
 
@@ -33,9 +33,9 @@ description: 在 Zongsoft discussions 仓库中修改、审查或排障论坛领
 
 - 纯文档：检查链接、CRLF 和差异。
 - 领域逻辑：构建 `src/Zongsoft.Discussions.csproj`，并对受影响服务使用隔离数据做聚焦验证。
-- API：不编写单元测试；构建 `src/api/Zongsoft.Discussions.Web.csproj`，在本地宿主验证变更路由和授权分支。
+- API：不编写单元测试；构建 `api/Zongsoft.Discussions.Web.csproj`，在本地宿主验证变更路由和授权分支。
 - 映射或 SQL：至少对照全部数据库方言做静态检查；只有具备临时数据库时才执行脚本。
-- Avalonia：使用 `src/ui/avalonia/Zongsoft.Discussions.Presentation.sln` 单独构建对应平台项目。
+- Avalonia：使用 `ui/avalonia/Zongsoft.Discussions.Presentation.sln` 单独构建对应平台项目。
 
 未经明确要求，不运行 Cake 的 `pack`、真实数据库脚本、外部对象存储请求或带真实身份信息的 HTTP 请求。
 
