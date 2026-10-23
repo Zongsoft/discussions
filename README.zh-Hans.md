@@ -62,7 +62,7 @@ dotnet build api/Zongsoft.Discussions.Web.csproj -f net10.0 -p:ZongsoftFramework
 离线回归测试覆盖站点隔离、内容可见性、异步文件读写、分页及投票事务。先构建相邻 Core 项目的对应目标框架，再运行：
 
 ```powershell
-dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:GeneratePackageOnBuild=false
+dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
 ```
 
 测试项目使用本地框架程序集和隔离的内存依赖。数据库集成、插件加载、真实 HTTP 请求与 Avalonia 界面需要单独进行运行验证。

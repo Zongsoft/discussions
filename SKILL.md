@@ -29,6 +29,10 @@ description: 在 Zongsoft discussions 仓库中修改、审查或排障论坛领
 - API 变化：优先复用服务层语义；同步检查控制器路由、返回约定和 `docs/http` 示例。
 - 插件变化：保持模块名 `Discussions`、插件依赖、挂载路径、打包产物和部署文件相互匹配。
 
+## 构建引用
+
+- 测试的主库 ProjectReference 与解决方案、API 引用使用相同的全局属性；需要本地 Framework 引用或禁用构建打包时，从命令行统一传入，不在测试引用上单独覆盖。
+
 ## 验证选择
 
 - 纯文档：检查链接、CRLF 和差异。

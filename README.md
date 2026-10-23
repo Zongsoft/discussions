@@ -60,7 +60,7 @@ Local references do not build framework automatically. Output directories, confi
 Offline regression tests cover site isolation, content visibility, asynchronous file handling, pagination, and transactional voting. Build the adjacent Core project for the same target framework, then run:
 
 ```powershell
-dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:GeneratePackageOnBuild=false
+dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:ZongsoftFrameworkPathReferenced=true -p:GeneratePackageOnBuild=false
 ```
 
 The test project uses local framework assemblies and isolated in-memory dependencies. Database integration, plugin loading, live HTTP requests, and the Avalonia interface require separate runtime validation.
