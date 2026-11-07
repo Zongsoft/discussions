@@ -38,7 +38,9 @@ await foreach(var thread in threads.WithCancellation(cancellation))
 
 根目录的 `Zongsoft.Discussions.slnx` 包含领域库、Web API 和单元测试项目。Avalonia 原型的独立解决方案位于 `ui/avalonia`。
 
-[GitHub Actions](.github/workflows/dotnet.yml) 在提交推送到 `main` 时构建领域库和 Web API，使用 NuGet 依赖验证 .NET 8、9、10 的 Release 编译，并关闭构建时制包。单元测试和 Avalonia 原型单独验证。
+[GitHub Actions](.github/workflows/build.yaml) 在提交推送到 `main` 时构建领域库和 Web API，使用 NuGet 依赖验证 .NET 8、9、10 的 Release 编译，并关闭构建时制包。单元测试和 Avalonia 原型单独验证。
+
+Git 按 [.gitattributes](.gitattributes) 在各平台检出普通文本为 CRLF、Shell 脚本为 LF，与 `.editorconfig` 的格式规则保持一致。
 
 依赖版本以 `Directory.Packages.props` 为准，默认从 NuGet 还原。使用 .NET 10 SDK，在 discussions 根目录执行：
 

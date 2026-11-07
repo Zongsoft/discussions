@@ -1,0 +1,3 @@
+# Keep checkout line endings consistent with .editorconfig.
+* text=auto eol=crlf
+*.sh text eol=lf

@@ -36,7 +36,9 @@ await foreach(var thread in threads.WithCancellation(cancellation))
 
 The root solution `Zongsoft.Discussions.slnx` includes the domain library, Web API, and unit test projects. The Avalonia prototype has its own solution under `ui/avalonia`.
 
-[GitHub Actions](.github/workflows/dotnet.yml) builds the domain library and Web API on pushes to `main`. It checks .NET 8, 9, and 10 in Release using NuGet dependencies, with package generation disabled. Unit tests and the Avalonia prototype are validated separately.
+[GitHub Actions](.github/workflows/build.yaml) builds the domain library and Web API on pushes to `main`. It checks .NET 8, 9, and 10 in Release using NuGet dependencies, with package generation disabled. Unit tests and the Avalonia prototype are validated separately.
+
+Git checkout follows [.gitattributes](.gitattributes): text files use CRLF and shell scripts use LF on every platform, matching the formatting rules in `.editorconfig`.
 
 Dependency versions are defined in `Directory.Packages.props` and are restored from NuGet by default. From the discussions root, use the .NET 10 SDK:
 
