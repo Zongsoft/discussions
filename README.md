@@ -73,6 +73,19 @@ dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:ZongsoftFramewo
 
 The test project uses local framework assemblies and isolated in-memory dependencies. Database integration, plugin loading, live HTTP requests, and the Avalonia interface require separate runtime validation.
 
+## NuGet publishing
+
+The manual [Publish NuGet Packages](.github/workflows/publish-nuget.yaml) workflow publishes `Zongsoft.Discussions` and `Zongsoft.Discussions.Web` from `main`. It builds Release packages for .NET 8, 9, and 10, then uses `NuGet/login@v1` with `id-token: write` to obtain a short-lived publishing key.
+
+Configure the `release` GitHub environment with a `NUGET_USER` secret containing the nuget.org username. The [NuGet trusted publishing policy](https://www.nuget.org/account/trustedpublishing) must match owner `Zongsoft`, repository `discussions`, workflow filename `publish-nuget.yaml`, and environment `release`.
+
+Before the first publish, create and inspect both packages locally:
+
+```powershell
+dotnet pack src/Zongsoft.Discussions.csproj -c Release -p:GeneratePackageOnBuild=false -o ./artifacts -bl:artifacts/domain.binlog
+dotnet pack api/Zongsoft.Discussions.Web.csproj -c Release -p:GeneratePackageOnBuild=false -o ./artifacts -bl:artifacts/web.binlog
+```
+
 <a name="contribution"></a>
 ## Contributing
 

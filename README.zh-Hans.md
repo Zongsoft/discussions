@@ -75,6 +75,19 @@ dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:ZongsoftFramewo
 
 测试项目使用本地框架程序集和隔离的内存依赖。数据库集成、插件加载、真实 HTTP 请求与 Avalonia 界面需要单独进行运行验证。
 
+## NuGet 发布
+
+手动工作流 [Publish NuGet Packages](.github/workflows/publish-nuget.yaml) 从 `main` 发布 `Zongsoft.Discussions` 和 `Zongsoft.Discussions.Web`，先生成 .NET 8、9、10 的 Release 包，再通过 `NuGet/login@v1` 和 `id-token: write` 获取短期发布密钥。
+
+在 GitHub 的 `release` 环境中配置 `NUGET_USER` secret，值为 nuget.org 用户名。[NuGet Trusted Publishing 策略](https://www.nuget.org/account/trustedpublishing)须匹配所有者 `Zongsoft`、仓库 `discussions`、工作流文件名 `publish-nuget.yaml` 和环境 `release`。
+
+首次发布前，先在本地生成并检查两个包的内容：
+
+```powershell
+dotnet pack src/Zongsoft.Discussions.csproj -c Release -p:GeneratePackageOnBuild=false -o ./artifacts -bl:artifacts/domain.binlog
+dotnet pack api/Zongsoft.Discussions.Web.csproj -c Release -p:GeneratePackageOnBuild=false -o ./artifacts -bl:artifacts/web.binlog
+```
+
 <a name="contribution"></a>
 ## 贡献
 
