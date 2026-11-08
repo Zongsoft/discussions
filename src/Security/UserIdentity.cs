@@ -1,4 +1,4 @@
-﻿/*
+/*
  *   _____                                ______
  *  /_   /  ____  ____  ____  _________  / __/ /_
  *    / /  / __ \/ __ \/ __ \/ ___/ __ \/ /_/ __/
@@ -101,8 +101,8 @@ public class UserIdentity : IUser
 	string IUser.Namespace { get; set; }
 	Identifier IIdentifiable.Identifier
 	{
-		get => new(typeof(IUser), this.UserId);
-		set => this.UserId = value.Validate<uint>(out var id) ? id : this.UserId;
+		get => new(Users.Identifiers.User, this.UserId);
+		set => this.UserId = value.TryGetValue(Users.Identifiers.User, out uint id) ? id : throw new ArgumentException(null, nameof(value));
 	}
 	#endregion
 

@@ -23,6 +23,7 @@ description: 在 Zongsoft discussions 仓库中修改、审查或排障论坛领
 ## 契约检查
 
 - 实体结构变化：同步检查模型、`.mapping`、四种数据库脚本、服务字段选择、API 输入输出和归档模板。
+- `UserIdentity` 与 `UserProfile` 的标识类别固定为 `Users.Identifiers.User`，键为 `UserId`；setter 使用类别和键转换校验，无效赋值抛出 `ArgumentException`。
 - 身份或权限变化：保持 `UserIdentity.Scheme`、声明转换、`UserChallenger`、插件注册和 `DataValidator` 的站点边界一致。
 - 主题或帖子变化：检查审核、隐藏、锁定、置顶、精华、全局主题、回复关系、投票、附件以及论坛/用户统计的联动。
 - 内容读写变化：确认内嵌内容与文件路径内容的判定、未审核内容脱敏、附件目录和 `basePath` 选项不会泄露或串站。

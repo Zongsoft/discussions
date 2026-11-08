@@ -32,6 +32,10 @@ await foreach(var thread in threads.WithCancellation(cancellation))
 
 `GetTopmostsAsync` returns a materialized array. `GetThreadsAsync` prepares the exclusions for the first page before returning an asynchronous query sequence. Web routes and response data shapes remain consistent, and request cancellation reaches data operations. Post and thread content respects approval status, authorship, and moderator access.
 
+## User identifiers
+
+`UserIdentity` and `UserProfile` implement `IIdentifiable`. Their identifiers use `Users.Identifiers.User` (`Zongsoft.Security.User`) as the logical category and `UserId` as the key. Assigning an identifier requires this category and a key convertible to `uint`; invalid assignments throw `ArgumentException`.
+
 ## Local build and validation
 
 The root solution `Zongsoft.Discussions.slnx` includes the domain library, Web API, and unit test projects. The Avalonia prototype has its own solution under `ui/avalonia`.

@@ -130,6 +130,7 @@ internal sealed class MutateContext(DataEntity entity, object data = null) : IDa
 	public object Data { get; set; } = data;
 	public int Count { get; set; }
 	public IDataMutateOptions Options => null;
+	public Returning Returning => throw new NotSupportedException();
 	public IDataValidator Validator => null;
 	public string Name => entity.Name;
 	public DataAccessMethod Method => DataAccessMethod.Insert;

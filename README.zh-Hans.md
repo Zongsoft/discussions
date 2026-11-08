@@ -34,6 +34,10 @@ await foreach(var thread in threads.WithCancellation(cancellation))
 
 `GetTopmostsAsync` 返回已经读取完成的主题数组；`GetThreadsAsync` 先准备首页的排除条件，再返回可枚举的查询结果。Web 路由与响应的数据形状保持一致，请求取消会传递给数据操作。帖子与主题内容遵循审核状态、作者和版主权限。
 
+## 用户标识
+
+`UserIdentity` 和 `UserProfile` 实现 `IIdentifiable`。标识使用 `Users.Identifiers.User`（`Zongsoft.Security.User`）作为逻辑类别，以 `UserId` 为键。赋值时必须匹配该类别，且键能转换为 `uint`；无效赋值抛出 `ArgumentException`。
+
 ## 本地构建与验证
 
 根目录的 `Zongsoft.Discussions.slnx` 包含领域库、Web API 和单元测试项目。Avalonia 原型的独立解决方案位于 `ui/avalonia`。
