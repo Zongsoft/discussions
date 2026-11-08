@@ -10,7 +10,7 @@ using Zongsoft.Security.Privileges;
 
 namespace Zongsoft.Discussions.Tests;
 
-public class IdentifierContractTest
+public class IdentifierTest
 {
 	[Fact]
 	public void TestUserIdentity() => Verify(new Security.UserIdentity());
