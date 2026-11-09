@@ -4,14 +4,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Xunit;
-
 using Zongsoft.Data;
 using Zongsoft.Discussions.Services;
 
 namespace Zongsoft.Discussions.Tests;
 
-public class ForumServiceAsyncTest
+public class ForumServiceTest
 {
 	[Theory]
 	[InlineData(null, 10)]

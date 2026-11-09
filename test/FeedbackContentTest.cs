@@ -4,15 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
 
-using Xunit;
-
 using Zongsoft.Data;
 using Zongsoft.Discussions.Models;
 using Zongsoft.Discussions.Services;
 
 namespace Zongsoft.Discussions.Tests;
 
-public class FeedbackContentAsyncTest
+public class FeedbackContentTest
 {
 	[Theory]
 	[InlineData(false)]

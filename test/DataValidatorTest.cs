@@ -3,15 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Xunit;
-
 using Zongsoft.Data;
 using Zongsoft.Data.Metadata;
 using Zongsoft.Discussions.Data;
 
 namespace Zongsoft.Discussions.Tests;
 
-public class DataValidatorAsyncTest
+public class DataValidatorTest
 {
 	[Theory]
 	[InlineData(false)]

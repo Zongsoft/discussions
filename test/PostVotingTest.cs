@@ -4,8 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Xunit;
-
 using Zongsoft.Data;
 using Zongsoft.Data.Transactions;
 using Zongsoft.Discussions.Models;
@@ -13,7 +11,7 @@ using Zongsoft.Discussions.Services;
 
 namespace Zongsoft.Discussions.Tests;
 
-public class PostVotingAsyncTest
+public class PostVotingTest
 {
 	[Theory]
 	[InlineData(false, 0, 1, true)]

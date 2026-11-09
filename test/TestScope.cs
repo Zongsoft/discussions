@@ -10,8 +10,6 @@ using System.Collections.Generic;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit;
-
 using Zongsoft.IO;
 using Zongsoft.Data;
 using Zongsoft.Data.Metadata;

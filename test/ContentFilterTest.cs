@@ -3,15 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Xunit;
-
 using Zongsoft.Data;
 using Zongsoft.Discussions.Data;
 using Zongsoft.Discussions.Models;
 
 namespace Zongsoft.Discussions.Tests;
 
-public class ContentFilterAsyncTest
+public class ContentFilterTest
 {
 	[Fact]
 	public async Task Filter_PreservesTypedAsyncSource()
