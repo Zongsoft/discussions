@@ -115,4 +115,4 @@ dotnet pack api/Zongsoft.Discussions.Web.csproj -c Release -p:GeneratePackageOnB
 <a name="license"></a>
 ## 授权协议
 
-本项目采用 [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0) 授权协议。
+本项目采用 [MIT](LICENSE) 授权协议。
