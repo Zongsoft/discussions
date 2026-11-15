@@ -5,7 +5,7 @@
 ## 项目边界
 
 - `shared` 保存 View、ViewModel、资源和平台无关启动逻辑。
-- `desktop` 是 `net9.0` 桌面入口；`browser` 是 `net9.0-browser` WebAssembly 入口及静态资源。
+- `desktop` 是 `net10.0;net11.0` 桌面入口；`browser` 是 `net10.0-browser;net11.0-browser` WebAssembly 入口及静态资源。
 - `Directory.Packages.props` 在仓库中央包版本之上补充 Avalonia 与 CommunityToolkit 版本；升级时保持三个项目兼容。
 - `Zongsoft.Discussions.Presentation.sln` 是本子树的解决方案，不要把 UI 文件意外纳入后端 `Zongsoft.Discussions.csproj`。
 

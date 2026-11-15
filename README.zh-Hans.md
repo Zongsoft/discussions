@@ -42,7 +42,7 @@ await foreach(var thread in threads.WithCancellation(cancellation))
 
 根目录的 `Zongsoft.Discussions.slnx` 包含领域库、Web API 和单元测试项目。Avalonia 原型的独立解决方案位于 `ui/avalonia`。
 
-[GitHub Actions](.github/workflows/build.yaml) 在提交推送到 `main` 时构建领域库和 Web API，使用 NuGet 依赖验证 .NET 8、9、10 的 Release 编译，并关闭构建时制包。单元测试和 Avalonia 原型单独验证。
+[GitHub Actions](.github/workflows/build.yaml) 在提交推送到 `main` 时构建领域库和 Web API，使用 NuGet 依赖验证 .NET 10、11 的 Release 编译，并关闭构建时制包。单元测试和 Avalonia 原型单独验证。
 
 Git 按 [.gitattributes](.gitattributes) 在各平台检出普通文本为 CRLF、Shell 脚本为 LF，与 `.editorconfig` 的格式规则保持一致。
 
@@ -77,7 +77,7 @@ dotnet test test/Zongsoft.Discussions.Tests.csproj -f net10.0 -p:ZongsoftFramewo
 
 ## NuGet 发布
 
-手动工作流 [Publish NuGet Packages](.github/workflows/publish-nuget.yaml) 从 `main` 发布 `Zongsoft.Discussions` 和 `Zongsoft.Discussions.Web`，先生成 .NET 8、9、10 的 Release 包，再通过 `NuGet/login@v1` 和 `id-token: write` 获取短期发布密钥。
+手动工作流 [Publish NuGet Packages](.github/workflows/publish-nuget.yaml) 从 `main` 发布 `Zongsoft.Discussions` 和 `Zongsoft.Discussions.Web`，先生成 .NET 10、11 的 Release 包，再通过 `NuGet/login@v1` 和 `id-token: write` 获取短期发布密钥。
 
 在 GitHub 的 `release` 环境中配置 `NUGET_USER` secret，值为 nuget.org 用户名。[NuGet Trusted Publishing 策略](https://www.nuget.org/account/trustedpublishing)须匹配所有者 `Zongsoft`、仓库 `discussions`、工作流文件名 `publish-nuget.yaml` 和环境 `release`。
 

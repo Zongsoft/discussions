@@ -40,7 +40,7 @@ await foreach(var thread in threads.WithCancellation(cancellation))
 
 The root solution `Zongsoft.Discussions.slnx` includes the domain library, Web API, and unit test projects. The Avalonia prototype has its own solution under `ui/avalonia`.
 
-[GitHub Actions](.github/workflows/build.yaml) builds the domain library and Web API on pushes to `main`. It checks .NET 8, 9, and 10 in Release using NuGet dependencies, with package generation disabled. Unit tests and the Avalonia prototype are validated separately.
+[GitHub Actions](.github/workflows/build.yaml) builds the domain library and Web API on pushes to `main`. It checks .NET 10 and 11 in Release using NuGet dependencies, with package generation disabled. Unit tests and the Avalonia prototype are validated separately.
 
 Git checkout follows [.gitattributes](.gitattributes): text files use CRLF and shell scripts use LF on every platform, matching the formatting rules in `.editorconfig`.
 
@@ -75,7 +75,7 @@ The test project uses local framework assemblies and isolated in-memory dependen
 
 ## NuGet publishing
 
-The manual [Publish NuGet Packages](.github/workflows/publish-nuget.yaml) workflow publishes `Zongsoft.Discussions` and `Zongsoft.Discussions.Web` from `main`. It builds Release packages for .NET 8, 9, and 10, then uses `NuGet/login@v1` with `id-token: write` to obtain a short-lived publishing key.
+The manual [Publish NuGet Packages](.github/workflows/publish-nuget.yaml) workflow publishes `Zongsoft.Discussions` and `Zongsoft.Discussions.Web` from `main`. It builds Release packages for .NET 10 and 11, then uses `NuGet/login@v1` with `id-token: write` to obtain a short-lived publishing key.
 
 Configure the `release` GitHub environment with a `NUGET_USER` secret containing the nuget.org username. The [NuGet trusted publishing policy](https://www.nuget.org/account/trustedpublishing) must match owner `Zongsoft`, repository `discussions`, workflow filename `publish-nuget.yaml`, and environment `release`.
 

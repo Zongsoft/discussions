@@ -19,4 +19,4 @@
 
 - 最小构建：`dotnet build Zongsoft.Discussions.Web.csproj -f net10.0`。
 - 路由或绑定变化在本地宿主验证正常、未认证、无权限、跨站点和无效输入分支。
-- 多目标兼容性变化再分别验证 net8.0、net9.0、net10.0。
+- 多目标兼容性变化再分别验证 net10.0、net11.0。
